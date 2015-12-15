@@ -1,5 +1,7 @@
 //!  Description of the data-structures for IA-32e paging mode.
+use core::cmp::Ordering;
 use core::fmt;
+use core::ops::{Add, Sub};
 
 /// Represents a physical memory address
 #[derive(Copy, Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
@@ -91,9 +93,127 @@ impl fmt::UpperHex for VAddr {
     }
 }
 
-pub const BASE_PAGE_SIZE: u64 = 4096; // 4 KiB
-pub const LARGE_PAGE_SIZE: u64 = 1024*1024*2; // 2 MiB
-pub const HUGE_PAGE_SIZE: u64 = 1024*1024*1024; // 1 GiB
+/// A physical frame (page)
+#[derive(Copy, Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+pub struct Frame {
+    num: u64,
+}
+
+impl Frame {
+    /// Returns the starting address of the `Frame`
+    pub const fn start_address(&self) -> PAddr {
+        PAddr::from_u64(self.num << BASE_PAGE_SHIFT)
+    }
+
+    /// Round `addr` up to the closest `Frame`
+    pub const fn up(addr: PAddr) -> Frame {
+        Frame { num: (addr.as_u64() + BASE_PAGE_SIZE - 1) >> BASE_PAGE_SHIFT }
+    }
+
+    /// Round `addr` down to the closest `Frame`
+    pub const fn down(addr: PAddr) -> Frame {
+        Frame { num: addr.as_u64() >> BASE_PAGE_SHIFT }
+    }
+}
+
+impl Add<u64> for Frame {
+    type Output = Frame;
+
+    fn add(self, rhs: u64) -> Frame {
+        Frame { num: self.num + rhs }
+    }
+}
+
+impl Sub<u64> for Frame {
+    type Output = Frame;
+
+    fn sub(self, rhs: u64) -> Frame {
+        Frame { num: self.num - rhs }
+    }
+}
+
+impl Sub<Frame> for Frame {
+    type Output = u64;
+
+    fn sub(self, rhs: Frame) -> u64 {
+        self.num - rhs.num
+    }
+}
+
+/// A contiguous range of `Frame`s (always left-inclusive)
+#[derive(Copy, Clone, Debug, PartialEq, Eq)]
+pub struct FrameRange {
+    lower: Frame,
+    upper: Frame,
+}
+
+impl FrameRange {
+    /// Construct a `FrameRange` [`lower`, `upper`)
+    pub const fn new(lower: Frame, upper: Frame) -> FrameRange {
+        FrameRange {
+            lower: lower,
+            upper: upper,
+        }
+    }
+
+    /// Get the first `Frame`
+    pub const fn lower(&self) -> Frame {
+        self.lower
+    }
+
+    /// Get the last `Frame` (after the range)
+    pub const fn upper(&self) -> Frame {
+        self.upper
+    }
+
+    /// Get the number of `Frame`s
+    pub const fn nframes(&self) -> u64 {
+        self.upper.num - self.lower.num
+    }
+
+    /// Trim `nframes` off the front of the range
+    pub fn trim_front(&mut self, nframes: u64) {
+        assert!(self.nframes() > nframes);
+        self.lower = self.lower + nframes;
+    }
+
+    /// Trim `nframes` off the back of the range
+    pub fn trim_back(&mut self, nframes: u64) {
+        assert!(self.nframes() > nframes);
+        self.upper = self.upper - nframes;
+    }
+
+    /// add `nframes` to the front of the range
+    pub fn push_front(&mut self, nframes: u64) {
+        self.lower = self.lower - nframes;
+    }
+
+    /// add `nframes` to the back of the range
+    pub fn push_back(&mut self, nframes: u64) {
+        self.upper = self.upper + nframes;
+    }
+}
+
+impl PartialOrd for FrameRange {
+    fn partial_cmp(&self, other: &FrameRange) -> Option<Ordering> {
+        if self.lower() == other.lower() && self.upper() == other.upper() {
+            Some(Ordering::Equal)
+        } else if self.upper() <= other.lower() {
+            Some(Ordering::Less)
+        } else if self.lower() >= other.upper() {
+            Some(Ordering::Greater)
+        } else {
+            None
+        }
+    }
+}
+
+pub const BASE_PAGE_SHIFT: u8 = 12;
+pub const BASE_PAGE_SIZE: u64 = 1 << BASE_PAGE_SHIFT; // 4 KiB
+pub const LARGE_PAGE_SHIFT: u8 = 21;
+pub const LARGE_PAGE_SIZE: u64 = 1 << LARGE_PAGE_SHIFT; // 2 MiB
+pub const HUGE_PAGE_SHIFT: u8 = 30;
+pub const HUGE_PAGE_SIZE: u64 = 1 << HUGE_PAGE_SHIFT; // 1 GiB
 pub const CACHE_LINE_SIZE: usize = 64; // 64 Bytes
 
 /// MAXPHYADDR, which is at most 52; (use CPUID for finding system value).
