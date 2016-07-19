@@ -4,10 +4,16 @@
 
 extern crate kvm;
 extern crate memmap;
+extern crate x86;
 
 use kvm::{Capability, Exit, IoDirection, System, Vcpu, VirtualMachine};
+use std::mem;
+use memmap::{Mmap, Protection};
 use std::fs::File;
 use std::io::{BufRead, BufReader};
+
+use x86::shared::control_regs;
+use x86::bits64::paging;
 
 #[naked]
 unsafe extern "C" fn use_the_port() {
@@ -71,13 +77,34 @@ fn io_example() {
 
     // We don't need to populate the GDT if we have our segments setup
     // cr0 - protected mode on, paging disabled
-    sregs.cr0 = 0x50033;
+
+    let cr0 = control_regs::CR0_ENABLE_PAGING | control_regs::CR0_ALIGNMENT_MASK | control_regs::CR0_WRITE_PROTECT | control_regs::CR0_NUMERIC_ERROR | control_regs::CR0_EXTENSION_TYPE | control_regs::CR0_MONITOR_COPROCESSOR | control_regs::CR0_PROTECTED_MODE;
+    sregs.cr0 = cr0.bits() as u64;
+
+    let cr4 = control_regs::CR4_ENABLE_GLOBAL_PAGES | control_regs::CR4_ENABLE_PAE | control_regs::CR4_ENABLE_PSE;
+    sregs.cr4 = cr4.bits() as u64;
+
+    // Construct identity map
+    let mut allocations = Vec::with_capacity(512+1);
+    let mut pml4_mem = Mmap::anonymous(4096, Protection::ReadWrite).unwrap();
+    let pml4 = unsafe { mem::transmute::<*mut u8, &mut paging::PML4>(pml4_mem.mut_ptr()) };
+    allocations.push(pml4_mem);
+    for i in 0..512 {
+        let mut pdpt_mem = Mmap::anonymous(4096, Protection::ReadWrite).unwrap();
+        let pdpt = unsafe { mem::transmute::<*mut u8, &mut paging::PDPT>(pdpt_mem.mut_ptr()) };
+        for j in 0..512 {
+            let offset = j * (1024*1024*1024) + i * 512 * (1024*1024*1024);
+            pdpt[j] = paging::PDPTEntry::new(paging::PAddr::from_u64(offset as u64), paging::PDPT_P | paging::PDPT_RW | paging::PDPT_PS);
+        }
+        pml4[i] = paging::PML4Entry::new(paging::PAddr::from_u64(pdpt as *const _ as u64), paging::PML4_P | paging::PML4_RW);
+        allocations.push(pdpt_mem);
+    }
+    sregs.cr3 = &pml4 as *const _ as _;
 
     // Set the special registers
     vcpu.set_sregs(&sregs).unwrap();
 
     let mut regs = vcpu.get_regs().unwrap();
-    // set the instruction pointer to 1 MB
     regs.rip = &use_the_port as *const _ as _;
     println!("regs.rip = {:X}", regs.rip);
     regs.rflags = 0x2;
@@ -88,6 +115,7 @@ fn io_example() {
 
     // Ensure that the exit reason we get back indicates that the I/O
     // instruction was executed
+    println!("{:?}", run);
     assert!(run.exit_reason == Exit::Io);
     let io = unsafe { *run.io() };
     assert!(io.direction == IoDirection::In);
