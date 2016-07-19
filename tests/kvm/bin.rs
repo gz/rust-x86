@@ -6,49 +6,16 @@ extern crate kvm;
 extern crate memmap;
 
 use kvm::{Capability, Exit, IoDirection, System, Vcpu, VirtualMachine};
-use memmap::{Mmap, Protection};
-
-//#[allow(improper_ctypes)]
-extern {
-    static kvmtest_begin_loc: u8;
-    static kvmtest_end_loc:   u8;
-}
+use std::fs::File;
+use std::io::{BufRead, BufReader};
 
 #[naked]
-//#[allow(dead_code)]
-#[link_section = ".kvmtest"]
-#[linkage = "external" ]
 unsafe extern "C" fn use_the_port() {
     asm!("inb $0, %al" :: "i"(0x01) :: "volatile");
 }
 
 #[test]
 fn io_example() {
-    // Allocate 2MB for the guest memory
-    let mut anon_mmap = Mmap::anonymous(2 * (1 << 20), Protection::ReadWrite)
-                            .unwrap();
-    let slice = unsafe { anon_mmap.as_mut_slice() };
-    
-    let slice2: &mut [u8] = {
-        let kvmtest_begin: *mut u8 = &kvmtest_begin_loc as *const _ as _;
-        let kvmtest_end:   *mut u8 = &kvmtest_end_loc   as *const _ as _;
-        unsafe {
-            ::std::slice::from_raw_parts_mut(
-                kvmtest_begin,
-                (kvmtest_end as usize) - (kvmtest_begin as usize))
-        }
-    };
-
-    slice[0x100000..][..slice2.len()].copy_from_slice(slice2);
-    
-    println!("fn: {:x}", use_the_port as usize); // make sure is used
-
-    println!("slice: {:?}", slice2.as_ptr());
-    println!("len: {:x}", slice2.len());
-    println!("{:x}", slice[0]);
-    println!("{:x}", slice[1]);
-    println!("{:?}", &slice[..10]);
-
     // Initialize the KVM system
     let sys = System::initialize().unwrap();
 
@@ -58,7 +25,26 @@ fn io_example() {
     // Ensure that the VM supports memory backing with user memory
     assert!(vm.check_capability(Capability::UserMemory) > 0);
     // Set the 2 MB range to start at physical address 0
-    vm.set_user_memory_region(0, slice, 0).unwrap();
+    let f = File::open("/proc/self/maps").unwrap();
+    let reader = BufReader::new(f);
+
+    for line in reader.lines() {
+        let line = line.unwrap();
+        println!("{}", line);
+        let mut s = line.split(' ');
+        let mut s2 = s.next().unwrap().split('-');
+        let begin = usize::from_str_radix(s2.next().unwrap(), 16).unwrap();
+        let end = usize::from_str_radix(s2.next().unwrap(), 16).unwrap();
+        if end < 0x800000000000 {
+            let perm = s.next().unwrap();
+            println!("{:#X}-{:#X} {}", begin, end, perm);
+            let slice = {
+                let begin_ptr: *mut u8 = begin as *const u8 as _;
+                unsafe { ::std::slice::from_raw_parts_mut(begin_ptr, end - begin) }
+            };
+            vm.set_user_memory_region(begin as _, slice, 0).unwrap();
+        }
+    }
 
     // Create a new VCPU
     let mut vcpu = Vcpu::create(&mut vm).unwrap();
@@ -92,7 +78,8 @@ fn io_example() {
 
     let mut regs = vcpu.get_regs().unwrap();
     // set the instruction pointer to 1 MB
-    regs.rip = 0x100000;
+    regs.rip = &use_the_port as *const _ as _;
+    println!("regs.rip = {:X}", regs.rip);
     regs.rflags = 0x2;
     vcpu.set_regs(&regs).unwrap();
 
