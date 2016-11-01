@@ -362,16 +362,16 @@ mod performance_counter {
 
         let mut rdr = csv::Reader::from_file("./x86data/perfmon_data/mapfile.csv").unwrap();
         let mut data_files = HashMap::new();
+        let mut data_4_hashtable = HashMap::new();
 
         // Parse CSV
         for record in rdr.decode() {
             let (family_model, version, file_name, event_type): (String, String, String, String) = record.unwrap();
             // TODO: Parse offcore counter descriptions.
-            if !data_files.contains_key(&file_name) {
-                let suffix = get_file_suffix(file_name.clone());
-                if suffix == "core" || suffix == "uncore" {
-                    data_files.insert(file_name.clone(), (family_model + "-" + suffix, version, event_type));
-                }
+            let suffix = get_file_suffix(file_name.clone());
+            if suffix == "core" || suffix == "uncore" {
+                data_files.insert(file_name.clone(),(family_model.clone() + "-" + suffix.clone(), version.clone(), event_type.clone()));
+                data_4_hashtable.insert((family_model + "-" + suffix, version, event_type),file_name.clone());            
             }
         }
 
@@ -380,7 +380,7 @@ mod performance_counter {
         let mut filewriter = BufWriter::new(File::create(&path).unwrap());
 
         let mut builder = phf_codegen::Map::new();
-        for (file, data) in &data_files {
+        for (data, file) in &data_4_hashtable {
             let (ref family_model, _, _): (String, String, String) = *data;
             let path = Path::new(file.as_str());
             let (_, ref variable_upper) = make_file_name(&path);
