@@ -46,7 +46,7 @@ version = "0.7.7"
 optional = true
 features = ["core"]
 
-[dev-dependencies]
+[target.'cfg(target_family = "unix")'.dev-dependencies]
 #klogger = { git = "https://github.com/gz/rust-klogger.git" }
 libc = "0.2.*"
 #test = { path = "test_harness" }
