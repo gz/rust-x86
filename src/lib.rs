@@ -39,6 +39,7 @@ pub mod segmentation;
 pub mod task;
 pub mod time;
 pub mod tlb;
+pub mod xapic;
 
 #[cfg(feature = "performance-counter")]
 pub mod perfcnt;

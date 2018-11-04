@@ -1975,7 +1975,7 @@ pub const MSR_UNC_CBO_3_PER_CTR1: u32 = 0x737;
 /// x2APIC ID register (R/O) See x2APIC Specification.
 pub const IA32_X2APIC_APICID: u32 = 0x802;
 
-/// If ( CPUID.01H:ECX.[bit 21]  = 1 )
+/// x2APIC Version. If ( CPUID.01H:ECX.[bit 21]  = 1 )
 pub const IA32_X2APIC_VERSION: u32 = 0x803;
 
 /// x2APIC Task Priority register (R/W)
@@ -1984,7 +1984,7 @@ pub const IA32_X2APIC_TPR: u32 = 0x808;
 /// x2APIC Processor Priority register (R/O)
 pub const IA32_X2APIC_PPR: u32 = 0x80a;
 
-/// If ( CPUID.01H:ECX.[bit 21]  = 1 )
+/// x2APIC End of Interrupt. If ( CPUID.01H:ECX.[bit 21]  = 1 )
 pub const IA32_X2APIC_EOI: u32 = 0x80b;
 
 /// x2APIC Logical Destination register (R/O)
@@ -2065,7 +2065,7 @@ pub const IA32_X2APIC_IRR6: u32 = 0x826;
 /// x2APIC Interrupt Request register bits [255:224] (R/O)
 pub const IA32_X2APIC_IRR7: u32 = 0x827;
 
-/// If ( CPUID.01H:ECX.[bit 21]  = 1 )
+/// Error Status Register. If ( CPUID.01H:ECX.[bit 21]  = 1 )
 pub const IA32_X2APIC_ESR: u32 = 0x828;
 
 /// x2APIC LVT Corrected Machine Check Interrupt register (R/W)
