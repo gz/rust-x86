@@ -420,6 +420,7 @@ pub const LARGE_PAGE_SIZE: usize = 1024 * 1024 * 2;
 pub const HUGE_PAGE_SIZE: usize = 1024 * 1024 * 1024;
 
 /// Size of a region covered by a PML4 Entry (512 GiB)
+#[cfg(target_arch = "x86_64")]
 pub const PML4_SLOT_SIZE: usize = HUGE_PAGE_SIZE * 512;
 
 /// Size of a cache-line
