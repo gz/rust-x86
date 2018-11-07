@@ -15,7 +15,7 @@ macro_rules! check_flag {
 /// A wrapper for a physical address.
 #[repr(transparent)]
 #[derive(Copy, Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
-pub struct PAddr(u64);
+pub struct PAddr(pub u64);
 
 impl PAddr {
     /// Convert to `u64`
@@ -197,7 +197,7 @@ impl fmt::UpperHex for PAddr {
 /// A wrapper for a virtual address.
 #[repr(transparent)]
 #[derive(Copy, Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
-pub struct VAddr(u64);
+pub struct VAddr(pub u64);
 
 impl VAddr {
     /// Convert from `u64`
@@ -220,8 +220,14 @@ impl VAddr {
         self.0 as usize
     }
 
-    pub fn as_ptr(&self) -> *mut u8 {
-        self.0 as *mut u8
+    /// Convert to mutable pointer.
+    pub fn as_mut_ptr<T>(&self) -> *mut T {
+        self.0 as *mut T
+    }
+
+    /// Convert to pointer.
+    pub fn as_ptr<T>(&self) -> *const T {
+        self.0 as *const T
     }
 }
 
