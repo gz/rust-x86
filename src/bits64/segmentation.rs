@@ -137,3 +137,31 @@ pub unsafe fn load_cs(sel: SegmentSelector) {
           lretq; \
           1:" :: "ri" (sel.bits() as usize) : "rax" "memory");
 }
+
+/// Write GS Segment Base
+/// Needs FSGSBASE-Enable Bit (bit 16 of CR4) set.
+pub unsafe fn wrgsbase(base: u64) {
+    asm!("wrgsbase $0" :: "r" (base) : "memory");
+}
+
+/// Write FS Segment Base
+/// Needs FSGSBASE-Enable Bit (bit 16 of CR4) set.
+pub unsafe fn wrfsbase(base: u64) {
+    asm!("wrfsbase $0" :: "r" (base) : "memory");
+}
+
+/// Read GS Segment Base
+/// Needs FSGSBASE-Enable Bit (bit 16 of CR4) set.
+pub unsafe fn rdgsbase() -> u64 {
+    let gs_base: u64;
+    asm!("rdgsbase $0" : "=r" (gs_base) );
+    gs_base
+}
+
+/// Read FS Segment Base
+/// Needs FSGSBASE-Enable Bit (bit 16 of CR4) set.
+pub unsafe fn rdfsbase() -> u64 {
+    let fs_base: u64;
+    asm!("rdfsbase $0" : "=r" (fs_base) );
+    fs_base
+}
