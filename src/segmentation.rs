@@ -27,7 +27,7 @@ impl SegmentSelector {
     ///
     /// # Arguments
     ///  * `index` - index in GDT or LDT array.
-    ///  * `rpl` - Requested privilege level of the selector  
+    ///  * `rpl` - Requested privilege level of the selector
     pub const fn new(index: u16, rpl: Ring) -> SegmentSelector {
         SegmentSelector {
             bits: index << 3 | (rpl as u16),
