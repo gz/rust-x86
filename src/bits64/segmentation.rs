@@ -129,7 +129,7 @@ impl BuildDescriptor<Descriptor64> for DescriptorBuilder {
 /// to %cs. Instead we push the new segment selector
 /// and return value on the stack and use lretq
 /// to reload cs and continue at 1:.
-#[cfg(target_arch = "x86_64")]
+#[cfg(target_arch = "x86-64")]
 pub unsafe fn load_cs(sel: SegmentSelector) {
     asm!("pushq $0; \
           leaq  1f(%rip), %rax; \
@@ -140,18 +140,21 @@ pub unsafe fn load_cs(sel: SegmentSelector) {
 
 /// Write GS Segment Base
 /// Needs FSGSBASE-Enable Bit (bit 16 of CR4) set.
+#[cfg(target_arch = "x86-64")]
 pub unsafe fn wrgsbase(base: u64) {
     asm!("wrgsbase $0" :: "r" (base) : "memory");
 }
 
 /// Write FS Segment Base
 /// Needs FSGSBASE-Enable Bit (bit 16 of CR4) set.
+#[cfg(target_arch = "x86-64")]
 pub unsafe fn wrfsbase(base: u64) {
     asm!("wrfsbase $0" :: "r" (base) : "memory");
 }
 
 /// Read GS Segment Base
 /// Needs FSGSBASE-Enable Bit (bit 16 of CR4) set.
+#[cfg(target_arch = "x86-64")]
 pub unsafe fn rdgsbase() -> u64 {
     let gs_base: u64;
     asm!("rdgsbase $0" : "=r" (gs_base) );
@@ -160,6 +163,7 @@ pub unsafe fn rdgsbase() -> u64 {
 
 /// Read FS Segment Base
 /// Needs FSGSBASE-Enable Bit (bit 16 of CR4) set.
+#[cfg(target_arch = "x86-64")]
 pub unsafe fn rdfsbase() -> u64 {
     let fs_base: u64;
     asm!("rdfsbase $0" : "=r" (fs_base) );
