@@ -1,20 +1,21 @@
 [package]
 name = "x86"
-version = "0.14.0"
+version = "0.15.0"
 authors = [
   "Gerd Zellweger <mail@gerdzellweger.com>",
   "Eric Kidd <git@randomhacks.net>",
   "Philipp Oppermann <dev@phil-opp.com>",
   "Dan Schatzberg <schatzberg.dan@gmail.com>",
   "John Ericson <John_Ericson@Yahoo.com>",
-  "Rex Lunae <rexlunae@gmail.com>"
+  "Rex Lunae <rexlunae@gmail.com>",
+  "Brian Martin <bmartin@twitter.com>",
 ]
 
 description = "Library to program x86 (amd64) hardware. Contains x86 specific data structure descriptions, data-tables, as well as convenience function to call assembly instructions typically not exposed in higher level languages."
 
 homepage = "https://github.com/gz/rust-x86"
 repository = "https://github.com/gz/rust-x86"
-documentation = "http://gz.github.io/rust-x86/x86/"
+documentation = "https://docs.rs/x86"
 readme = "README.md"
 keywords = ["ia32", "os", "amd64", "x86", "x86-64"]
 license = "MIT"
