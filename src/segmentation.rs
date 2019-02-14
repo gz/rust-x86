@@ -1,6 +1,8 @@
+use bitflags::*;
+
 use core::fmt;
 
-use Ring;
+use crate::Ring;
 
 /// Specifies which element to load into a segment from
 /// descriptor tables (i.e., is a index to LDT or GDT table
@@ -566,8 +568,8 @@ pub fn cs() -> SegmentSelector {
 
 #[cfg(test)]
 mod test {
-    use segmentation::*;
-    use Ring;
+    use super::*;
+    use crate::Ring;
 
     #[test]
     fn test_x86_64_default_gdt() {

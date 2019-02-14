@@ -1,6 +1,8 @@
 //! Shared interrupt description and set-up code.
 //! See the `bits*::irq` modules for arch-specific portions.
 
+use bitflags::*;
+
 use core::fmt;
 
 /// x86 Exception description (see also Intel Vol. 3a Chapter 6).

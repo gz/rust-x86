@@ -1,4 +1,7 @@
 //! Description of the data-structures for IA-32e paging mode.
+
+use bitflags::*;
+
 use core::convert::{From, Into};
 use core::fmt;
 use core::ops;

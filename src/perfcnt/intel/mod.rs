@@ -7,7 +7,7 @@ pub use self::description::{Counter, EventDescription, MSRIndex, PebsType, Tuple
 
 use core::fmt::{Error, Result, Write};
 use core::str;
-use cpuid;
+use crate::cpuid;
 use phf;
 
 const MODEL_LEN: usize = 30;

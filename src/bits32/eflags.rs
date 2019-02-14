@@ -1,6 +1,8 @@
 //! Processor state stored in the EFLAGS register.
 
-use Ring;
+use bitflags::*;
+
+use crate::Ring;
 
 /// The EFLAGS register.
 bitflags! {

@@ -1,6 +1,6 @@
 #[allow(unused_imports)]
-use segmentation::SegmentSelector;
-use segmentation::{
+use crate::segmentation::SegmentSelector;
+use crate::segmentation::{
     BuildDescriptor, Descriptor, DescriptorBuilder, DescriptorType, GateDescriptorBuilder,
     LdtDescriptorBuilder, SystemDescriptorTypes64,
 };
