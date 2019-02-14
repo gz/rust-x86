@@ -82,6 +82,9 @@ mod performance_counter {
                 Err(e) => panic!("{}: Can not parse {} in {}", e, x, value_str),
             })
             .fold(0, |acc, c| {
+                if !(c < 8) {
+                    panic!("unexpected counter value: {}", value_str);
+                }
                 assert!(c < 8);
                 acc | 1 << c
             })
@@ -166,11 +169,11 @@ mod performance_counter {
 
                 for (key, value) in pcn.iter() {
                     if !value.is_string() {
-                        panic!("Not a string");
+                        print!("Not a string: {:?} -> {:?}", key, value);
                     }
 
                     //println!("key = {} value = {}", key, value.as_string().unwrap());
-                    let value_string = value.as_string().unwrap();
+                    let value_string = value.as_string().unwrap_or("unknown");
                     let value_str = string_to_static_str(value_string).trim();
                     let split_str_parts: Vec<&str> =
                         value_string.split(",").map(|x| x.trim()).collect();
@@ -266,7 +269,9 @@ mod performance_counter {
                         "Filter" => filter = parse_null_string(value_str),
                         "ExtSel" => extsel = parse_bool(value_str),
                         "CollectPEBSRecord" => collect_pebs_record = Some(parse_number(value_str)),
-                        "ELLC" => { /* Ignored due to missing documentation. */ }
+                        "ELLC" => { /* Ignored due to missing documentation. */ },
+                        "EVENT_STATUS" => { /* Ignored */ },
+                        "PDIR_COUNTER" => { /* Ignored */ },
                         _ => panic!("Unknown member: {} in file {}", key, input),
                     };
                 }
@@ -332,7 +337,7 @@ mod performance_counter {
         let (output_file, _) = stem.split_at(core_start.unwrap());
 
         // File name without _V*.json at the end:
-        let version_start = stem.find("_V").unwrap();
+        let version_start = stem.find("_V").unwrap_or_else(|| { stem.find("_v").expect("Couldn't find version") });
         let (variable, _) = stem.split_at(version_start);
         let uppercase = variable.to_ascii_uppercase();
         let variable_clean = uppercase.replace("-", "_");
@@ -348,7 +353,7 @@ mod performance_counter {
             "uncore"
         } else if file_name.contains("_matrix_") {
             "matrix"
-        } else if file_name.contains("_FP_ARITH_INST_") {
+        } else if file_name.contains("_FP_ARITH_INST_") || file_name.contains("_fp_arith_inst_") {
             "fparith"
         } else {
             panic!("Unknown suffix {}", file_name);
