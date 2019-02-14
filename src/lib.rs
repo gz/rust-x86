@@ -35,7 +35,7 @@ pub mod perfcnt;
 
 pub mod current {
     #[cfg(target_arch = "x86")]
-    pub use bits32::*;
+    pub use crate::bits32::*;
     #[cfg(target_arch = "x86_64")]
     pub use crate::bits64::*;
 }
