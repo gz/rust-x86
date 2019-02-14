@@ -4,7 +4,9 @@
 //! The upper 32 bits of RFLAGS register is reserved.
 //! The lower 32 bits of RFLAGS is the same as EFLAGS.
 
-use Ring;
+use bitflags::*;
+
+use crate::Ring;
 
 /// The RFLAGS register.
 /// This is duplicated code from bits32 eflags.rs.

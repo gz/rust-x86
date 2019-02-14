@@ -1,4 +1,4 @@
-use segmentation::{
+use crate::segmentation::{
     DescriptorBuilder, DescriptorType, GateDescriptorBuilder, SegmentSelector,
     SystemDescriptorTypes32,
 };

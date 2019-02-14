@@ -4,21 +4,10 @@
 #![no_std]
 #![cfg_attr(test, allow(unused_features))]
 
-#[macro_use]
-extern crate bitflags;
-extern crate raw_cpuid;
-#[cfg(feature = "performance-counter")]
-#[macro_use]
-extern crate phf;
-
-#[cfg(test)]
-#[macro_use]
-extern crate std;
-
 #[cfg(target_arch = "x86")]
-use core::arch::x86 as arch;
+pub(crate) use core::arch::x86 as arch;
 #[cfg(target_arch = "x86_64")]
-use core::arch::x86_64 as arch;
+pub(crate) use core::arch::x86_64 as arch;
 
 macro_rules! bit {
     ($x:expr) => {
@@ -46,9 +35,9 @@ pub mod perfcnt;
 
 pub mod current {
     #[cfg(target_arch = "x86")]
-    pub use bits32::*;
+    pub use crate::bits32::*;
     #[cfg(target_arch = "x86_64")]
-    pub use bits64::*;
+    pub use crate::bits64::*;
 }
 
 pub mod cpuid {

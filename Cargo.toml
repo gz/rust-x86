@@ -19,6 +19,7 @@ readme = "README.md"
 keywords = ["ia32", "os", "amd64", "x86", "x86-64"]
 license = "MIT"
 build = "build.rs"
+edition = '2018'
 
 [features]
 #default = ["performance-counter"]

@@ -1,7 +1,9 @@
 //! Functions to read and write control registers.
 //! See Intel Vol. 3a Section 2.5, especially Figure 2-7.
 
-use arch::{_xgetbv, _xsetbv};
+use bitflags::*;
+
+use crate::arch::{_xgetbv, _xsetbv};
 
 bitflags! {
     pub struct Cr0: usize {

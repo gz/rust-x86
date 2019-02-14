@@ -1,5 +1,5 @@
 #[allow(unused_imports)]
-use segmentation::SegmentSelector;
+use crate::segmentation::SegmentSelector;
 
 /// Reload code segment register.
 /// Note this is special since we can not directly move
