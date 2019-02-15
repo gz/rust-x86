@@ -1,4 +1,4 @@
-use std::fmt;
+use core::fmt;
 
 #[derive(Eq, PartialEq)]
 pub enum PebsType {
