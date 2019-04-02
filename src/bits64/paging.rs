@@ -677,9 +677,8 @@ impl PDPTEntry {
                 is_page, PDPTFlags::PS);
 }
 
-/// PD configuration bits description.
 bitflags! {
-    /// PDPT configuration bit description.
+    /// PD configuration bits description.
     #[repr(transparent)]
     pub struct PDFlags: u64 {
         /// Present; must be 1 to map a 2-MByte page or reference a page table.
@@ -780,9 +779,8 @@ impl PDEntry {
                 is_instruction_fetching_disabled, PDFlags::XD);
 }
 
-/// PT Entry bits description.
 bitflags! {
-    /// PT configuration bit description.
+    /// PT Entry bits description.
     #[repr(transparent)]
     pub struct PTFlags: u64 {
         /// Present; must be 1 to map a 4-KByte page.

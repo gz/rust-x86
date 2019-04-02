@@ -4,8 +4,8 @@ use bitflags::*;
 
 use crate::Ring;
 
-/// The EFLAGS register.
 bitflags! {
+    /// The EFLAGS register.
     pub struct EFlags: u32 {
         /// ID Flag (ID)
         const FLAGS_ID = 1 << 21;

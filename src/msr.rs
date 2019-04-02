@@ -77,7 +77,7 @@ pub const TEST_CTL: u32 = 0x33;
 /// SMI Counter (R/O)
 pub const MSR_SMI_COUNT: u32 = 0x34;
 
-/// Control Features in IA-32 Processor (R/W) See Table 35-2 (If CPUID.01H:ECX.[bit 5])
+/// Control Features in IA-32 Processor (R/W) See Table 35-2 (If CPUID.01H:ECX.\[bit 5\])
 pub const IA32_FEATURE_CONTROL: u32 = 0x3a;
 
 /// Per-Logical-Processor TSC ADJUST (R/W) See Table 35-2.
@@ -158,7 +158,7 @@ pub const IA32_BIOS_SIGN_ID: u32 = 0x8b;
 /// SMM Monitor Configuration (R/W) See Table 35-2.
 pub const IA32_SMM_MONITOR_CTL: u32 = 0x9b;
 
-/// If IA32_VMX_MISC[bit 15])
+/// If IA32_VMX_MISC\[bit 15\])
 pub const IA32_SMBASE: u32 = 0x9e;
 
 /// System Management Mode Physical Address Mask register  (WO in SMM) Model-specific implementation of SMRR-like interface, read visible  and write only in SMM..
@@ -294,16 +294,16 @@ pub const MSR_MCG_RIP: u32 = 0x189;
 /// Machine Check Miscellaneous See Section 15.3.2.6, IA32_MCG Extended  Machine Check State MSRs.
 pub const MSR_MCG_MISC: u32 = 0x18a;
 
-/// See Table 35-2; If CPUID.0AH:EAX[15:8] = 8
+/// See Table 35-2; If CPUID.0AH:EAX\[15:8\] = 8
 pub const IA32_PERFEVTSEL4: u32 = 0x18a;
 
-/// See Table 35-2; If CPUID.0AH:EAX[15:8] = 8
+/// See Table 35-2; If CPUID.0AH:EAX\[15:8\] = 8
 pub const IA32_PERFEVTSEL5: u32 = 0x18b;
 
-/// See Table 35-2; If CPUID.0AH:EAX[15:8] = 8
+/// See Table 35-2; If CPUID.0AH:EAX\[15:8\] = 8
 pub const IA32_PERFEVTSEL6: u32 = 0x18c;
 
-/// See Table 35-2; If CPUID.0AH:EAX[15:8] = 8
+/// See Table 35-2; If CPUID.0AH:EAX\[15:8\] = 8
 pub const IA32_PERFEVTSEL7: u32 = 0x18d;
 
 /// Machine Check R8 See Section 15.3.2.6, IA32_MCG Extended  Machine Check State MSRs.
@@ -366,16 +366,16 @@ pub const MSR_MISC_PWR_MGMT: u32 = 0x1aa;
 /// See http://biosbits.org.
 pub const MSR_TURBO_POWER_CURRENT_LIMIT: u32 = 0x1ac;
 
-/// Maximum Ratio Limit of Turbo Mode RO if MSR_PLATFORM_INFO.[28] = 0, RW if MSR_PLATFORM_INFO.[28] = 1
+/// Maximum Ratio Limit of Turbo Mode RO if MSR_PLATFORM_INFO.\[28\] = 0, RW if MSR_PLATFORM_INFO.\[28\] = 1
 pub const MSR_TURBO_RATIO_LIMIT: u32 = 0x1ad;
 
-/// if CPUID.6H:ECX[3] = 1
+/// if CPUID.6H:ECX\[3\] = 1
 pub const IA32_ENERGY_PERF_BIAS: u32 = 0x1b0;
 
-/// If CPUID.06H: EAX[6] = 1
+/// If CPUID.06H: EAX\[6\] = 1
 pub const IA32_PACKAGE_THERM_STATUS: u32 = 0x1b1;
 
-/// If CPUID.06H: EAX[6] = 1
+/// If CPUID.06H: EAX\[6\] = 1
 pub const IA32_PACKAGE_THERM_INTERRUPT: u32 = 0x1b2;
 
 /// Last Branch Record Filtering Select Register (R/W)  See Section 17.6.2, Filtering of Last Branch Records.
@@ -423,7 +423,7 @@ pub const ROB_CR_BKUPTMPDR6: u32 = 0x1e0;
 /// See Table 35-2.
 pub const IA32_SMRR_PHYSBASE: u32 = 0x1f2;
 
-/// If IA32_MTRR_CAP[SMRR]  = 1
+/// If IA32_MTRR_CAP\[SMRR\]  = 1
 pub const IA32_SMRR_PHYSMASK: u32 = 0x1f3;
 
 /// 06_0FH
@@ -485,16 +485,16 @@ pub const IA32_MTRR_PHYSBASE7: u32 = 0x20e;
 /// Variable Range Mask MTRR See Section 11.11.2.3, Variable Range MTRRs.
 pub const IA32_MTRR_PHYSMASK7: u32 = 0x20f;
 
-/// if IA32_MTRR_CAP[7:0] >  8
+/// if IA32_MTRR_CAP\[7:0\] >  8
 pub const IA32_MTRR_PHYSBASE8: u32 = 0x210;
 
-/// if IA32_MTRR_CAP[7:0] >  8
+/// if IA32_MTRR_CAP\[7:0\] >  8
 pub const IA32_MTRR_PHYSMASK8: u32 = 0x211;
 
-/// if IA32_MTRR_CAP[7:0] >  9
+/// if IA32_MTRR_CAP\[7:0\] >  9
 pub const IA32_MTRR_PHYSBASE9: u32 = 0x212;
 
-/// if IA32_MTRR_CAP[7:0] >  9
+/// if IA32_MTRR_CAP\[7:0\] >  9
 pub const IA32_MTRR_PHYSMASK9: u32 = 0x213;
 
 /// Fixed Range MTRR See Section 11.11.2.2, Fixed Range MTRRs.
@@ -1651,52 +1651,52 @@ pub const MSR_MC26_ADDR: u32 = 0x46a;
 /// See Section 15.3.2.4,  IA32_MCi_MISC MSRs.
 pub const MSR_MC26_MISC: u32 = 0x46b;
 
-/// Reporting Register of Basic VMX Capabilities (R/O) See Table 35-2. See Appendix A.1, Basic VMX Information (If CPUID.01H:ECX.[bit 9])
+/// Reporting Register of Basic VMX Capabilities (R/O) See Table 35-2. See Appendix A.1, Basic VMX Information (If CPUID.01H:ECX.\[bit 9\])
 pub const IA32_VMX_BASIC: u32 = 0x480;
 
-/// Capability Reporting Register of Pin-based VM-execution  Controls (R/O) See Appendix A.3, VM-Execution Controls (If CPUID.01H:ECX.[bit 9])
+/// Capability Reporting Register of Pin-based VM-execution  Controls (R/O) See Appendix A.3, VM-Execution Controls (If CPUID.01H:ECX.\[bit 9\])
 pub const IA32_VMX_PINBASED_CTLS: u32 = 0x481;
 
-/// Capability Reporting Register of Primary Processor-based  VM-execution Controls (R/O) See Appendix A.3, VM-Execution Controls (If CPUID.01H:ECX.[bit 9])
+/// Capability Reporting Register of Primary Processor-based  VM-execution Controls (R/O) See Appendix A.3, VM-Execution Controls (If CPUID.01H:ECX.\[bit 9\])
 pub const IA32_VMX_PROCBASED_CTLS: u32 = 0x482;
 
-/// Capability Reporting Register of VM-exit Controls (R/O) See Appendix A.4, VM-Exit Controls (If CPUID.01H:ECX.[bit 9])
+/// Capability Reporting Register of VM-exit Controls (R/O) See Appendix A.4, VM-Exit Controls (If CPUID.01H:ECX.\[bit 9\])
 pub const IA32_VMX_EXIT_CTLS: u32 = 0x483;
 
-/// Capability Reporting Register of VM-entry Controls (R/O) See Appendix A.5, VM-Entry Controls (If CPUID.01H:ECX.[bit 9])
+/// Capability Reporting Register of VM-entry Controls (R/O) See Appendix A.5, VM-Entry Controls (If CPUID.01H:ECX.\[bit 9\])
 pub const IA32_VMX_ENTRY_CTLS: u32 = 0x484;
 
-/// Reporting Register of Miscellaneous VMX Capabilities (R/O) See Appendix A.6, Miscellaneous Data (If CPUID.01H:ECX.[bit 9])
+/// Reporting Register of Miscellaneous VMX Capabilities (R/O) See Appendix A.6, Miscellaneous Data (If CPUID.01H:ECX.\[bit 9\])
 pub const IA32_VMX_MISC: u32 = 0x485;
 
-/// Capability Reporting Register of CR0 Bits Fixed to 0 (R/O) See Appendix A.7, VMX-Fixed Bits in CR0 (If CPUID.01H:ECX.[bit 9])
+/// Capability Reporting Register of CR0 Bits Fixed to 0 (R/O) See Appendix A.7, VMX-Fixed Bits in CR0 (If CPUID.01H:ECX.\[bit 9\])
 pub const IA32_VMX_CR0_FIXED0: u32 = 0x486;
 
-/// If CPUID.01H:ECX.[bit 5] = 1
+/// If CPUID.01H:ECX.\[bit 5\] = 1
 pub const IA32_VMX_CRO_FIXED0: u32 = 0x486;
 
-/// Capability Reporting Register of CR0 Bits Fixed to 1 (R/O) See Appendix A.7, VMX-Fixed Bits in CR0 (If CPUID.01H:ECX.[bit 9])
+/// Capability Reporting Register of CR0 Bits Fixed to 1 (R/O) See Appendix A.7, VMX-Fixed Bits in CR0 (If CPUID.01H:ECX.\[bit 9\])
 pub const IA32_VMX_CR0_FIXED1: u32 = 0x487;
 
-/// If CPUID.01H:ECX.[bit 5] = 1
+/// If CPUID.01H:ECX.\[bit 5\] = 1
 pub const IA32_VMX_CRO_FIXED1: u32 = 0x487;
 
-/// Capability Reporting Register of CR4 Bits Fixed to 0 (R/O) See Appendix A.8, VMX-Fixed Bits in CR4 (If CPUID.01H:ECX.[bit 9])
+/// Capability Reporting Register of CR4 Bits Fixed to 0 (R/O) See Appendix A.8, VMX-Fixed Bits in CR4 (If CPUID.01H:ECX.\[bit 9\])
 pub const IA32_VMX_CR4_FIXED0: u32 = 0x488;
 
-/// Capability Reporting Register of CR4 Bits Fixed to 1 (R/O) See Appendix A.8, VMX-Fixed Bits in CR4 (If CPUID.01H:ECX.[bit 9])
+/// Capability Reporting Register of CR4 Bits Fixed to 1 (R/O) See Appendix A.8, VMX-Fixed Bits in CR4 (If CPUID.01H:ECX.\[bit 9\])
 pub const IA32_VMX_CR4_FIXED1: u32 = 0x489;
 
-/// Capability Reporting Register of VMCS Field Enumeration (R/O) See Appendix A.9, VMCS Enumeration (If CPUID.01H:ECX.[bit 9])
+/// Capability Reporting Register of VMCS Field Enumeration (R/O) See Appendix A.9, VMCS Enumeration (If CPUID.01H:ECX.\[bit 9\])
 pub const IA32_VMX_VMCS_ENUM: u32 = 0x48a;
 
-/// Capability Reporting Register of Secondary Processor-based  VM-execution Controls (R/O) See Appendix A.3, VM-Execution Controls (If CPUID.01H:ECX.[bit 9] and  IA32_VMX_PROCBASED_CTLS[bit 63])
+/// Capability Reporting Register of Secondary Processor-based  VM-execution Controls (R/O) See Appendix A.3, VM-Execution Controls (If CPUID.01H:ECX.\[bit 9\] and  IA32_VMX_PROCBASED_CTLS\[bit 63\])
 pub const IA32_VMX_PROCBASED_CTLS2: u32 = 0x48b;
 
 /// Capability Reporting Register of EPT and VPID (R/O)  See Table 35-2
 pub const IA32_VMX_EPT_VPID_ENUM: u32 = 0x48c;
 
-/// If ( CPUID.01H:ECX.[bit 5],  IA32_VMX_PROCBASED_C TLS[bit 63], and either  IA32_VMX_PROCBASED_C TLS2[bit 33] or  IA32_VMX_PROCBASED_C TLS2[bit 37])
+/// If ( CPUID.01H:ECX.\[bit 5\],  IA32_VMX_PROCBASED_C TLS\[bit 63\], and either  IA32_VMX_PROCBASED_C TLS2\[bit 33\] or  IA32_VMX_PROCBASED_C TLS2\[bit 37\])
 pub const IA32_VMX_EPT_VPID_CAP: u32 = 0x48c;
 
 /// Capability Reporting Register of Pin-based VM-execution Flex  Controls (R/O) See Table 35-2
@@ -1714,37 +1714,37 @@ pub const IA32_VMX_TRUE_ENTRY_CTLS: u32 = 0x490;
 /// Capability Reporting Register of VM-function Controls (R/O) See Table 35-2
 pub const IA32_VMX_FMFUNC: u32 = 0x491;
 
-/// If( CPUID.01H:ECX.[bit 5] =  1 and IA32_VMX_BASIC[bit 55] )
+/// If( CPUID.01H:ECX.\[bit 5\] =  1 and IA32_VMX_BASIC\[bit 55\] )
 pub const IA32_VMX_VMFUNC: u32 = 0x491;
 
-/// (If CPUID.0AH: EAX[15:8] >  0) & IA32_PERF_CAPABILITIES[ 13] = 1
+/// (If CPUID.0AH: EAX\[15:8\] >  0) & IA32_PERF_CAPABILITIES\[ 13\] = 1
 pub const IA32_A_PMC0: u32 = 0x4c1;
 
-/// (If CPUID.0AH: EAX[15:8] >  1) & IA32_PERF_CAPABILITIES[ 13] = 1
+/// (If CPUID.0AH: EAX\[15:8\] >  1) & IA32_PERF_CAPABILITIES\[ 13\] = 1
 pub const IA32_A_PMC1: u32 = 0x4c2;
 
-/// (If CPUID.0AH: EAX[15:8] >  2) & IA32_PERF_CAPABILITIES[ 13] = 1
+/// (If CPUID.0AH: EAX\[15:8\] >  2) & IA32_PERF_CAPABILITIES\[ 13\] = 1
 pub const IA32_A_PMC2: u32 = 0x4c3;
 
-/// (If CPUID.0AH: EAX[15:8] >  3) & IA32_PERF_CAPABILITIES[ 13] = 1
+/// (If CPUID.0AH: EAX\[15:8\] >  3) & IA32_PERF_CAPABILITIES\[ 13\] = 1
 pub const IA32_A_PMC3: u32 = 0x4c4;
 
-/// (If CPUID.0AH: EAX[15:8] >  4) & IA32_PERF_CAPABILITIES[ 13] = 1
+/// (If CPUID.0AH: EAX\[15:8\] >  4) & IA32_PERF_CAPABILITIES\[ 13\] = 1
 pub const IA32_A_PMC4: u32 = 0x4c5;
 
-/// (If CPUID.0AH: EAX[15:8] >  5) & IA32_PERF_CAPABILITIES[ 13] = 1
+/// (If CPUID.0AH: EAX\[15:8\] >  5) & IA32_PERF_CAPABILITIES\[ 13\] = 1
 pub const IA32_A_PMC5: u32 = 0x4c6;
 
-/// (If CPUID.0AH: EAX[15:8] >  6) & IA32_PERF_CAPABILITIES[ 13] = 1
+/// (If CPUID.0AH: EAX\[15:8\] >  6) & IA32_PERF_CAPABILITIES\[ 13\] = 1
 pub const IA32_A_PMC6: u32 = 0x4c7;
 
-/// (If CPUID.0AH: EAX[15:8] >  7) & IA32_PERF_CAPABILITIES[ 13] = 1
+/// (If CPUID.0AH: EAX\[15:8\] >  7) & IA32_PERF_CAPABILITIES\[ 13\] = 1
 pub const IA32_A_PMC7: u32 = 0x4c8;
 
 /// Enhanced SMM Feature Control (SMM-RW) Reports SMM capability Enhancement. Accessible only while in  SMM.
 pub const MSR_SMM_FEATURE_CONTROL: u32 = 0x4e0;
 
-/// SMM Delayed (SMM-RO) Reports the interruptible state of all logical processors in the  package . Available only while in SMM and  MSR_SMM_MCA_CAP[LONG_FLOW_INDICATION] == 1.
+/// SMM Delayed (SMM-RO) Reports the interruptible state of all logical processors in the  package . Available only while in SMM and  MSR_SMM_MCA_CAP\[LONG_FLOW_INDICATION\] == 1.
 pub const MSR_SMM_DELAYED: u32 = 0x4e2;
 
 /// SMM Blocked (SMM-RO) Reports the blocked state of all logical processors in the package .  Available only while in SMM.
@@ -1975,7 +1975,7 @@ pub const MSR_UNC_CBO_3_PER_CTR1: u32 = 0x737;
 /// x2APIC ID register (R/O) See x2APIC Specification.
 pub const IA32_X2APIC_APICID: u32 = 0x802;
 
-/// x2APIC Version. If ( CPUID.01H:ECX.[bit 21]  = 1 )
+/// x2APIC Version. If ( CPUID.01H:ECX.\[bit 21\]  = 1 )
 pub const IA32_X2APIC_VERSION: u32 = 0x803;
 
 /// x2APIC Task Priority register (R/W)
@@ -1984,7 +1984,7 @@ pub const IA32_X2APIC_TPR: u32 = 0x808;
 /// x2APIC Processor Priority register (R/O)
 pub const IA32_X2APIC_PPR: u32 = 0x80a;
 
-/// x2APIC End of Interrupt. If ( CPUID.01H:ECX.[bit 21]  = 1 )
+/// x2APIC End of Interrupt. If ( CPUID.01H:ECX.\[bit 21\]  = 1 )
 pub const IA32_X2APIC_EOI: u32 = 0x80b;
 
 /// x2APIC Logical Destination register (R/O)
@@ -1993,79 +1993,79 @@ pub const IA32_X2APIC_LDR: u32 = 0x80d;
 /// x2APIC Spurious Interrupt Vector register (R/W)
 pub const IA32_X2APIC_SIVR: u32 = 0x80f;
 
-/// x2APIC In-Service register bits [31:0] (R/O)
+/// x2APIC In-Service register bits \[31:0\] (R/O)
 pub const IA32_X2APIC_ISR0: u32 = 0x810;
 
-/// x2APIC In-Service register bits [63:32] (R/O)
+/// x2APIC In-Service register bits \[63:32\] (R/O)
 pub const IA32_X2APIC_ISR1: u32 = 0x811;
 
-/// x2APIC In-Service register bits [95:64] (R/O)
+/// x2APIC In-Service register bits \[95:64\] (R/O)
 pub const IA32_X2APIC_ISR2: u32 = 0x812;
 
-/// x2APIC In-Service register bits [127:96] (R/O)
+/// x2APIC In-Service register bits \[127:96\] (R/O)
 pub const IA32_X2APIC_ISR3: u32 = 0x813;
 
-/// x2APIC In-Service register bits [159:128] (R/O)
+/// x2APIC In-Service register bits \[159:128\] (R/O)
 pub const IA32_X2APIC_ISR4: u32 = 0x814;
 
-/// x2APIC In-Service register bits [191:160] (R/O)
+/// x2APIC In-Service register bits \[191:160\] (R/O)
 pub const IA32_X2APIC_ISR5: u32 = 0x815;
 
-/// x2APIC In-Service register bits [223:192] (R/O)
+/// x2APIC In-Service register bits \[223:192\] (R/O)
 pub const IA32_X2APIC_ISR6: u32 = 0x816;
 
-/// x2APIC In-Service register bits [255:224] (R/O)
+/// x2APIC In-Service register bits \[255:224\] (R/O)
 pub const IA32_X2APIC_ISR7: u32 = 0x817;
 
-/// x2APIC Trigger Mode register bits [31:0] (R/O)
+/// x2APIC Trigger Mode register bits \[31:0\] (R/O)
 pub const IA32_X2APIC_TMR0: u32 = 0x818;
 
-/// x2APIC Trigger Mode register bits [63:32] (R/O)
+/// x2APIC Trigger Mode register bits \[63:32\] (R/O)
 pub const IA32_X2APIC_TMR1: u32 = 0x819;
 
-/// x2APIC Trigger Mode register bits [95:64] (R/O)
+/// x2APIC Trigger Mode register bits \[95:64\] (R/O)
 pub const IA32_X2APIC_TMR2: u32 = 0x81a;
 
-/// x2APIC Trigger Mode register bits [127:96] (R/O)
+/// x2APIC Trigger Mode register bits \[127:96\] (R/O)
 pub const IA32_X2APIC_TMR3: u32 = 0x81b;
 
-/// x2APIC Trigger Mode register bits [159:128] (R/O)
+/// x2APIC Trigger Mode register bits \[159:128\] (R/O)
 pub const IA32_X2APIC_TMR4: u32 = 0x81c;
 
-/// x2APIC Trigger Mode register bits [191:160] (R/O)
+/// x2APIC Trigger Mode register bits \[191:160\] (R/O)
 pub const IA32_X2APIC_TMR5: u32 = 0x81d;
 
-/// x2APIC Trigger Mode register bits [223:192] (R/O)
+/// x2APIC Trigger Mode register bits \[223:192\] (R/O)
 pub const IA32_X2APIC_TMR6: u32 = 0x81e;
 
-/// x2APIC Trigger Mode register bits [255:224] (R/O)
+/// x2APIC Trigger Mode register bits \[255:224\] (R/O)
 pub const IA32_X2APIC_TMR7: u32 = 0x81f;
 
-/// x2APIC Interrupt Request register bits [31:0] (R/O)
+/// x2APIC Interrupt Request register bits \[31:0\] (R/O)
 pub const IA32_X2APIC_IRR0: u32 = 0x820;
 
-/// x2APIC Interrupt Request register bits [63:32] (R/O)
+/// x2APIC Interrupt Request register bits \[63:32\] (R/O)
 pub const IA32_X2APIC_IRR1: u32 = 0x821;
 
-/// x2APIC Interrupt Request register bits [95:64] (R/O)
+/// x2APIC Interrupt Request register bits \[95:64\] (R/O)
 pub const IA32_X2APIC_IRR2: u32 = 0x822;
 
-/// x2APIC Interrupt Request register bits [127:96] (R/O)
+/// x2APIC Interrupt Request register bits \[127:96\] (R/O)
 pub const IA32_X2APIC_IRR3: u32 = 0x823;
 
-/// x2APIC Interrupt Request register bits [159:128] (R/O)
+/// x2APIC Interrupt Request register bits \[159:128\] (R/O)
 pub const IA32_X2APIC_IRR4: u32 = 0x824;
 
-/// x2APIC Interrupt Request register bits [191:160] (R/O)
+/// x2APIC Interrupt Request register bits \[191:160\] (R/O)
 pub const IA32_X2APIC_IRR5: u32 = 0x825;
 
-/// x2APIC Interrupt Request register bits [223:192] (R/O)
+/// x2APIC Interrupt Request register bits \[223:192\] (R/O)
 pub const IA32_X2APIC_IRR6: u32 = 0x826;
 
-/// x2APIC Interrupt Request register bits [255:224] (R/O)
+/// x2APIC Interrupt Request register bits \[255:224\] (R/O)
 pub const IA32_X2APIC_IRR7: u32 = 0x827;
 
-/// Error Status Register. If ( CPUID.01H:ECX.[bit 21]  = 1 )
+/// Error Status Register. If ( CPUID.01H:ECX.\[bit 21\]  = 1 )
 pub const IA32_X2APIC_ESR: u32 = 0x828;
 
 /// x2APIC LVT Corrected Machine Check Interrupt register (R/W)
@@ -2083,13 +2083,13 @@ pub const IA32_X2APIC_LVT_THERMAL: u32 = 0x833;
 /// x2APIC LVT Performance Monitor register (R/W)
 pub const IA32_X2APIC_LVT_PMI: u32 = 0x834;
 
-/// If ( CPUID.01H:ECX.[bit 21]  = 1 )
+/// If ( CPUID.01H:ECX.\[bit 21\]  = 1 )
 pub const IA32_X2APIC_LVT_LINT0: u32 = 0x835;
 
-/// If ( CPUID.01H:ECX.[bit 21]  = 1 )
+/// If ( CPUID.01H:ECX.\[bit 21\]  = 1 )
 pub const IA32_X2APIC_LVT_LINT1: u32 = 0x836;
 
-/// If ( CPUID.01H:ECX.[bit 21]  = 1 )
+/// If ( CPUID.01H:ECX.\[bit 21\]  = 1 )
 pub const IA32_X2APIC_LVT_ERROR: u32 = 0x837;
 
 /// x2APIC Initial Count register (R/W)
@@ -2101,7 +2101,7 @@ pub const IA32_X2APIC_CUR_COUNT: u32 = 0x839;
 /// x2APIC Divide Configuration register (R/W)
 pub const IA32_X2APIC_DIV_CONF: u32 = 0x83e;
 
-/// If ( CPUID.01H:ECX.[bit 21]  = 1 )
+/// If ( CPUID.01H:ECX.\[bit 21\]  = 1 )
 pub const IA32_X2APIC_SELF_IPI: u32 = 0x83f;
 
 /// Uncore U-box perfmon global control MSR.
@@ -2227,13 +2227,13 @@ pub const MSR_W_PMON_BOX_STATUS: u32 = 0xc81;
 /// Uncore W-box perfmon local box overflow control MSR.
 pub const MSR_W_PMON_BOX_OVF_CTRL: u32 = 0xc82;
 
-/// If ( CPUID.(EAX=07H,  ECX=0):EBX.[bit 12] = 1 )
+/// If ( CPUID.(EAX=07H,  ECX=0):EBX.\[bit 12\] = 1 )
 pub const IA32_QM_EVTSEL: u32 = 0xc8d;
 
-/// If ( CPUID.(EAX=07H,  ECX=0):EBX.[bit 12] = 1 )
+/// If ( CPUID.(EAX=07H,  ECX=0):EBX.\[bit 12\] = 1 )
 pub const IA32_QM_CTR: u32 = 0xc8e;
 
-/// If ( CPUID.(EAX=07H,  ECX=0):EBX.[bit 12] = 1 )
+/// If ( CPUID.(EAX=07H,  ECX=0):EBX.\[bit 12\] = 1 )
 pub const IA32_PQR_ASSOC: u32 = 0xc8f;
 
 /// Uncore W-box perfmon event select MSR.
@@ -3160,7 +3160,7 @@ pub const MSR_IFSB_CNTR7: u32 = 0x107d3;
 /// L3/FSB Common Control Register (R/W) Apply to Intel Xeon processor 7400 series (processor signature  06_1D) only. See Section 17.2.2
 pub const MSR_EMON_L3_GL_CTL: u32 = 0x107d8;
 
-/// If (  CPUID.80000001.EDX.[bit  20] or  CPUID.80000001.EDX.[bit 29])
+/// If (  CPUID.80000001.EDX.\[bit  20\] or  CPUID.80000001.EDX.\[bit 29\])
 pub const IA32_EFER: u32 = 0xc0000080;
 
 /// System Call Target Address (R/W)  See Table 35-2.
@@ -3178,7 +3178,7 @@ pub const IA32_FS_BASE: u32 = 0xc0000100;
 /// Map of BASE Address of GS (R/W)  See Table 35-2.
 pub const IA32_GS_BASE: u32 = 0xc0000101;
 
-/// If  CPUID.80000001.EDX.[bit  29] = 1
+/// If  CPUID.80000001.EDX.\[bit  29\] = 1
 pub const IA32_KERNEL_GS_BASE: u32 = 0xc0000102;
 
 /// Swap Target of BASE Address of GS (R/W) See Table 35-2.
