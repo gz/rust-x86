@@ -62,6 +62,7 @@ macro_rules! get_events {
 
 /// Return all core performance events for the running micro-architecture.
 pub fn events() -> Option<&'static phf::Map<&'static str, EventDescription<'static>>> {
+    // Should be something like: GenuineIntel-6-2C
     get_events!("{}-{}-{:X}{:X}")
 }
 

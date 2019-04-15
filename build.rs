@@ -278,6 +278,11 @@ mod performance_counter {
                             "ELLC" => { /* Ignored due to missing documentation. */ },
                             "EVENT_STATUS" => { /* Ignored */ },
                             "PDIR_COUNTER" => { /* Ignored */ },
+                            "Deprecated" => { /* Ignored */ },
+                            "FCMask" => { /* TODO */ },
+                            "FILTER_VALUE" => { /* TODO */ },
+                            "PortMask" => { /* TODO */ },
+                            "UMaskExt" => { /* TODO */ },
                             _ => panic!("Unknown member: {} in file {}", key, input),
                         };
                     }
@@ -396,16 +401,16 @@ mod performance_counter {
             // TODO: Parse offcore counter descriptions.
 
             let suffix = get_file_suffix(file_name.clone());
-            if !data_files.contains_key(&file_name) {
-                if suffix == "core" || suffix == "uncore" {
-                    data_files.insert(
-                        file_name.clone(),
-                        vec![(family_model, version, event_type)],
-                    );
+            if suffix == "core" || suffix == "uncore" {
+                if !data_files.contains_key(&file_name) {
+                        data_files.insert(
+                            file_name.clone(),
+                            vec![(family_model, version, event_type)],
+                        );
                 }
-            }
-            else {
-                data_files.get_mut(&file_name).unwrap().push((family_model, version, event_type));
+                else {
+                        data_files.get_mut(&file_name).unwrap().push((family_model, version, event_type));
+                }
             }
         }
 
