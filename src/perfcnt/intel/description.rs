@@ -215,6 +215,9 @@ pub struct EventDescription<'a> {
     pub filter: Option<&'a str>,
 
     pub extsel: bool,
+
+    /// Is this an uncore event?
+    pub uncore: bool,
 }
 
 impl<'a> EventDescription<'a> {
@@ -245,6 +248,7 @@ impl<'a> EventDescription<'a> {
         unit: Option<&'a str>,
         filter: Option<&'a str>,
         extsel: bool,
+        uncore: bool,
     ) -> EventDescription<'a> {
         EventDescription {
             event_code: event_code,
@@ -273,6 +277,7 @@ impl<'a> EventDescription<'a> {
             unit: unit,
             filter: filter,
             extsel: extsel,
+            uncore: uncore
         }
     }
 }

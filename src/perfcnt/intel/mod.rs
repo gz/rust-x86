@@ -1,5 +1,5 @@
-//! Information about Intel's performance counters.
-pub mod counters;
+//! Information about Intel's performance events.
+pub mod events;
 // The types need to be in a spearate file so we don't get circular
 // dependencies with build.rs include:
 mod description;
@@ -39,7 +39,7 @@ impl Write for ModelWriter {
 }
 
 // Format must be a string literal
-macro_rules! get_counters {
+macro_rules! get_events {
     ($format:expr) => {{
         let cpuid = cpuid::CpuId::new();
 
@@ -54,26 +54,21 @@ macro_rules! get_counters {
                 write!(writer, $format, vendor, family, extended_model, model).unwrap();
                 let key = writer.as_str();
 
-                counters::COUNTER_MAP.get(key)
+                events::COUNTER_MAP.get(key)
             })
         })
     }};
 }
 
-/// Return all core performance counters for the running micro-architecture.
-pub fn core_counters() -> Option<&'static phf::Map<&'static str, EventDescription<'static>>> {
-    get_counters!("{}-{}-{:X}{:X}-core")
-}
-
-/// Return all uncore performance counters for the running micro-architecture.
-pub fn uncore_counters() -> Option<&'static phf::Map<&'static str, EventDescription<'static>>> {
-    get_counters!("{}-{}-{:X}{:X}-uncore")
+/// Return all core performance events for the running micro-architecture.
+pub fn events() -> Option<&'static phf::Map<&'static str, EventDescription<'static>>> {
+    get_events!("{}-{}-{:X}{:X}")
 }
 
 #[test]
-fn counter_test() {
+fn events_test() {
     // Note: This will silently fail in case the counter is not available.
-    core_counters().map(|cc| {
+    events().map(|cc| {
         cc.get("INST_RETIRED.ANY").map(|p| {
             assert!(p.event_name == "INST_RETIRED.ANY");
         });
