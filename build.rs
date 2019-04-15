@@ -170,6 +170,12 @@ mod performance_counter {
                     let mut filter = None;
                     let mut extsel = false;
                     let mut collect_pebs_record = None;
+                    let mut event_status: u64 = 0;
+                    let mut deprecated: bool = false;
+                    let mut fc_mask: u8 = 0;
+                    let mut filter_value: u64 = 0;
+                    let mut port_mask: u8 = 0;
+                    let mut umask_ext: u8 = 0;
 
                     let mut do_insert: bool = false;
 
@@ -276,13 +282,13 @@ mod performance_counter {
                             "ExtSel" => extsel = parse_bool(value_str),
                             "CollectPEBSRecord" => collect_pebs_record = Some(parse_number(value_str)),
                             "ELLC" => { /* Ignored due to missing documentation. */ },
-                            "EVENT_STATUS" => { /* Ignored */ },
+                            "EVENT_STATUS" => event_status = parse_number(value_str),
                             "PDIR_COUNTER" => { /* Ignored */ },
-                            "Deprecated" => { /* Ignored */ },
-                            "FCMask" => { /* TODO */ },
-                            "FILTER_VALUE" => { /* TODO */ },
-                            "PortMask" => { /* TODO */ },
-                            "UMaskExt" => { /* TODO */ },
+                            "Deprecated" => deprecated = parse_bool(value_str),
+                            "FCMask" => fc_mask = parse_number(value_str) as u8,
+                            "FILTER_VALUE" => filter_value = parse_number(value_str),
+                            "PortMask" => port_mask = parse_number(value_str) as u8,
+                            "UMaskExt" => umask_ext = parse_number(value_str) as u8,
                             _ => panic!("Unknown member: {} in file {}", key, input),
                         };
                     }
@@ -314,7 +320,13 @@ mod performance_counter {
                         unit,
                         filter,
                         extsel,
-                        uncore
+                        uncore,
+                        deprecated,
+                        event_status,
+                        fc_mask,
+                        filter_value,
+                        port_mask,
+                        umask_ext,
                     );
 
                     //println!("{:?}", ipcd.event_name);

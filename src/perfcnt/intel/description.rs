@@ -218,6 +218,27 @@ pub struct EventDescription<'a> {
 
     /// Is this an uncore event?
     pub uncore: bool,
+
+    /// Deprecated?
+    pub deprecated: bool,
+
+    /// Event status
+    pub event_status: u64,
+
+    /// FC Mask
+    pub fc_mask: u8,
+
+    /// Filter value
+    pub filter_value: u64,
+
+    /// Port Mask
+    pub port_mask: u8,
+
+    /// This field maps to the Unit Mask filed in the IA32_PERFEVTSELx[15:8] MSRs. 
+    /// It further qualifies the event logic unit selected in the event select 
+    /// field to detect a specific micro-architectural condition.
+    pub umask_ext: u8,
+
 }
 
 impl<'a> EventDescription<'a> {
@@ -249,6 +270,12 @@ impl<'a> EventDescription<'a> {
         filter: Option<&'a str>,
         extsel: bool,
         uncore: bool,
+        deprecated: bool,
+        event_status: u64,
+        fc_mask: u8,
+        filter_value: u64,
+        port_mask: u8,
+        umask_ext: u8,
     ) -> EventDescription<'a> {
         EventDescription {
             event_code: event_code,
@@ -277,7 +304,13 @@ impl<'a> EventDescription<'a> {
             unit: unit,
             filter: filter,
             extsel: extsel,
-            uncore: uncore
+            uncore: uncore,
+            deprecated: deprecated,
+            event_status: event_status,
+            fc_mask: fc_mask,
+            filter_value: filter_value,
+            port_mask: port_mask,
+            umask_ext: umask_ext,
         }
     }
 }
