@@ -8,9 +8,9 @@ use bitflags::*;
 
 use crate::Ring;
 
-/// The RFLAGS register.
-/// This is duplicated code from bits32 eflags.rs.
 bitflags! {
+    /// The RFLAGS register.
+    /// This is duplicated code from bits32 eflags.rs.
     pub struct RFlags: u64 {
         /// ID Flag (ID)
         const FLAGS_ID = 1 << 21;
