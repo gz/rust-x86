@@ -21,9 +21,8 @@ This library depends on libcore so it can be used in kernel level code.
 ## Features
 
   * performance-counter: Includes the performance counter information. Note this feature
-    can increase compilation time significantly due to large statically generated hash-tables
-    that are included in the source. In case you do not need performance-counter information
-    you can disable it using: `cargo build --no-default-features`
+    can increase compilation time significantly due to large, statically generated hash-tables
+    that are included in the source. Therefore, it is disabled by default.
 
 ## Documentation
  * [API Documentation](https://docs.rs/crate/x86/)
