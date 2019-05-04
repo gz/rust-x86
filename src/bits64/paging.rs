@@ -25,6 +25,12 @@ impl PAddr {
     pub const fn as_u64(&self) -> u64 {
         self.0
     }
+
+    /// Convert to `usize`
+    pub const fn as_usize(&self) -> usize {
+        self.0 as usize
+    }
+
     /// Convert from `64`
     pub const fn from_u64(p: u64) -> Self {
         PAddr(p)
