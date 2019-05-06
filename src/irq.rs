@@ -185,7 +185,7 @@ pub static EXCEPTIONS: [InterruptDescription; 21] = [
     },
 ];
 
-bitflags!{
+bitflags! {
     // Taken from Intel Manual Section 4.7 Page-Fault Exceptions.
     pub struct PageFaultError: u32 {
         /// 0: The fault was caused by a non-present page.

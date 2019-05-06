@@ -234,11 +234,10 @@ pub struct EventDescription<'a> {
     /// Port Mask
     pub port_mask: u8,
 
-    /// This field maps to the Unit Mask filed in the IA32_PERFEVTSELx[15:8] MSRs. 
-    /// It further qualifies the event logic unit selected in the event select 
+    /// This field maps to the Unit Mask filed in the IA32_PERFEVTSELx[15:8] MSRs.
+    /// It further qualifies the event logic unit selected in the event select
     /// field to detect a specific micro-architectural condition.
     pub umask_ext: u8,
-
 }
 
 impl<'a> EventDescription<'a> {

@@ -17,7 +17,7 @@ macro_rules! check_flag {
 
 /// A wrapper for a physical address.
 #[repr(transparent)]
-#[derive(Copy, Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
+#[derive(Copy, Clone, Eq, Ord, PartialEq, PartialOrd)]
 pub struct PAddr(pub u64);
 
 impl PAddr {
@@ -185,6 +185,12 @@ impl fmt::Display for PAddr {
     }
 }
 
+impl fmt::Debug for PAddr {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        self.0.fmt(f)
+    }
+}
+
 impl fmt::LowerHex for PAddr {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         self.0.fmt(f)
@@ -203,9 +209,16 @@ impl fmt::UpperHex for PAddr {
     }
 }
 
+impl fmt::Pointer for PAddr {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        use core::fmt::LowerHex;
+        self.0.fmt(f)
+    }
+}
+
 /// A wrapper for a virtual address.
 #[repr(transparent)]
-#[derive(Copy, Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
+#[derive(Copy, Clone, Eq, Ord, PartialEq, PartialOrd)]
 pub struct VAddr(pub u64);
 
 impl VAddr {
@@ -404,6 +417,12 @@ impl fmt::Display for VAddr {
     }
 }
 
+impl fmt::Debug for VAddr {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        self.0.fmt(f)
+    }
+}
+
 impl fmt::LowerHex for VAddr {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         self.0.fmt(f)
@@ -418,6 +437,13 @@ impl fmt::Octal for VAddr {
 
 impl fmt::UpperHex for VAddr {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        self.0.fmt(f)
+    }
+}
+
+impl fmt::Pointer for VAddr {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        use core::fmt::LowerHex;
         self.0.fmt(f)
     }
 }

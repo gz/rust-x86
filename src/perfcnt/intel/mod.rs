@@ -5,9 +5,9 @@ pub mod events;
 mod description;
 pub use self::description::{Counter, EventDescription, MSRIndex, PebsType, Tuple};
 
+use crate::cpuid;
 use core::fmt::{Error, Result, Write};
 use core::str;
-use crate::cpuid;
 use phf;
 
 const MODEL_LEN: usize = 30;

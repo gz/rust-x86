@@ -228,7 +228,8 @@ mod performance_counter {
                                     2 => {
                                         assert!(split_parts[0] <= u8::max_value() as u64);
                                         assert!(split_parts[1] <= u8::max_value() as u64);
-                                        umask = Tuple::Two(split_parts[0] as u8, split_parts[1] as u8)
+                                        umask =
+                                            Tuple::Two(split_parts[0] as u8, split_parts[1] as u8)
                                     }
                                     _ => panic!("More than two event codes?"),
                                 }
@@ -280,10 +281,12 @@ mod performance_counter {
                             "Unit" => unit = parse_null_string(value_str),
                             "Filter" => filter = parse_null_string(value_str),
                             "ExtSel" => extsel = parse_bool(value_str),
-                            "CollectPEBSRecord" => collect_pebs_record = Some(parse_number(value_str)),
-                            "ELLC" => { /* Ignored due to missing documentation. */ },
+                            "CollectPEBSRecord" => {
+                                collect_pebs_record = Some(parse_number(value_str))
+                            }
+                            "ELLC" => { /* Ignored due to missing documentation. */ }
                             "EVENT_STATUS" => event_status = parse_number(value_str),
-                            "PDIR_COUNTER" => { /* Ignored */ },
+                            "PDIR_COUNTER" => { /* Ignored */ }
                             "Deprecated" => deprecated = parse_bool(value_str),
                             "FCMask" => fc_mask = parse_number(value_str) as u8,
                             "FILTER_VALUE" => filter_value = parse_number(value_str),
@@ -331,14 +334,17 @@ mod performance_counter {
 
                     //println!("{:?}", ipcd.event_name);
                     if do_insert == true {
-                        builder_values.insert(String::from(ipcd.event_name), String::from(format!("{:?}", ipcd)));
+                        builder_values.insert(
+                            String::from(ipcd.event_name),
+                            String::from(format!("{:?}", ipcd)),
+                        );
                     }
                 }
             } else {
                 panic!("JSON data is not an array.");
             }
         }
-    
+
         write!(
             file,
             "pub const {}: phf::Map<&'static str, EventDescription<'static>> = ",
@@ -346,11 +352,13 @@ mod performance_counter {
         )
         .unwrap();
 
-
         for (key, val) in builder_values.iter() {
             // Stupid hack since .entry needs &str
             unsafe {
-                builder.entry(mem::transmute::<&str, &'static str>(key.as_str()), mem::transmute::<&str, &'static str>(val.as_str()));
+                builder.entry(
+                    mem::transmute::<&str, &'static str>(key.as_str()),
+                    mem::transmute::<&str, &'static str>(val.as_str()),
+                );
             }
         }
         builder.build(file).unwrap();
@@ -404,24 +412,20 @@ mod performance_counter {
         let mut data_files = HashMap::new();
 
         for record in rdr.decode() {
-            let (family_model, version, file_name, event_type): (
-                String,
-                String,
-                String,
-                String,
-            ) = record.unwrap();
+            let (family_model, version, file_name, event_type): (String, String, String, String) =
+                record.unwrap();
             // TODO: Parse offcore counter descriptions.
 
             let suffix = get_file_suffix(file_name.clone());
             if suffix == "core" || suffix == "uncore" {
                 if !data_files.contains_key(&file_name) {
-                        data_files.insert(
-                            file_name.clone(),
-                            vec![(family_model, version, event_type)],
-                        );
-                }
-                else {
-                        data_files.get_mut(&file_name).unwrap().push((family_model, version, event_type));
+                    data_files.insert(file_name.clone(), vec![(family_model, version, event_type)]);
+                } else {
+                    data_files.get_mut(&file_name).unwrap().push((
+                        family_model,
+                        version,
+                        event_type,
+                    ));
                 }
             }
         }
@@ -444,8 +448,7 @@ mod performance_counter {
                         format!("{}", variable_upper.as_str()).as_str(),
                     );
                     inserted.insert(family_model.clone(), true);
-                }
-                else {
+                } else {
                     // ignore
                 }
             }
@@ -466,21 +469,18 @@ mod performance_counter {
         let mut architectures: HashMap<String, Vec<String>> = HashMap::new();
         for (file, _) in &data_files {
             let path = Path::new(file.as_str());
-            let (_, ref variable_upper) = make_file_name(&path);    
-            
+            let (_, ref variable_upper) = make_file_name(&path);
+
             println!("Adding {}", variable_upper);
-            architectures.entry(variable_upper.to_string())
+            architectures
+                .entry(variable_upper.to_string())
                 .or_insert_with(Vec::new)
                 .push(file.clone());
         }
 
         for (ref arch, ref files) in architectures {
             println!("Processing {:?} {:?}", arch, files);
-            parse_performance_counters(
-                files.to_vec(),
-                arch,
-                &mut filewriter
-            );
+            parse_performance_counters(files.to_vec(), arch, &mut filewriter);
         }
     }
 }
