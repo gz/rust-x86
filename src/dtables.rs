@@ -12,6 +12,15 @@ pub struct DescriptorTablePointer<Entry> {
     pub base: *const Entry,
 }
 
+impl<T> Default for DescriptorTablePointer<T> {
+    fn default() -> DescriptorTablePointer<T> {
+        DescriptorTablePointer {
+            limit: 0,
+            base: core::ptr::null(),
+        }
+    }
+}
+
 impl<T> DescriptorTablePointer<T> {
     pub fn new(tbl: &T) -> Self {
         // GDT, LDT, and IDT all expect the limit to be set to "one less".
@@ -57,4 +66,9 @@ pub unsafe fn lldt<T>(ldt: &DescriptorTablePointer<T>) {
 /// Load IDT table with 32bit descriptors.
 pub unsafe fn lidt<T>(idt: &DescriptorTablePointer<T>) {
     asm!("lidt ($0)" :: "r" (idt) : "memory");
+}
+
+/// Retrive IDT table with 32bit descriptors.
+pub unsafe fn sidt<T>(mut idt: &mut DescriptorTablePointer<T>) {
+    asm!("sidt ($0)" : "=r" (idt) :: "memory");
 }
