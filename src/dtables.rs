@@ -69,6 +69,6 @@ pub unsafe fn lidt<T>(idt: &DescriptorTablePointer<T>) {
 }
 
 /// Retrive IDT table with 32bit descriptors.
-pub unsafe fn sidt<T>(mut idt: &mut DescriptorTablePointer<T>) {
-    asm!("sidt ($0)" : "=r" (idt) :: "memory");
+pub unsafe fn sidt<T>(idt: &mut DescriptorTablePointer<T>) {
+    asm!("sidt ($0)" : "=r" (idt as *mut DescriptorTablePointer<T>) :: "memory");
 }
