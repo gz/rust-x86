@@ -77,3 +77,31 @@ pub unsafe fn read() -> EFlags {
 pub unsafe fn set(val: EFlags) {
     asm!("pushl $0; popfl" :: "r"(val.bits()) : "memory" "flags");
 }
+
+/// Clears the AC flag bit in EFLAGS register.
+///
+/// This disables any alignment checking of user-mode data accesses.
+/// If the SMAP bit is set in the CR4 register, this disallows
+/// explicit supervisor-mode data accesses to user-mode pages.
+///
+/// # Unsafe
+///
+/// This instruction is only valid in Ring 0 and requires
+/// that the CPU supports the instruction (check CPUID).
+pub unsafe fn clac() {
+    asm!("clac" ::: "memory" "flags" : "volatile");
+}
+
+/// Sets the AC flag bit in EFLAGS register.
+///
+/// This may enable alignment checking of user-mode data accesses.
+/// This allows explicit supervisor-mode data accesses to user-mode
+/// pages even if the SMAP bit is set in the CR4 register.
+///
+/// # Unsafe
+///
+/// This instruction is only valid in Ring 0 and requires
+/// that the CPU supports the instruction (check CPUID).
+pub unsafe fn stac() {
+    asm!("stac" ::: "memory" "flags" : "volatile");
+}

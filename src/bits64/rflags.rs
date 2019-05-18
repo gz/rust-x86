@@ -86,3 +86,6 @@ pub unsafe fn read() -> RFlags {
 pub unsafe fn set(val: RFlags) {
     asm!("pushq $0; popfq" :: "r"(val.bits()) : "memory" "flags");
 }
+
+// clac and stac are also usable in 64-bit mode
+pub use crate::bits32::eflags::{clac, stac};
