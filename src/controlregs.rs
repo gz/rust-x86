@@ -134,7 +134,7 @@ pub unsafe fn cr4() -> Cr4 {
 ///
 /// # Example
 ///
-/// ```
+/// ```no-run
 /// unsafe {
 ///   let cr4 = cr4();
 ///   let cr4 = cr4 | Cr4::CR4_ENABLE_PSE;

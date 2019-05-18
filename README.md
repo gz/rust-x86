@@ -10,11 +10,13 @@ Currently supports
   * Segmentation
   * Descriptor-tables (GDT, LDT, IDT)
   * IA32-e page table layout
-  * Interrupts
+  * Interrupts (with xAPIC and x2APIC registers)
   * Task state
-  * Querying CPUID (uses [raw_cpuid](https://github.com/gz/rust-cpuid) library)
   * Performance counter information
   * Intel SGX: Software Guard Extensions
+  * Random numbers (rdrand, rdseed)
+  * Time (rdtsc, rdtscp)
+  * Querying CPUID (uses [raw_cpuid](https://github.com/gz/rust-cpuid) library)
 
 This library depends on libcore so it can be used in kernel level code.
 

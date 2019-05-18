@@ -1,3 +1,5 @@
+//! Functionality to manipulate segment registers, build segement
+//! descriptors and selectors.
 use bitflags::*;
 
 use core::fmt;
