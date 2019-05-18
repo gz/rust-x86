@@ -15,9 +15,7 @@ use core::arch::x86_64::{
 };
 
 #[cfg(target_arch = "x86")]
-use core::arch::x86::{
-    _rdrand16_step, _rdrand32_step, _rdrand64_step, _rdseed16_step, _rdseed32_step, _rdseed64_step,
-};
+use core::arch::x86::{_rdrand16_step, _rdrand32_step, _rdseed16_step, _rdseed32_step};
 
 /// Generates a 16-bit random value and stores it in `e`.
 ///
@@ -41,6 +39,7 @@ pub unsafe fn rdrand32(e: &mut u32) -> bool {
 ///
 /// # Unsafe
 /// Will crash if RDRAND instructions are not supported.
+#[cfg(target_arch = "x86_64")]
 #[inline(always)]
 pub unsafe fn rdrand64(e: &mut u64) -> bool {
     _rdrand64_step(e) == 1
@@ -75,6 +74,7 @@ impl RdRand for u32 {
     }
 }
 
+#[cfg(target_arch = "x86_64")]
 impl RdRand for u64 {
     /// Fills the 64-bit value with a random bit string
     ///
@@ -119,6 +119,7 @@ pub unsafe fn rdseed32(e: &mut u32) -> bool {
 ///
 /// # Unsafe
 /// Will crash if RDSEED instructions are not supported.
+#[cfg(target_arch = "x86_64")]
 #[inline(always)]
 pub unsafe fn rdseed64(e: &mut u64) -> bool {
     _rdseed64_step(e) == 1
@@ -153,6 +154,7 @@ impl RdSeed for u32 {
     }
 }
 
+#[cfg(target_arch = "x86_64")]
 impl RdSeed for u64 {
     /// Fills the 64-bit value with a random bit string
     ///
