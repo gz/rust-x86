@@ -600,7 +600,7 @@ pub const HUGE_PAGE_SIZE: usize = 1024 * 1024 * 1024;
 pub const PML4_SLOT_SIZE: usize = HUGE_PAGE_SIZE * 512;
 
 /// Size of a cache-line
-pub const CACHE_LINE_SIZE: u64 = 64;
+pub const CACHE_LINE_SIZE: usize = 64;
 
 /// A type wrapping a base page with a 4 KiB buffer.
 pub struct Page([u8; BASE_PAGE_SIZE]);
