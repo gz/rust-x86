@@ -386,11 +386,116 @@ impl VAddr {
     pub fn as_ptr<T>(self) -> *const T {
         self.0 as *const T
     }
+
+    /// Physical Address zero.
+    pub const fn zero() -> Self {
+        VAddr(0)
+    }
+
+    /// Is zero?
+    pub fn is_zero(self) -> bool {
+        self == VAddr::zero()
+    }
+
+    fn align_up<U>(self, align: U) -> Self
+    where
+        U: Into<u64>,
+    {
+        VAddr(align_up(self.0, align.into()))
+    }
+
+    fn align_down<U>(self, align: U) -> Self
+    where
+        U: Into<u64>,
+    {
+        VAddr(align_down(self.0, align.into()))
+    }
+
+    /// Offset within the 4 KiB page.
+    pub fn base_page_offset(self) -> u64 {
+        self.0 & (BASE_PAGE_SIZE as u64 - 1)
+    }
+
+    /// Offset within the 2 MiB page.
+    pub fn large_page_offset(self) -> u64 {
+        self.0 & (LARGE_PAGE_SIZE as u64 - 1)
+    }
+
+    /// Offset within the 1 GiB page.
+    pub fn huge_page_offset(self) -> u64 {
+        self.0 & (HUGE_PAGE_SIZE as u64 - 1)
+    }
+
+    /// Return address of nearest 4 KiB page (lower or equal than self).
+    pub fn align_down_to_base_page(self) -> Self {
+        self.align_down(BASE_PAGE_SIZE as u64)
+    }
+
+    /// Return address of nearest 2 MiB page (lower or equal than self).
+    pub fn align_down_to_large_page(self) -> Self {
+        self.align_down(LARGE_PAGE_SIZE as u64)
+    }
+
+    /// Return address of nearest 1 GiB page (lower or equal than self).
+    pub fn align_down_to_huge_page(self) -> Self {
+        self.align_down(HUGE_PAGE_SIZE as u64)
+    }
+
+    /// Return address of nearest 4 KiB page (higher or equal than self).
+    pub fn align_up_to_base_page(self) -> Self {
+        self.align_up(BASE_PAGE_SIZE as u64)
+    }
+
+    /// Return address of nearest 2 MiB page (higher or equal than self).
+    pub fn align_up_to_large_page(self) -> Self {
+        self.align_up(LARGE_PAGE_SIZE as u64)
+    }
+
+    /// Return address of nearest 1 GiB page (higher or equal than self).
+    pub fn align_up_to_huge_page(self) -> Self {
+        self.align_up(HUGE_PAGE_SIZE as u64)
+    }
+
+    /// Is this address aligned to a 4 KiB page?
+    pub fn is_base_page_aligned(self) -> bool {
+        self.align_down(BASE_PAGE_SIZE as u64) == self
+    }
+
+    /// Is this address aligned to a 2 MiB page?
+    pub fn is_large_page_aligned(self) -> bool {
+        self.align_down(LARGE_PAGE_SIZE as u64) == self
+    }
+
+    /// Is this address aligned to a 1 GiB page?
+    pub fn is_huge_page_aligned(self) -> bool {
+        self.align_down(HUGE_PAGE_SIZE as u64) == self
+    }
+
+    /// Is this address aligned to `align`?
+    ///
+    /// # Note
+    /// `align` must be a power of two.
+    pub fn is_aligned<U>(self, align: U) -> bool
+    where
+        U: Into<u64> + Copy,
+    {
+        if !align.into().is_power_of_two() {
+            return false;
+        }
+
+        self.align_down(align) == self
+    }
 }
 
 impl From<u64> for VAddr {
     fn from(num: u64) -> Self {
         VAddr(num)
+    }
+}
+
+impl From<i32> for VAddr {
+    fn from(num: i32) -> Self {
+        VAddr(num as u64)
     }
 }
 
@@ -492,11 +597,27 @@ impl ops::BitAnd for VAddr {
     }
 }
 
+impl ops::BitAnd<u64> for VAddr {
+    type Output = VAddr;
+
+    fn bitand(self, rhs: u64) -> Self::Output {
+        VAddr(self.0 & rhs)
+    }
+}
+
 impl ops::BitAnd<usize> for VAddr {
-    type Output = usize;
+    type Output = VAddr;
 
     fn bitand(self, rhs: usize) -> Self::Output {
-        self.as_usize() & rhs
+        VAddr(self.0 & rhs as u64)
+    }
+}
+
+impl ops::BitAnd<i32> for VAddr {
+    type Output = VAddr;
+
+    fn bitand(self, rhs: i32) -> Self::Output {
+        VAddr(self.0 & rhs as u64)
     }
 }
 
@@ -509,34 +630,42 @@ impl ops::BitOr for VAddr {
 }
 
 impl ops::BitOr<u64> for VAddr {
-    type Output = u64;
+    type Output = VAddr;
 
-    fn bitor(self, rhs: Self::Output) -> Self::Output {
-        self.0 | rhs
+    fn bitor(self, rhs: u64) -> Self::Output {
+        VAddr(self.0 | rhs)
     }
 }
 
 impl ops::BitOr<usize> for VAddr {
-    type Output = usize;
+    type Output = VAddr;
 
-    fn bitor(self, rhs: Self::Output) -> Self::Output {
-        self.as_usize() | rhs
+    fn bitor(self, rhs: usize) -> Self::Output {
+        VAddr(self.0 | rhs as u64)
     }
 }
 
 impl ops::Shr<u64> for VAddr {
     type Output = u64;
 
-    fn shr(self, rhs: Self::Output) -> Self::Output {
-        self.0 >> rhs
+    fn shr(self, rhs: u64) -> Self::Output {
+        self.0 >> rhs as u64
     }
 }
 
 impl ops::Shr<usize> for VAddr {
-    type Output = usize;
+    type Output = u64;
 
-    fn shr(self, rhs: Self::Output) -> Self::Output {
-        self.as_usize() >> rhs
+    fn shr(self, rhs: usize) -> Self::Output {
+        self.0 >> rhs as u64
+    }
+}
+
+impl ops::Shr<i32> for VAddr {
+    type Output = u64;
+
+    fn shr(self, rhs: i32) -> Self::Output {
+        self.0 >> rhs as u64
     }
 }
 
@@ -635,25 +764,25 @@ pub type PT = [PTEntry; PAGE_SIZE_ENTRIES];
 /// Given virtual address calculate corresponding entry in PML4.
 #[cfg(target_arch = "x86_64")]
 #[inline]
-pub fn pml4_index(addr: VAddr) -> usize {
+pub fn pml4_index(addr: VAddr) -> u64 {
     (addr >> 39usize) & 0b111111111
 }
 
 /// Given virtual address calculate corresponding entry in PDPT.
 #[inline]
-pub fn pdpt_index(addr: VAddr) -> usize {
+pub fn pdpt_index(addr: VAddr) -> u64 {
     (addr >> 30usize) & 0b111111111
 }
 
 /// Given virtual address calculate corresponding entry in PD.
 #[inline]
-pub fn pd_index(addr: VAddr) -> usize {
+pub fn pd_index(addr: VAddr) -> u64 {
     (addr >> 21usize) & 0b111111111
 }
 
 /// Given virtual address calculate corresponding entry in PT.
 #[inline]
-pub fn pt_index(addr: VAddr) -> usize {
+pub fn pt_index(addr: VAddr) -> u64 {
     (addr >> 12usize) & 0b111111111
 }
 
@@ -1106,6 +1235,81 @@ mod test {
         assert_eq!(base.align_up_to_base_page(), PAddr::from(0x201000));
         assert_eq!(base.align_up_to_large_page(), PAddr::from(0x400000));
         assert_eq!(base.align_up_to_huge_page(), PAddr::from(1073741824));
+        assert!(!base.is_base_page_aligned());
+        assert!(!base.is_large_page_aligned());
+        assert!(!base.is_huge_page_aligned());
+        assert!(base.is_aligned(0x1u64));
+        assert!(base.is_aligned(0x2u64));
+        assert!(!base.is_aligned(0x3u64));
+        assert!(!base.is_aligned(0x4u64));
+    }
+
+    #[test]
+    fn vaddr_align() {
+        let base = VAddr::from(0x1000);
+        assert_eq!(base.base_page_offset(), 0x0);
+        assert_eq!(base.large_page_offset(), 0x1000);
+        assert_eq!(base.huge_page_offset(), 0x1000);
+        assert_eq!(base.align_down_to_base_page(), VAddr::from(0x1000));
+        assert_eq!(base.align_down_to_large_page(), VAddr::from(0x0));
+        assert_eq!(base.align_down_to_huge_page(), VAddr::from(0x0));
+        assert_eq!(base.align_up_to_base_page(), VAddr::from(0x1000));
+        assert_eq!(base.align_up_to_large_page(), VAddr::from(0x200000));
+        assert_eq!(base.align_up_to_huge_page(), VAddr::from(1073741824));
+        assert!(base.is_base_page_aligned());
+        assert!(!base.is_large_page_aligned());
+        assert!(!base.is_huge_page_aligned());
+        assert!(base.is_aligned(0x1u64));
+        assert!(base.is_aligned(0x2u64));
+        assert!(!base.is_aligned(0x3u64));
+        assert!(base.is_aligned(0x4u64));
+
+        let base = VAddr::from(0x1001);
+        assert_eq!(base.base_page_offset(), 0x1);
+        assert_eq!(base.large_page_offset(), 0x1001);
+        assert_eq!(base.huge_page_offset(), 0x1001);
+        assert_eq!(base.align_down_to_base_page(), VAddr::from(0x1000));
+        assert_eq!(base.align_down_to_large_page(), VAddr::from(0x0));
+        assert_eq!(base.align_down_to_huge_page(), VAddr::from(0x0));
+        assert_eq!(base.align_up_to_base_page(), VAddr::from(0x2000));
+        assert_eq!(base.align_up_to_large_page(), VAddr::from(0x200000));
+        assert_eq!(base.align_up_to_huge_page(), VAddr::from(1073741824));
+        assert!(!base.is_base_page_aligned());
+        assert!(!base.is_large_page_aligned());
+        assert!(!base.is_huge_page_aligned());
+        assert!(base.is_aligned(0x1u64));
+        assert!(!base.is_aligned(0x2u64));
+        assert!(!base.is_aligned(0x3u64));
+        assert!(!base.is_aligned(0x4u64));
+
+        let base = VAddr::from(0x200000);
+        assert_eq!(base.base_page_offset(), 0x0);
+        assert_eq!(base.large_page_offset(), 0x0);
+        assert_eq!(base.huge_page_offset(), 0x200000);
+        assert_eq!(base.align_down_to_base_page(), VAddr::from(0x200000));
+        assert_eq!(base.align_down_to_large_page(), VAddr::from(0x200000));
+        assert_eq!(base.align_down_to_huge_page(), VAddr::from(0x0));
+        assert_eq!(base.align_up_to_base_page(), VAddr::from(0x200000));
+        assert_eq!(base.align_up_to_large_page(), VAddr::from(0x200000));
+        assert_eq!(base.align_up_to_huge_page(), VAddr::from(1073741824));
+        assert!(base.is_base_page_aligned());
+        assert!(base.is_large_page_aligned());
+        assert!(!base.is_huge_page_aligned());
+        assert!(base.is_aligned(0x1u64));
+        assert!(base.is_aligned(0x2u64));
+        assert!(!base.is_aligned(0x3u64));
+        assert!(base.is_aligned(0x4u64));
+
+        let base = VAddr::from(0x200002);
+        assert_eq!(base.base_page_offset(), 0x2);
+        assert_eq!(base.large_page_offset(), 0x2);
+        assert_eq!(base.huge_page_offset(), 0x200002);
+        assert_eq!(base.align_down_to_base_page(), VAddr::from(0x200000));
+        assert_eq!(base.align_down_to_large_page(), VAddr::from(0x200000));
+        assert_eq!(base.align_down_to_huge_page(), VAddr::from(0x0));
+        assert_eq!(base.align_up_to_base_page(), VAddr::from(0x201000));
+        assert_eq!(base.align_up_to_large_page(), VAddr::from(0x400000));
+        assert_eq!(base.align_up_to_huge_page(), VAddr::from(1073741824));
         assert!(!base.is_base_page_aligned());
         assert!(!base.is_large_page_aligned());
         assert!(!base.is_huge_page_aligned());
