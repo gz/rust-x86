@@ -185,7 +185,7 @@ mod performance_counter {
                         }
 
                         //println!("key = {} value = {}", key, value.as_string().unwrap());
-                        let value_string = value.as_string().unwrap_or("unknown");
+                        let value_string = value.as_str().unwrap_or("unknown");
                         let value_str = string_to_static_str(value_string).trim();
                         let split_str_parts: Vec<&str> =
                             value_string.split(",").map(|x| x.trim()).collect();
@@ -408,12 +408,14 @@ mod performance_counter {
         //println!("cargo:rerun-if-changed=x86data/perfmon_data");
 
         // First, parse mapfile.csv to find out all supported architectures and their event description locations
-        let mut rdr = csv::Reader::from_file("./x86data/perfmon_data/mapfile.csv").unwrap();
+        let mut rdr = csv::Reader::from_path("./x86data/perfmon_data/mapfile.csv").unwrap();
         let mut data_files = HashMap::new();
 
-        for record in rdr.decode() {
-            let (family_model, version, file_name, event_type): (String, String, String, String) =
-                record.unwrap();
+        for record in rdr.records().map(|v| v.unwrap()) {
+            let family_model = record.get(0).unwrap().to_string();
+            let version = record.get(1).unwrap().to_string();
+            let file_name = record.get(2).unwrap().to_string();
+            let event_type = record.get(3).unwrap().to_string();
             // TODO: Parse offcore counter descriptions.
 
             let suffix = get_file_suffix(file_name.clone());
