@@ -194,7 +194,6 @@ mod test {
         }
     }
 
-
     #[test]
     fn rdrand32_test() {
         unsafe {
@@ -208,7 +207,6 @@ mod test {
         }
     }
 
-
     #[test]
     fn rdrand16_test() {
         unsafe {
@@ -220,7 +218,6 @@ mod test {
             assert_ne!(buf[3], 0);
         }
     }
-
 
     #[test]
     fn rdseed64_test() {
@@ -235,7 +232,6 @@ mod test {
         }
     }
 
-
     #[test]
     fn rdseed32_test() {
         unsafe {
@@ -248,7 +244,6 @@ mod test {
             assert_ne!(buf[3], 0);
         }
     }
-
 
     #[test]
     fn rdseed16_test() {

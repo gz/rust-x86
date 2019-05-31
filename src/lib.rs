@@ -68,7 +68,6 @@ pub enum Ring {
     Ring3 = 0b11,
 }
 
-
 /// Stops instruction execution and places the processor in a HALT state.
 ///
 /// An enabled interrupt (including NMI and SMI), a debug exception, the BINIT#
