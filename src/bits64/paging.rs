@@ -764,26 +764,26 @@ pub type PT = [PTEntry; PAGE_SIZE_ENTRIES];
 /// Given virtual address calculate corresponding entry in PML4.
 #[cfg(target_arch = "x86_64")]
 #[inline]
-pub fn pml4_index(addr: VAddr) -> u64 {
-    (addr >> 39usize) & 0b111111111
+pub fn pml4_index(addr: VAddr) -> usize {
+    ((addr >> 39usize) & 0b111111111) as usize
 }
 
 /// Given virtual address calculate corresponding entry in PDPT.
 #[inline]
-pub fn pdpt_index(addr: VAddr) -> u64 {
-    (addr >> 30usize) & 0b111111111
+pub fn pdpt_index(addr: VAddr) -> usize {
+    ((addr >> 30usize) & 0b111111111) as usize
 }
 
 /// Given virtual address calculate corresponding entry in PD.
 #[inline]
-pub fn pd_index(addr: VAddr) -> u64 {
-    (addr >> 21usize) & 0b111111111
+pub fn pd_index(addr: VAddr) -> usize {
+    ((addr >> 21usize) & 0b111111111) as usize
 }
 
 /// Given virtual address calculate corresponding entry in PT.
 #[inline]
-pub fn pt_index(addr: VAddr) -> u64 {
-    (addr >> 12usize) & 0b111111111
+pub fn pt_index(addr: VAddr) -> usize {
+    ((addr >> 12usize) & 0b111111111) as usize
 }
 
 bitflags! {
