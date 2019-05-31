@@ -15,6 +15,29 @@ macro_rules! check_flag {
     )
 }
 
+/// Align address downwards.
+///
+/// Returns the greatest x with alignment `align` so that x <= addr.
+/// The alignment must be a power of 2.
+#[inline(always)]
+fn align_down(addr: u64, align: u64) -> u64 {
+    addr & !(align - 1)
+}
+
+/// Align address upwards.
+///
+/// Returns the smallest x with alignment `align` so that x >= addr.
+/// The alignment must be a power of 2.
+#[inline(always)]
+fn align_up(addr: u64, align: u64) -> u64 {
+    let align_mask = align - 1;
+    if addr & align_mask == 0 {
+        addr
+    } else {
+        (addr | align_mask) + 1
+    }
+}
+
 /// A wrapper for a physical address.
 #[repr(transparent)]
 #[derive(Copy, Clone, Eq, Ord, PartialEq, PartialOrd)]
@@ -22,18 +45,112 @@ pub struct PAddr(pub u64);
 
 impl PAddr {
     /// Convert to `u64`
-    pub const fn as_u64(&self) -> u64 {
+    pub fn as_u64(self) -> u64 {
         self.0
     }
 
     /// Convert to `usize`
-    pub const fn as_usize(&self) -> usize {
+    pub fn as_usize(self) -> usize {
         self.0 as usize
     }
 
-    /// Convert from `64`
-    pub const fn from_u64(p: u64) -> Self {
-        PAddr(p)
+    /// Physical Address zero.
+    pub const fn zero() -> Self {
+        PAddr(0)
+    }
+
+    /// Is zero?
+    pub fn is_zero(self) -> bool {
+        self == PAddr::zero()
+    }
+
+    fn align_up<U>(self, align: U) -> Self
+    where
+        U: Into<u64>,
+    {
+        PAddr(align_up(self.0, align.into()))
+    }
+
+    fn align_down<U>(self, align: U) -> Self
+    where
+        U: Into<u64>,
+    {
+        PAddr(align_down(self.0, align.into()))
+    }
+
+    /// Offset within the 4 KiB page.
+    pub fn base_page_offset(self) -> u64 {
+        self.0 & (BASE_PAGE_SIZE as u64 - 1)
+    }
+
+    /// Offset within the 2 MiB page.
+    pub fn large_page_offset(self) -> u64 {
+        self.0 & (LARGE_PAGE_SIZE as u64 - 1)
+    }
+
+    /// Offset within the 1 GiB page.
+    pub fn huge_page_offset(self) -> u64 {
+        self.0 & (HUGE_PAGE_SIZE as u64 - 1)
+    }
+
+    /// Return address of nearest 4 KiB page (lower or equal than self).
+    pub fn align_down_to_base_page(self) -> Self {
+        self.align_down(BASE_PAGE_SIZE as u64)
+    }
+
+    /// Return address of nearest 2 MiB page (lower or equal than self).
+    pub fn align_down_to_large_page(self) -> Self {
+        self.align_down(LARGE_PAGE_SIZE as u64)
+    }
+
+    /// Return address of nearest 1 GiB page (lower or equal than self).
+    pub fn align_down_to_huge_page(self) -> Self {
+        self.align_down(HUGE_PAGE_SIZE as u64)
+    }
+
+    /// Return address of nearest 4 KiB page (higher or equal than self).
+    pub fn align_up_to_base_page(self) -> Self {
+        self.align_up(BASE_PAGE_SIZE as u64)
+    }
+
+    /// Return address of nearest 2 MiB page (higher or equal than self).
+    pub fn align_up_to_large_page(self) -> Self {
+        self.align_up(LARGE_PAGE_SIZE as u64)
+    }
+
+    /// Return address of nearest 1 GiB page (higher or equal than self).
+    pub fn align_up_to_huge_page(self) -> Self {
+        self.align_up(HUGE_PAGE_SIZE as u64)
+    }
+
+    /// Is this address aligned to a 4 KiB page?
+    pub fn is_base_page_aligned(self) -> bool {
+        self.align_down(BASE_PAGE_SIZE as u64) == self
+    }
+
+    /// Is this address aligned to a 2 MiB page?
+    pub fn is_large_page_aligned(self) -> bool {
+        self.align_down(LARGE_PAGE_SIZE as u64) == self
+    }
+
+    /// Is this address aligned to a 1 GiB page?
+    pub fn is_huge_page_aligned(self) -> bool {
+        self.align_down(HUGE_PAGE_SIZE as u64) == self
+    }
+
+    /// Is this address aligned to `align`?
+    ///
+    /// # Note
+    /// `align` must be a power of two.
+    pub fn is_aligned<U>(self, align: U) -> bool
+    where
+        U: Into<u64> + Copy,
+    {
+        if !align.into().is_power_of_two() {
+            return false;
+        }
+
+        self.align_down(align) == self
     }
 }
 
@@ -43,9 +160,27 @@ impl From<u64> for PAddr {
     }
 }
 
+impl From<usize> for PAddr {
+    fn from(num: usize) -> Self {
+        PAddr(num as u64)
+    }
+}
+
+impl From<i32> for PAddr {
+    fn from(num: i32) -> Self {
+        PAddr(num as u64)
+    }
+}
+
 impl Into<u64> for PAddr {
     fn into(self) -> u64 {
         self.0
+    }
+}
+
+impl Into<usize> for PAddr {
+    fn into(self) -> usize {
+        self.0 as usize
     }
 }
 
@@ -126,10 +261,10 @@ impl ops::Rem<u64> for PAddr {
 }
 
 impl ops::Rem<usize> for PAddr {
-    type Output = usize;
+    type Output = u64;
 
     fn rem(self, rhs: usize) -> Self::Output {
-        self.0 as usize % rhs
+        self.0 % (rhs as u64)
     }
 }
 
@@ -145,7 +280,7 @@ impl ops::BitAnd<u64> for PAddr {
     type Output = u64;
 
     fn bitand(self, rhs: u64) -> Self::Output {
-        self.as_u64() & rhs
+        Into::<u64>::into(self) & rhs
     }
 }
 
@@ -233,22 +368,22 @@ impl VAddr {
     }
 
     /// Convert to `u64`
-    pub const fn as_u64(&self) -> u64 {
+    pub const fn as_u64(self) -> u64 {
         self.0
     }
 
     /// Convert to `usize`
-    pub const fn as_usize(&self) -> usize {
+    pub const fn as_usize(self) -> usize {
         self.0 as usize
     }
 
     /// Convert to mutable pointer.
-    pub fn as_mut_ptr<T>(&self) -> *mut T {
+    pub fn as_mut_ptr<T>(self) -> *mut T {
         self.0 as *mut T
     }
 
     /// Convert to pointer.
-    pub fn as_ptr<T>(&self) -> *const T {
+    pub fn as_ptr<T>(self) -> *const T {
         self.0 as *const T
     }
 }
@@ -465,7 +600,7 @@ pub const HUGE_PAGE_SIZE: usize = 1024 * 1024 * 1024;
 pub const PML4_SLOT_SIZE: usize = HUGE_PAGE_SIZE * 512;
 
 /// Size of a cache-line
-pub const CACHE_LINE_SIZE: usize = 64;
+pub const CACHE_LINE_SIZE: u64 = 64;
 
 /// A type wrapping a base page with a 4 KiB buffer.
 pub struct Page([u8; BASE_PAGE_SIZE]);
@@ -899,4 +1034,84 @@ impl PTEntry {
                 is_global, PTFlags::G);
     check_flag!(doc = "If IA32_EFER.NXE = 1, execute-disable. If 1, instruction fetches are not allowed from the 4-KByte region.",
                 is_instruction_fetching_disabled, PTFlags::XD);
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn paddr_align() {
+        let base = PAddr::from(0x1000);
+        assert_eq!(base.base_page_offset(), 0x0);
+        assert_eq!(base.large_page_offset(), 0x1000);
+        assert_eq!(base.huge_page_offset(), 0x1000);
+        assert_eq!(base.align_down_to_base_page(), PAddr::from(0x1000));
+        assert_eq!(base.align_down_to_large_page(), PAddr::from(0x0));
+        assert_eq!(base.align_down_to_huge_page(), PAddr::from(0x0));
+        assert_eq!(base.align_up_to_base_page(), PAddr::from(0x1000));
+        assert_eq!(base.align_up_to_large_page(), PAddr::from(0x200000));
+        assert_eq!(base.align_up_to_huge_page(), PAddr::from(1073741824));
+        assert!(base.is_base_page_aligned());
+        assert!(!base.is_large_page_aligned());
+        assert!(!base.is_huge_page_aligned());
+        assert!(base.is_aligned(0x1u64));
+        assert!(base.is_aligned(0x2u64));
+        assert!(!base.is_aligned(0x3u64));
+        assert!(base.is_aligned(0x4u64));
+
+        let base = PAddr::from(0x1001);
+        assert_eq!(base.base_page_offset(), 0x1);
+        assert_eq!(base.large_page_offset(), 0x1001);
+        assert_eq!(base.huge_page_offset(), 0x1001);
+        assert_eq!(base.align_down_to_base_page(), PAddr::from(0x1000));
+        assert_eq!(base.align_down_to_large_page(), PAddr::from(0x0));
+        assert_eq!(base.align_down_to_huge_page(), PAddr::from(0x0));
+        assert_eq!(base.align_up_to_base_page(), PAddr::from(0x2000));
+        assert_eq!(base.align_up_to_large_page(), PAddr::from(0x200000));
+        assert_eq!(base.align_up_to_huge_page(), PAddr::from(1073741824));
+        assert!(!base.is_base_page_aligned());
+        assert!(!base.is_large_page_aligned());
+        assert!(!base.is_huge_page_aligned());
+        assert!(base.is_aligned(0x1u64));
+        assert!(!base.is_aligned(0x2u64));
+        assert!(!base.is_aligned(0x3u64));
+        assert!(!base.is_aligned(0x4u64));
+
+        let base = PAddr::from(0x200000);
+        assert_eq!(base.base_page_offset(), 0x0);
+        assert_eq!(base.large_page_offset(), 0x0);
+        assert_eq!(base.huge_page_offset(), 0x200000);
+        assert_eq!(base.align_down_to_base_page(), PAddr::from(0x200000));
+        assert_eq!(base.align_down_to_large_page(), PAddr::from(0x200000));
+        assert_eq!(base.align_down_to_huge_page(), PAddr::from(0x0));
+        assert_eq!(base.align_up_to_base_page(), PAddr::from(0x200000));
+        assert_eq!(base.align_up_to_large_page(), PAddr::from(0x200000));
+        assert_eq!(base.align_up_to_huge_page(), PAddr::from(1073741824));
+        assert!(base.is_base_page_aligned());
+        assert!(base.is_large_page_aligned());
+        assert!(!base.is_huge_page_aligned());
+        assert!(base.is_aligned(0x1u64));
+        assert!(base.is_aligned(0x2u64));
+        assert!(!base.is_aligned(0x3u64));
+        assert!(base.is_aligned(0x4u64));
+
+        let base = PAddr::from(0x200002);
+        assert_eq!(base.base_page_offset(), 0x2);
+        assert_eq!(base.large_page_offset(), 0x2);
+        assert_eq!(base.huge_page_offset(), 0x200002);
+        assert_eq!(base.align_down_to_base_page(), PAddr::from(0x200000));
+        assert_eq!(base.align_down_to_large_page(), PAddr::from(0x200000));
+        assert_eq!(base.align_down_to_huge_page(), PAddr::from(0x0));
+        assert_eq!(base.align_up_to_base_page(), PAddr::from(0x201000));
+        assert_eq!(base.align_up_to_large_page(), PAddr::from(0x400000));
+        assert_eq!(base.align_up_to_huge_page(), PAddr::from(1073741824));
+        assert!(!base.is_base_page_aligned());
+        assert!(!base.is_large_page_aligned());
+        assert!(!base.is_huge_page_aligned());
+        assert!(base.is_aligned(0x1u64));
+        assert!(base.is_aligned(0x2u64));
+        assert!(!base.is_aligned(0x3u64));
+        assert!(!base.is_aligned(0x4u64));
+    }
 }
