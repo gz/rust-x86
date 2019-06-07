@@ -568,6 +568,17 @@ pub fn cs() -> SegmentSelector {
     SegmentSelector::from_raw(segment)
 }
 
+/// Swap the GS register.
+///
+/// Exchanges the current GS base register value with the value contained
+/// in MSR address IA32_KERNEL_GS_BASE.
+///
+/// # Unsafe
+/// The SWAPGS instruction is a privileged instruction intended for use by system software.
+pub unsafe fn swapgs() {
+    asm!("swapgs" ::: "gs");
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
