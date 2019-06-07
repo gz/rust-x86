@@ -169,3 +169,17 @@ pub unsafe fn rdfsbase() -> u64 {
     asm!("rdfsbase $0" : "=r" (fs_base) );
     fs_base
 }
+
+/// Swap the GS register.
+///
+/// Exchanges the current GS base register value with the value contained
+/// in MSR address IA32_KERNEL_GS_BASE.
+///
+/// The SWAPGS instruction is available only in 64-bit mode.
+///
+/// # Unsafe
+/// The SWAPGS instruction is a privileged instruction intended for use by system software.
+#[cfg(target_arch = "x86_64")]
+pub unsafe fn swapgs() {
+    asm!("swapgs" ::: "gs");
+}

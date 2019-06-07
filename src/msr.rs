@@ -3178,9 +3178,6 @@ pub const IA32_FS_BASE: u32 = 0xc0000100;
 /// Map of BASE Address of GS (R/W)  See Table 35-2.
 pub const IA32_GS_BASE: u32 = 0xc0000101;
 
-/// If  CPUID.80000001.EDX.\[bit  29\] = 1
-pub const IA32_KERNEL_GS_BASE: u32 = 0xc0000102;
-
 /// Swap Target of BASE Address of GS (R/W) See Table 35-2.
 pub const IA32_KERNEL_GSBASE: u32 = 0xc0000102;
 
