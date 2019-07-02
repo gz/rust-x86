@@ -17,6 +17,7 @@ Currently supports
   * Random numbers (rdrand, rdseed)
   * Time (rdtsc, rdtscp)
   * Querying CPUID (uses [raw_cpuid](https://github.com/gz/rust-cpuid) library)
+  * Transactional memory (Intel RTM and HLE)
 
 This library depends on libcore so it can be used in kernel level code.
 
