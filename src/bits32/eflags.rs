@@ -67,6 +67,7 @@ impl EFlags {
 }
 
 #[cfg(target_arch = "x86")]
+#[inline(always)]
 pub unsafe fn read() -> EFlags {
     let r: u32;
     asm!("pushfl; popl $0" : "=r"(r) :: "memory");
@@ -74,6 +75,7 @@ pub unsafe fn read() -> EFlags {
 }
 
 #[cfg(target_arch = "x86")]
+#[inline(always)]
 pub unsafe fn set(val: EFlags) {
     asm!("pushl $0; popfl" :: "r"(val.bits()) : "memory" "flags");
 }
@@ -88,6 +90,7 @@ pub unsafe fn set(val: EFlags) {
 ///
 /// This instruction is only valid in Ring 0 and requires
 /// that the CPU supports the instruction (check CPUID).
+#[inline(always)]
 pub unsafe fn clac() {
     asm!("clac" ::: "memory" "flags" : "volatile");
 }
@@ -102,6 +105,7 @@ pub unsafe fn clac() {
 ///
 /// This instruction is only valid in Ring 0 and requires
 /// that the CPU supports the instruction (check CPUID).
+#[inline(always)]
 pub unsafe fn stac() {
     asm!("stac" ::: "memory" "flags" : "volatile");
 }
