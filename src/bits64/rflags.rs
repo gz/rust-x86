@@ -76,6 +76,7 @@ impl RFlags {
 }
 
 #[cfg(target_arch = "x86_64")]
+#[inline(always)]
 pub unsafe fn read() -> RFlags {
     let r: u64;
     asm!("pushfq; popq $0" : "=r"(r) :: "memory");
@@ -83,6 +84,7 @@ pub unsafe fn read() -> RFlags {
 }
 
 #[cfg(target_arch = "x86_64")]
+#[inline(always)]
 pub unsafe fn set(val: RFlags) {
     asm!("pushq $0; popfq" :: "r"(val.bits()) : "memory" "flags");
 }
