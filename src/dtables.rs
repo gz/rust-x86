@@ -1,6 +1,7 @@
 //! Functions and data-structures to load descriptor tables.
 use core::fmt;
 use core::mem::size_of;
+use crate::segmentation::SegmentSelector;
 
 /// A struct describing a pointer to a descriptor table (GDT / IDT).
 /// This is in a format suitable for giving to 'lgdt' or 'lidt'.
@@ -58,9 +59,25 @@ pub unsafe fn lgdt<T>(gdt: &DescriptorTablePointer<T>) {
     asm!("lgdt ($0)" :: "r" (gdt) : "memory");
 }
 
-/// Load LDT table with 32bit descriptors.
-pub unsafe fn lldt<T>(ldt: &DescriptorTablePointer<T>) {
-    asm!("lldt ($0)" :: "r" (ldt) : "memory");
+/// Loads the segment selector into the selector field of the local
+/// descriptor table register (LDTR).
+///
+/// After the segment selector is loaded in the LDTR,
+/// the processor uses the segment selector to locate
+/// the segment descriptor for the LDT in the global
+/// descriptor table (GDT).
+pub unsafe fn load_ldtr(selector: SegmentSelector) {
+    asm!("lldt $0" :: "r" (selector.bits()) : "memory");
+}
+
+/// Returns the segment selector from the local descriptor table register (LDTR).
+///
+/// The returned segment selector points to the segment descriptor
+/// (located in the GDT) for the current LDT.
+pub unsafe fn ldtr() -> SegmentSelector {
+    let selector: u16;
+    asm!("sldt $0" : "=r"(selector));
+    SegmentSelector::from_raw(selector)
 }
 
 /// Load IDT table with 32bit descriptors.
