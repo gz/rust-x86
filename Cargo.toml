@@ -25,16 +25,15 @@ build = "build.rs"
 edition = '2018'
 
 [features]
-#default = ["performance-counter"]
 performance-counter = ["phf", "phf_codegen", "csv", "serde_json"]
 
 #[[test]]
 #name = "no_std_build"
 #harness = false
 
-#[[test]]
-#name = "kvm"
-#path = "tests/kvm/bin.rs"
+[[test]]
+name = "kvm"
+path = "tests/kvm/bin.rs"
 
 [build-dependencies]
 phf_codegen = { version = "0.7", optional = true }
@@ -51,7 +50,6 @@ optional = true
 features = ["core"]
 
 [target.'cfg(target_family = "unix")'.dev-dependencies]
-#klogger = { git = "https://github.com/gz/rust-klogger.git" }
+klogger = { git = "https://github.com/gz/rust-klogger.git", features = ["use_ioports"] }
+kvmtest = { path = "kvmtest" }
 libc = "0.2.*"
-#test = { path = "test_harness" }
-#test-macros = { path = "test_macros" }

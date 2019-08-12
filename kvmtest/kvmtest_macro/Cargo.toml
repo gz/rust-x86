@@ -1,0 +1,14 @@
+[package]
+name = "kvmtest_macro"
+version = "0.0.1"
+authors = ["Gerd Zellweger <mail@gerdzellweger.com>"]
+edition = "2018"
+
+[dependencies]
+syn = { version = "0.15", features = ["full", "extra-traits"] }
+quote = "0.6"
+proc-macro2 = "0.4"
+kvmtest_types = { path = "../kvmtest_types" }
+
+[lib]
+proc-macro = true

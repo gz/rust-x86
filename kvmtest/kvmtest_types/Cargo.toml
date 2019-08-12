@@ -1,0 +1,8 @@
+[package]
+name = "kvmtest_types"
+version = "0.0.1"
+authors = ["Gerd Zellweger <mail@gerdzellweger.com>"]
+edition = "2018"
+
+[dependencies]
+x86 = "0.19"
