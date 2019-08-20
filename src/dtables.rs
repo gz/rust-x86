@@ -1,4 +1,4 @@
-//! Functions and data-structures to load descriptor tables.
+//! Functions and data-structures for working with descriptor tables.
 use core::fmt;
 use core::mem::size_of;
 use crate::segmentation::SegmentSelector;
@@ -54,9 +54,14 @@ impl<T> fmt::Debug for DescriptorTablePointer<T> {
     }
 }
 
-/// Load GDT table with 32bit descriptors
+/// Load the GDTR register with the specified base and limit.
 pub unsafe fn lgdt<T>(gdt: &DescriptorTablePointer<T>) {
     asm!("lgdt ($0)" :: "r" (gdt) : "memory");
+}
+
+/// Retrieve base and limit from the GDTR register.
+pub unsafe fn sgdt<T>(idt: &mut DescriptorTablePointer<T>) {
+    asm!("sgdt ($0)" : "=r" (idt as *mut DescriptorTablePointer<T>) :: "memory");
 }
 
 /// Loads the segment selector into the selector field of the local
@@ -80,12 +85,12 @@ pub unsafe fn ldtr() -> SegmentSelector {
     SegmentSelector::from_raw(selector)
 }
 
-/// Load IDT table with 32bit descriptors.
+/// Load the IDTR register with the specified base and limit.
 pub unsafe fn lidt<T>(idt: &DescriptorTablePointer<T>) {
     asm!("lidt ($0)" :: "r" (idt) : "memory");
 }
 
-/// Retrive IDT table with 32bit descriptors.
+/// Retrieve base and limit from the IDTR register.
 pub unsafe fn sidt<T>(idt: &mut DescriptorTablePointer<T>) {
     asm!("sidt ($0)" : "=r" (idt as *mut DescriptorTablePointer<T>) :: "memory");
 }
