@@ -22,7 +22,7 @@ println!, but a custom sprintln! macro is provided).
 
 ## An example
 
-This is particularly helpful to test the x86 crate. For example say we have function
+This is particularly helpful to test the x86 crate. For example say we have a function
 like this:
 
 ```rust
@@ -35,7 +35,7 @@ pub unsafe fn inw(port: u16) -> u16 {
 }
 ```
 
-The problem with `inw` is that it needs IO privilage level in E/RFlags to not
+The problem with `inw` is that it needs IO privilege level in E/RFlags to not
 cause an exception (and as a result crash the process). A regular Linux process
 will not run with this privilege level, however we can now write a kvmtest:
 
