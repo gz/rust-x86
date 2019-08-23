@@ -13,8 +13,10 @@ use x86::controlregs::*;
 
 mod vspace;
 
+use hypervisor::vspace::VSpace;
+
 pub(crate) struct PhysicalMemory {
-    offset: u64,
+    offset: usize,
     allocated: usize,
     size: usize,
     backing_memory: MemoryMap,
@@ -26,11 +28,11 @@ impl PhysicalMemory {
     pub(crate) fn new(offset: u64) -> PhysicalMemory {
         let size = 4 * (1<<20);
 
-        let options = [MapOption::MapAddr(offset as *const _ as *const u8), MapOption::MapReadable, MapOption::MapWritable, MapOption::MapExecutable];
-        let mm = MemoryMap::new(size, options).ok();
+        let options = [MapOption::MapAddr(offset as *const u8), MapOption::MapReadable, MapOption::MapWritable, MapOption::MapExecutable];
+        let mm = MemoryMap::new(size, &options).unwrap();
 
         PhysicalMemory {
-            offset: offset,
+            offset: offset as usize,
             allocated: 0,
             size: size,
             backing_memory: mm,
@@ -38,21 +40,22 @@ impl PhysicalMemory {
     }
 
     fn as_mut_slice<'a>(&'a mut self) -> &'a mut [u8] {
-        unsafe { slice::from_raw_parts(self.backing_memory.data(), self.size) };
+        unsafe { slice::from_raw_parts_mut(self.backing_memory.data(), self.size) }
     }
 
     fn len(&self) -> usize {
         self.size
     }
 
-    fn alloc_pages(how_many: u64) -> *mut u8 {
-        unsafe {
-            let to_allocate = how_many * BASE_PAGE_SIZE;
-            let ptr = std::alloc::alloc(std::alloc::Layout::from_size_align_unchecked(to_allocate, BASE_PAGE_SIZE));
-
-            self.allocated += to_allocate;
-            PAddr::from(ptr as u64)
+    fn alloc_pages(&mut self, how_many: u64) -> *mut u8 {
+        let to_allocate = how_many as usize * BASE_PAGE_SIZE;
+        if self.allocated + to_allocate > self.size {
+            panic!("OOM")
         }
+
+        let ptr = (self.offset + self.allocated) as *mut u8;
+        self.allocated += to_allocate;
+        ptr
     }
 }
 
@@ -67,10 +70,12 @@ pub(crate) struct TestEnvironment<'a> {
 impl<'a> TestEnvironment<'a> {
     pub(crate) fn new(
         sys: &'a System,
-        stack: &'a mut Stack,
+        stack: &'a mut PhysicalMemory,
         heap: &'a mut PhysicalMemory,
-        vspace: VSpace,
+        ptables: &'a mut PhysicalMemory,
+        //vspace: VSpace,
     ) -> TestEnvironment<'a> {
+        let vspace = VSpace::new(ptables);
         let mut vm = VirtualMachine::create(sys).unwrap();
         // Ensure that the VM supports memory backing with user memory
         assert!(vm.check_capability(Capability::UserMemory) > 0);
@@ -86,14 +91,6 @@ impl<'a> TestEnvironment<'a> {
 
     /// Map the page table memory and stack memory
     pub(crate) fn create_vcpu(&'a mut self, init_fn: VAddr) -> kvm::Vcpu {
-        let stack_size = self.stacklen();
-
-        self.vm
-            .set_user_memory_region(0, self.heap.as_mut_slice(), 0)
-            .unwrap();
-        self.vm
-            .set_user_memory_region(STACK_BASE_T.as_u64(), self.stack.as_mut_slice(), 0)
-            .unwrap();
 
         // Map the process
         let f = File::open("/proc/self/maps").unwrap();
@@ -106,16 +103,19 @@ impl<'a> TestEnvironment<'a> {
             let begin = usize::from_str_radix(s2.next().unwrap(), 16).unwrap();
             let end = usize::from_str_radix(s2.next().unwrap(), 16).unwrap();
             if end <= 0x800000000000 {
-                println!("{:#X} -- {:#X} {}", begin, end, s.next().unwrap());
+                //println!("{:#X} -- {:#X} {}", begin, end, s.next().unwrap());
                 let slice = {
                     let begin_ptr: *mut u8 = begin as *const u8 as _;
                     unsafe { ::std::slice::from_raw_parts_mut(begin_ptr, end - begin) }
                 };
-                // Make sure process doesn't overlap with page table
-                //assert!(begin > page_table_memory_limit);
+
+                //Set-up hypervisor by making all our memory available to the "guest"-test
                 self.vm
                     .set_user_memory_region(begin as _, slice, 0)
-                    .unwrap();
+                    .expect("Can't set user memory region!");
+                
+                // Set-up guest page-table by 1:1 mapping everything
+                self.vspace.map_identity(PAddr::from(begin), PAddr::from(end), vspace::MapAction::ReadWriteExecuteKernel);
             }
         }
         
@@ -169,7 +169,7 @@ impl<'a> TestEnvironment<'a> {
             | Cr0::CR0_ALIGNMENT_MASK
             | Cr0::CR0_ENABLE_PAGING)
             .bits() as u64;
-        sregs.cr3 = PAGE_TABLE_P.as_u64();
+        sregs.cr3 = 0x9000000;
         sregs.cr4 = (Cr4::CR4_ENABLE_PSE
             | Cr4::CR4_ENABLE_PAE
             | Cr4::CR4_ENABLE_GLOBAL_PAGES
@@ -186,10 +186,11 @@ impl<'a> TestEnvironment<'a> {
 
         let mut regs = vcpu.get_regs().unwrap();
 
-        // Set the instruction pointer to 1 MB
+        // Set the instruction and stack pointer
+        let stack_size = self.stack.len();
         regs.rip = init_fn.as_usize() as u64;
         regs.rflags = 0x246; // XXX
-        regs.rsp = STACK_BASE_T.as_u64() + stack_size as u64 - 8;
+        regs.rsp = 0x3000000 + stack_size as u64 - 8;
         regs.rbp = regs.rsp;
 
         vcpu.set_regs(&regs).unwrap();

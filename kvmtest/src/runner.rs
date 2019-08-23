@@ -1,4 +1,4 @@
-use hypervisor::{handle_ioexit, IoHandleStatus, PhysicalMemory, SerialPrinter, Stack, TestEnvironment};
+use hypervisor::{handle_ioexit, IoHandleStatus, PhysicalMemory, SerialPrinter, TestEnvironment};
 use kvm::{Exit, System};
 use x86::bits64::paging::VAddr;
 
@@ -59,10 +59,11 @@ pub fn runner(tests: &[&KvmTestFn]) {
             test_before_run(test.name);
 
             let sys = System::initialize().unwrap();
-            let mut st = Stack::new();
-            let mut pt = PageTable::new();
-            pt.setup_identity_mapping();
-            let mut test_environment = TestEnvironment::new(&sys, &mut st, &mut pt);
+            let mut stack = PhysicalMemory::new(0x3000000);
+            let mut heap = PhysicalMemory::new(0x6000000);
+            let mut ptables = PhysicalMemory::new(0x9000000);
+
+            let mut test_environment = TestEnvironment::new(&sys, &mut stack, &mut heap, &mut ptables);
             let mut printer: SerialPrinter = SerialPrinter::new();
 
             let test_fn_vaddr = VAddr::from_usize(test.testfn.0 as *const () as usize);
@@ -79,7 +80,9 @@ pub fn runner(tests: &[&KvmTestFn]) {
                             Result::Ok(IoHandleStatus::Handled) => { /* Continue */ }
                             Result::Ok(IoHandleStatus::TestSuccessful) => vm_is_done = true,
                             Result::Ok(IoHandleStatus::TestPanic(code)) => {
-                                println!("IoHandleStatus::TestPanic {}", code);
+                                if !test.should_panic {
+                                    debug!("IoHandleStatus::TestPanic {} should_panic is {}", code, test.should_panic);
+                                }
                                 vm_is_done = true;
                                 test_panicked = true;
                             }
@@ -99,6 +102,7 @@ pub fn runner(tests: &[&KvmTestFn]) {
                     _ => {
                         test_panicked = true;
                         println!("Unknown exit reason: {:?}", run.exit_reason);
+                        break;
                     }
                 }
             }

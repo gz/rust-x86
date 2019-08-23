@@ -2,15 +2,30 @@
 macro_rules! kassert {
     ($test:expr) => ({
         if !$test {
-            sprintln!("assertion failed: {}, {}:{}:{}", stringify!($test), file!(), line!(), column!());
+            sprintln!("kassertion failed: {}, {}:{}:{}", stringify!($test), file!(), line!(), column!());
             unsafe { x86::io::outw(0xf4, 0x01); } // exit failure
         }
     });
     ($test:expr, $($arg:tt)+) => ({
         if !$test {
-            sprintln!("assertion failed: {}, {}:{}:{}", format_args!($($arg)+), file!(), line!(), column!());
+            sprintln!("kassertion failed: {}, {}:{}:{}", format_args!($($arg)+), file!(), line!(), column!());
             #[allow(unused_unsafe)]
             unsafe { x86::io::outw(0xf4, 0x01); } // exit failure
+        }
+    });
+}
+
+#[macro_export]
+macro_rules! kpanic {
+    ($test:expr) => ({
+        sprintln!("kpanic: {}, {}:{}:{}", stringify!($test), file!(), line!(), column!());
+        unsafe { x86::io::outw(0xf4, 0x02); } // exit failure
+    });
+    ($test:expr, $($arg:tt)+) => ({
+        if !$test {
+            sprintln!("kpanic: {}, {}:{}:{}", format_args!($($arg)+), file!(), line!(), column!());
+            #[allow(unused_unsafe)]
+            unsafe { x86::io::outw(0xf4, 0x02); } // exit failure
         }
     });
 }

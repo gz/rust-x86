@@ -4,6 +4,7 @@ use std::mem::transmute;
 use std::option::Option;
 
 use log::{trace, debug, info};
+use hypervisor::PhysicalMemory;
 
 use x86::bits64::paging::*;
 
@@ -108,9 +109,21 @@ impl fmt::Display for MapAction {
 /// A VSpace allows to create and modify a (virtual) address space.
 pub struct VSpace<'a> {
     pub pml4: &'a mut PML4,
+    pmem: &'a mut PhysicalMemory,
+    pmem_offset: usize
 }
 
 impl<'a> VSpace<'a> {
+
+    pub(crate) fn new(
+        pmem: &'a mut PhysicalMemory,
+    ) -> VSpace {
+        let pml4_ptr = pmem.alloc_pages(1);
+        let pml4 = unsafe { transmute::<*mut u8, &mut PML4>(pml4_ptr) };
+
+        VSpace { pml4: pml4, pmem: pmem, pmem_offset: 0 }
+    }
+
     /// Constructs an identity map but with an offset added to the region.
     ///
     /// # Example
@@ -348,12 +361,13 @@ impl<'a> VSpace<'a> {
     }
 
     /// A simple wrapper function for allocating just oen page.
-    pub(crate) fn allocate_one_page() -> PAddr {
-        VSpace::allocate_pages(1, KERNEL_PT)
+    pub(crate) fn allocate_one_page(&mut self) -> PAddr {
+        self.allocate_pages(1, KERNEL_PT)
     }
 
     /// Does an allocation of physical memory where the base-address is a multiple of `align_to`.
     pub(crate) fn allocate_pages_aligned(
+        &mut self,
         how_many: usize,
         typ: u64,
         align_to: u64,
@@ -369,7 +383,7 @@ impl<'a> VSpace<'a> {
         assert!(actual_how_many >= how_many);
 
         // The region we allocated
-        let paddr = VSpace::allocate_pages(actual_how_many, typ);
+        let paddr = self.allocate_pages(actual_how_many, typ);
         let end = paddr + (actual_how_many * BASE_PAGE_SIZE);
 
         // The region within the allocated one we actually want
@@ -405,25 +419,25 @@ impl<'a> VSpace<'a> {
     ///
     /// Zeroes the memory we allocate.
     /// Returns a `u64` containing the base to that.
-    pub(crate) fn allocate_pages(how_many: usize, typ: u64) -> PAddr {
+    pub(crate) fn allocate_pages(&mut self, how_many: usize, typ: u64) -> PAddr {
         unsafe {
-            let ptr = std::alloc::alloc(std::alloc::Layout::from_size_align_unchecked(how_many * BASE_PAGE_SIZE, BASE_PAGE_SIZE));
+            let ptr = self.pmem.alloc_pages(how_many as u64);
             PAddr::from(ptr as u64)
         }
     }
 
     fn new_pt(&mut self) -> PDEntry {
-        let paddr: PAddr = VSpace::allocate_one_page();
+        let paddr: PAddr = self.allocate_one_page();
         return PDEntry::new(paddr, PDFlags::P | PDFlags::RW);
     }
 
     fn new_pd(&mut self) -> PDPTEntry {
-        let paddr: PAddr = VSpace::allocate_one_page();
+        let paddr: PAddr = self.allocate_one_page();
         return PDPTEntry::new(paddr, PDPTFlags::P | PDPTFlags::RW);
     }
 
     fn new_pdpt(&mut self) -> PML4Entry {
-        let paddr: PAddr = VSpace::allocate_one_page();
+        let paddr: PAddr = self.allocate_one_page();
         return PML4Entry::new(paddr, PML4Flags::P | PML4Flags::RW);
     }
 
@@ -484,7 +498,7 @@ impl<'a> VSpace<'a> {
     pub fn map(&mut self, base: VAddr, size: usize, rights: MapAction, palignment: u64) {
         assert!(base.is_base_page_aligned(), "base is not page-aligned");
         assert_eq!(size % BASE_PAGE_SIZE, 0, "size is not page-aligned");
-        let paddr = VSpace::allocate_pages_aligned(
+        let paddr = self.allocate_pages_aligned(
             size / BASE_PAGE_SIZE,
             KERNEL_ELF,
             palignment,

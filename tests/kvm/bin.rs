@@ -11,6 +11,7 @@ extern crate klogger;
 
 extern crate kvmtest;
 use self::kvmtest::kassert;
+use self::kvmtest::kpanic;
 use self::kvmtest::kvmtest;
 use self::kvmtest::KvmTestFn;
 
@@ -26,10 +27,11 @@ fn use_the_port() {
 
 #[kvmtest(ram(0x30000000, 0x31000000))]
 fn print_works() {
+    sprint!("sprint!, ");
     sprintln!("sprintln! works");
 }
 
-#[kvmtest]
+#[kvmtest(should_panic)]
 fn panic_test() {
-    // kpanic!("failed");
+    kpanic!("failed");
 }
