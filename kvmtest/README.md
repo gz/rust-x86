@@ -64,8 +64,8 @@ the right thing.
 
 You'll find more example tests among the [x86 tests](../tests/kvm/bin.rs).
 Note that running a kvmtest currently works only on Linux and requires some linking magic.
-Setting RUSTFLAGS="-C relocation-model=dynamic-no-pic -C code-model=kernel" should do.
-I expect the custom RUSTFLAGS to not be necessary in the future.
+Setting `RUSTFLAGS="-C relocation-model=dynamic-no-pic -C code-model=kernel"` should do.
+I expect the custom `RUSTFLAGS` to not be necessary in the future.
 
 ## kvmtest reference
 
