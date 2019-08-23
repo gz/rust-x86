@@ -1,12 +1,14 @@
 # kvmtest custom test runner
 
 kvmtest is a custom test runner that allows you to write unit tests which use
-privileged (x86) instructions. It achieves that as follows: for every unit test
-it creates a tiny VM (using kvm) which mirrors the address space of the current
-test process inside the guest VM. Next the VM is initialized and jumps to the
-unit test function which is now executed in guest ring 0 (and here you can use
-all your fancy instructions). Finally, once the test returns (or panics),
-control is transferred back from the VM to our test runner.
+privileged (x86) instructions. 
+
+It achieves that as follows: for every unit test it creates a tiny VM (using
+kvm) which mirrors the address space of the current test process inside the
+guest VM. Next the VM is initialized and jumps to the unit test function which
+is now executed in guest ring 0 (and here you can use all your fancy
+instructions). Finally, once the test returns (or panics), control is
+transferred back from the VM to our test runner.
 
 Funky? Yes. 
 
@@ -49,7 +51,7 @@ fn check_inw_port_read() {
 }
 ```
 
-Things are happening on here that warrant some explaining:
+A few things are happening here that warrant some explaining:
 
 First, instead of `#[test]` we used `#[kvmtest]` to tell the system we don't
 want to use regular unit tests. `kvmtest` supports a few arguments (more on
@@ -60,7 +62,7 @@ unsafe, just because `inw` is unsafe. Finally, we use `kassert!`, a custom asser
 macro that works in guest ring 0 for our hypervisor, to check that `inw` does
 the right thing.
 
-You'll find more example tests in the [../tests/kvm/bin.rs|x86 tests].
+You'll find more example tests among the [x86 tests](../tests/kvm/bin.rs).
 
 ## kvmtest reference
 
@@ -72,6 +74,6 @@ The kvmtest attribute currently supports the following parameters:
 
 ## Code Organization
 
-* kvmtest_macro: contains a procedural macro implementation of `kvmtest`.
-* kvmtest_types: contains implementations of kassert, kpanic and the KvmTestFn struct.
-* src: contains the custom test runner implementation.
+* [kvmtest_macro](kvmtest_macro): contains a procedural macro implementation of `kvmtest`.
+* [kvmtest_types](kvmtest_types): contains implementations of kassert, kpanic and the KvmTestFn struct.
+* [src](src): contains the custom test runner implementation.
