@@ -2,11 +2,11 @@ use hypervisor::{handle_ioexit, IoHandleStatus, PhysicalMemory, SerialPrinter, T
 use kvm::{Exit, System};
 use x86::bits64::paging::VAddr;
 
-use crate::KvmTestFn;
+use crate::X86TestFn;
 
 /// Start the test harness.
 pub fn test_start(ntests: usize) {
-    println!("running {} tests (using kvmtest runner)", ntests)
+    println!("running {} tests (using x86test runner)", ntests)
 }
 
 /// Signals that given test is ignored.
@@ -45,7 +45,7 @@ pub fn test_summary(passed: usize, failed: usize, ignored: usize) {
 }
 
 /// Actual logic to run a list of KVM tests.
-pub fn runner(tests: &[&KvmTestFn]) {
+pub fn runner(tests: &[&X86TestFn]) {
     test_start(tests.len());
 
     let mut failed = 0;

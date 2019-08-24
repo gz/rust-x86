@@ -1,5 +1,5 @@
 [package]
-name = "kvmtest_macro"
+name = "x86test_macro"
 version = "0.0.1"
 authors = ["Gerd Zellweger <mail@gerdzellweger.com>"]
 edition = "2018"
@@ -8,7 +8,7 @@ edition = "2018"
 syn = { version = "0.15", features = ["full", "extra-traits"] }
 quote = "0.6"
 proc-macro2 = "0.4"
-kvmtest_types = { path = "../kvmtest_types" }
+x86test_types = { path = "../x86test_types" }
 
 [lib]
 proc-macro = true

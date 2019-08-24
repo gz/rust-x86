@@ -7,7 +7,7 @@ use std::slice;
 use kvm::{Capability, IoDirection, Segment, System, Vcpu, VirtualMachine};
 use mmap::{MemoryMap, MapOption};
 
-use crate::KvmTestFn;
+use crate::X86TestFn;
 use x86::bits64::paging::*;
 use x86::controlregs::*;
 
@@ -246,7 +246,7 @@ pub(crate) enum IoHandleStatus {
 }
 
 pub(crate) fn handle_ioexit(
-    meta: &KvmTestFn,
+    meta: &X86TestFn,
     cpu: &mut Vcpu,
     run: &kvm::Run,
     printer: &mut SerialPrinter,

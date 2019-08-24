@@ -1,4 +1,4 @@
-//! This implements the kvmtest macro to run and also customize the execution
+//! This implements the x86test macro to run and also customize the execution
 //! of KVM based unit-tests.
 #![feature(proc_macro_diagnostic)]
 extern crate proc_macro;
@@ -53,16 +53,16 @@ fn should_panic(fun: &ItemFn) -> bool {
     }).is_some()
 }
 
-/// The `kvmtest` macro adds and initializes a `KvmTestFn` struct for
-/// every test function. That `KvmTestFn` in turn is annotated with
+/// The `x86test` macro adds and initializes a `X86TestFn` struct for
+/// every test function. That `X86TestFn` in turn is annotated with
 /// `#[test_case]` therefore all these structs are aggregated with
 /// by the custom test framework runner which is declared in `runner.rs`.
 ///
 /// # Example
-/// As an example, if we add kvmtest to a function, we do the following:
+/// As an example, if we add x86test to a function, we do the following:
 ///
 /// ```no-run
-/// #[kvmtest(ram(0x10000, 0x11000), ioport(0x1, 0xfe), should_panic)]
+/// #[x86test(ram(0x10000, 0x11000), ioport(0x1, 0xfe), should_panic)]
 /// fn use_the_port() {
 ///     unsafe {
 ///         kassert!(x86::io::inw(0x1) == 0xff, "`inw` instruction didn't read correct value");
@@ -81,14 +81,14 @@ fn should_panic(fun: &ItemFn) -> bool {
 ///
 /// #[allow(non_upper_case_globals)]
 /// #[test_case]
-/// static use_the_port_genkvmtest: KvmTestFn = KvmTestFn {
+/// static use_the_port_genkvmtest: X86TestFn = X86TestFn {
 ///     name: "use_the_port",
 ///     ignore: false,
 ///     identity_map: true,
 ///     physical_memory: (0x10000, 0x11000),
 ///     ioport_reads: (0x1, 0xfe),
 ///     should_panic: true,
-///     testfn: kvmtest::StaticTestFn(|| {
+///     testfn: x86test::StaticTestFn(|| {
 ///         use_the_port()
 ///         // Tell our "hypervisor" that we finished the test
 ///         unsafe { x86::io::outw(0xf4, 0x00); }
@@ -96,7 +96,7 @@ fn should_panic(fun: &ItemFn) -> bool {
 /// };
 /// ```
 #[proc_macro_attribute]
-pub fn kvmtest(args: TokenStream, input: TokenStream) -> TokenStream {
+pub fn x86test(args: TokenStream, input: TokenStream) -> TokenStream {
     let ico = input.clone();
 
     let args: Vec<NestedMeta> = syn::parse_macro_input!(args as AttributeArgs);
@@ -106,8 +106,8 @@ pub fn kvmtest(args: TokenStream, input: TokenStream) -> TokenStream {
     let mut ioport_reads: (u64, u64) = (0, 0);
     let mut should_panic = should_panic(&input_fn);
 
-    // Parse the arguments of kvmtest:
-    // #[kvmtest(ram(0xdead, 12), ioport(0x1, 0xfe))]
+    // Parse the arguments of x86test:
+    // #[x86test(ram(0xdead, 12), ioport(0x1, 0xfe))]
     // will push (0xdead, 12) to physical_memory and (0x1, 0xfe) to ioport_reads:
     for arg in args {
         if let NestedMeta::Meta(Meta::List(MetaList {
@@ -146,14 +146,14 @@ pub fn kvmtest(args: TokenStream, input: TokenStream) -> TokenStream {
     let ast = quote! {
         #[allow(non_upper_case_globals, unused_attributes)]
         #[test_case]
-        static #struct_ident: KvmTestFn = KvmTestFn {
+        static #struct_ident: X86TestFn = X86TestFn {
             name: #test_name,
             ignore: false,
             identity_map: true,
             physical_memory: #physical_memory_tuple,
             ioport_reads: #ioport_reads_tuple,
             should_panic: #should_panic,
-            testfn: kvmtest::StaticTestFn(|| {
+            testfn: x86test::StaticTestFn(|| {
                 #fn_ident();
                 // Tell our "hypervisor" that we finished the test
                 unsafe { x86::io::outw(0xf4, 0x00); }

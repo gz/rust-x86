@@ -1,6 +1,6 @@
-# kvmtest custom test runner
+# x86test custom test runner
 
-kvmtest is a custom test runner that allows you to write unit tests which use
+x86test is a custom test runner that allows you to write unit tests which use
 privileged (x86) instructions. 
 
 It achieves that as follows: for every unit test it creates a tiny VM (using
@@ -37,10 +37,10 @@ pub unsafe fn inw(port: u16) -> u16 {
 
 The problem with `inw` is that it needs IO privilege level in E/RFlags to not
 cause an exception (and as a result crash the process). A regular Linux process
-will not run with this privilege level, however we can now write a kvmtest:
+will not run with this privilege level, however we can now write a x86test:
 
 ```rust
-#[kvmtest(ioport(0x1, 0xfe))]
+#[x86test(ioport(0x1, 0xfe))]
 fn check_inw_port_read() {
     unsafe {
         kassert!(
@@ -53,8 +53,8 @@ fn check_inw_port_read() {
 
 A few things are happening here that warrant some explaining:
 
-First, instead of `#[test]` we used `#[kvmtest]` to tell the system we don't
-want to use regular unit tests. `kvmtest` supports a few arguments (more on
+First, instead of `#[test]` we used `#[x86test]` to tell the system we don't
+want to use regular unit tests. `x86test` supports a few arguments (more on
 that later), here we just tell the "hypervisor" of the test runner to install
 an ioport with port number 1 that shall always return 0xfe when being read.
 Next, comes our function declaration -- nothing special here -- followed by
@@ -63,13 +63,13 @@ macro that works in guest ring 0 for our hypervisor, to check that `inw` does
 the right thing.
 
 You'll find more example tests among the [x86 tests](../tests/kvm/bin.rs).
-Note that running a kvmtest currently works only on Linux and requires some linking magic.
+Note that running a x86test currently works only on Linux and requires some linking magic.
 Setting `RUSTFLAGS="-C relocation-model=dynamic-no-pic -C code-model=kernel"` should do.
 I expect the custom `RUSTFLAGS` to not be necessary in the future.
 
-## kvmtest reference
+## x86test reference
 
-The kvmtest attribute currently supports the following parameters:
+The x86test attribute currently supports the following parameters:
 
 * ioport(port, val): Reads to `port` will return `val`.
 * ram(from, to): Adds physical memory in address range `from` -- `to`
@@ -77,6 +77,6 @@ The kvmtest attribute currently supports the following parameters:
 
 ## Code Organization
 
-* [kvmtest_macro](kvmtest_macro): contains a procedural macro implementation of `kvmtest`.
-* [kvmtest_types](kvmtest_types): contains implementations of kassert, kpanic and the KvmTestFn struct.
+* [x86test_macro](x86test_macro): contains a procedural macro implementation of `x86test`.
+* [x86test_types](x86test_types): contains implementations of kassert, kpanic and the X86TestFn struct.
 * [src](src): contains the custom test runner implementation.

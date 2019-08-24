@@ -1,12 +1,12 @@
 [package]
-name = "kvmtest"
+name = "x86test"
 version = "0.0.1"
 authors = ["Gerd Zellweger <mail@gerdzellweger.com>"]
 
 [dependencies]
-kvmtest_macro = { path = "kvmtest_macro" }
-kvmtest_types = { path = "kvmtest_types" }
+x86test_macro = { path = "x86test_macro" }
+x86test_types = { path = "x86test_types" }
 kvm = { git = "https://github.com/gz/kvm.git" }
 x86 = "0.19"
 mmap = "0.1.1"
-log = "0.*"
+log = "0.4"

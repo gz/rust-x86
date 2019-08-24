@@ -32,7 +32,7 @@ macro_rules! kpanic {
 
 pub struct StaticTestFn(pub fn());
 
-pub struct KvmTestFn {
+pub struct X86TestFn {
     pub name: &'static str,
     pub ignore: bool,
     pub identity_map: bool,

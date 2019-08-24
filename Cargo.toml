@@ -51,5 +51,5 @@ features = ["core"]
 
 [target.'cfg(target_family = "unix")'.dev-dependencies]
 klogger = { git = "https://github.com/gz/rust-klogger.git", features = ["use_ioports"] }
-kvmtest = { path = "kvmtest" }
+x86test = { path = "x86test" }
 libc = "0.2.*"
