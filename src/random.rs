@@ -256,5 +256,4 @@ mod test {
             assert_ne!(buf[3], 0);
         }
     }
-
 }

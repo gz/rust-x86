@@ -31,7 +31,8 @@ fn print_works() {
     sprintln!("sprintln! works");
 }
 
-#[kvmtest(should_panic)]
+#[kvmtest]
+#[should_panic]
 fn panic_test() {
     kpanic!("failed");
 }
