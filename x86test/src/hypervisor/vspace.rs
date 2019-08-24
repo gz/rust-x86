@@ -3,8 +3,8 @@ use std::fmt;
 use std::mem::transmute;
 use std::option::Option;
 
-use log::{trace, debug, info};
-use hypervisor::PhysicalMemory;
+use crate::hypervisor::PhysicalMemory;
+use log::{debug, info, trace};
 
 use x86::bits64::paging::*;
 
@@ -113,14 +113,14 @@ pub struct VSpace<'a> {
 }
 
 impl<'a> VSpace<'a> {
-
-    pub(crate) fn new(
-        pmem: &'a mut PhysicalMemory,
-    ) -> VSpace {
+    pub(crate) fn new(pmem: &'a mut PhysicalMemory) -> VSpace {
         let pml4_ptr = pmem.alloc_pages(1);
         let pml4 = unsafe { transmute::<*mut u8, &mut PML4>(pml4_ptr) };
 
-        VSpace { pml4: pml4, pmem: pmem }
+        VSpace {
+            pml4: pml4,
+            pmem: pmem,
+        }
     }
 
     /// Constructs an identity map but with an offset added to the region.
@@ -496,11 +496,7 @@ impl<'a> VSpace<'a> {
     pub fn map(&mut self, base: VAddr, size: usize, rights: MapAction, palignment: u64) {
         assert!(base.is_base_page_aligned(), "base is not page-aligned");
         assert_eq!(size % BASE_PAGE_SIZE, 0, "size is not page-aligned");
-        let paddr = self.allocate_pages_aligned(
-            size / BASE_PAGE_SIZE,
-            KERNEL_ELF,
-            palignment,
-        );
+        let paddr = self.allocate_pages_aligned(size / BASE_PAGE_SIZE, KERNEL_ELF, palignment);
         self.map_generic(base, (paddr, size), rights);
     }
 }

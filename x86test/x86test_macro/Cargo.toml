@@ -1,14 +1,24 @@
 [package]
-name = "x86test_macro"
+name = "x86test-macro"
 version = "0.0.1"
 authors = ["Gerd Zellweger <mail@gerdzellweger.com>"]
-edition = "2018"
+
+repository = "https://github.com/gz/rust-x86"
+documentation = "https://docs.rs/x86test-macro"
+
+keywords = ["vm", "os", "amd64", "kvm", "x86-64"]
+license = "MIT OR Apache-2.0"
+edition = '2018'
+
+description = """
+Procedural macro plugin for x86test.
+"""
 
 [dependencies]
 syn = { version = "0.15", features = ["full", "extra-traits"] }
 quote = "0.6"
 proc-macro2 = "0.4"
-x86test_types = { path = "../x86test_types" }
+x86test-types = { path = "../x86test_types", version = "0.0.1" }
 
 [lib]
 proc-macro = true

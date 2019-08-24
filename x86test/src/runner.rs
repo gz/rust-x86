@@ -1,4 +1,6 @@
-use hypervisor::{handle_ioexit, IoHandleStatus, PhysicalMemory, SerialPrinter, TestEnvironment};
+use crate::hypervisor::{
+    handle_ioexit, IoHandleStatus, PhysicalMemory, SerialPrinter, TestEnvironment,
+};
 use kvm::{Exit, System};
 use x86::bits64::paging::VAddr;
 
@@ -63,7 +65,8 @@ pub fn runner(tests: &[&X86TestFn]) {
             let mut heap = PhysicalMemory::new(0x6000000);
             let mut ptables = PhysicalMemory::new(0x9000000);
 
-            let mut test_environment = TestEnvironment::new(&sys, &mut stack, &mut heap, &mut ptables);
+            let mut test_environment =
+                TestEnvironment::new(&sys, &mut stack, &mut heap, &mut ptables);
             let mut printer: SerialPrinter = SerialPrinter::new();
 
             let test_fn_vaddr = VAddr::from_usize(test.testfn.0 as *const () as usize);
@@ -81,7 +84,10 @@ pub fn runner(tests: &[&X86TestFn]) {
                             Result::Ok(IoHandleStatus::TestSuccessful) => vm_is_done = true,
                             Result::Ok(IoHandleStatus::TestPanic(code)) => {
                                 if !test.should_panic {
-                                    debug!("IoHandleStatus::TestPanic {} should_panic is {}", code, test.should_panic);
+                                    debug!(
+                                        "IoHandleStatus::TestPanic {} should_panic is {}",
+                                        code, test.should_panic
+                                    );
                                 }
                                 vm_is_done = true;
                                 test_panicked = true;
@@ -94,8 +100,11 @@ pub fn runner(tests: &[&X86TestFn]) {
                         }
                     }
                     Exit::Shutdown => {
-                        println!("Exit::Shutdown cpu.get_regs() {:#x}", vcpu.get_regs().unwrap().rip);
-                        println!("Exit::Shutdown cpu.get_sregs() {:#?}", vcpu.get_sregs());// 0x7ffff732fad0
+                        println!(
+                            "Exit::Shutdown cpu.get_regs() {:#x}",
+                            vcpu.get_regs().unwrap().rip
+                        );
+                        println!("Exit::Shutdown cpu.get_sregs() {:#?}", vcpu.get_sregs()); // 0x7ffff732fad0
                         vm_is_done = true;
                         test_panicked = true;
                     }

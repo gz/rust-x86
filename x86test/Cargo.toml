@@ -3,9 +3,21 @@ name = "x86test"
 version = "0.0.1"
 authors = ["Gerd Zellweger <mail@gerdzellweger.com>"]
 
+repository = "https://github.com/gz/rust-x86"
+documentation = "https://docs.rs/x86test"
+
+readme = "README.md"
+keywords = ["vm", "os", "amd64", "kvm", "x86-64"]
+license = "MIT OR Apache-2.0"
+edition = '2018'
+
+description = """
+Custom test runner for bare-metal x86 tests.
+"""
+
 [dependencies]
-x86test_macro = { path = "x86test_macro" }
-x86test_types = { path = "x86test_types" }
+x86test-macro = { path = "x86test_macro", version = "0.0.1" }
+x86test-types = { path = "x86test_types", version = "0.0.1" }
 kvm-sys = "0.3.0"
 x86 = "0.19"
 mmap = "0.1.1"

@@ -4,7 +4,7 @@ use std::io;
 use std::io::{BufRead, BufReader, Write};
 
 use kvm::{Capability, IoDirection, Segment, System, Vcpu, VirtualMachine};
-use mmap::{MemoryMap, MapOption};
+use mmap::{MapOption, MemoryMap};
 
 use crate::X86TestFn;
 use x86::bits64::paging::*;
@@ -12,7 +12,7 @@ use x86::controlregs::*;
 
 mod vspace;
 
-use hypervisor::vspace::VSpace;
+use crate::hypervisor::vspace::VSpace;
 
 pub(crate) struct PhysicalMemory {
     offset: usize,
@@ -26,9 +26,14 @@ impl PhysicalMemory {
     /// Allocate a chunk of memory that is handed out as "physical memory"
     /// to allocate page-tables etc.
     pub(crate) fn new(offset: u64) -> PhysicalMemory {
-        let size = 4 * (1<<20);
+        let size = 4 * (1 << 20);
 
-        let options = [MapOption::MapAddr(offset as *const u8), MapOption::MapReadable, MapOption::MapWritable, MapOption::MapExecutable];
+        let options = [
+            MapOption::MapAddr(offset as *const u8),
+            MapOption::MapReadable,
+            MapOption::MapWritable,
+            MapOption::MapExecutable,
+        ];
         let mm = MemoryMap::new(size, &options).unwrap();
 
         PhysicalMemory {
@@ -88,7 +93,6 @@ impl<'a> TestEnvironment<'a> {
 
     /// Map the page table memory and stack memory
     pub(crate) fn create_vcpu(&'a mut self, init_fn: VAddr) -> kvm::Vcpu {
-
         // Map the process
         let f = File::open("/proc/self/maps").unwrap();
         let reader = BufReader::new(f);
@@ -110,12 +114,16 @@ impl<'a> TestEnvironment<'a> {
                 self.vm
                     .set_user_memory_region(begin as _, slice, 0)
                     .expect("Can't set user memory region!");
-                
+
                 // Set-up guest page-table by 1:1 mapping everything
-                self.vspace.map_identity(PAddr::from(begin), PAddr::from(end), vspace::MapAction::ReadWriteExecuteKernel);
+                self.vspace.map_identity(
+                    PAddr::from(begin),
+                    PAddr::from(end),
+                    vspace::MapAction::ReadWriteExecuteKernel,
+                );
             }
         }
-        
+
         let mut vcpu = Vcpu::create(&mut self.vm).unwrap();
         // Set supported CPUID (KVM fails without doing this)
         let mut cpuid = self.sys.get_supported_cpuid().unwrap();

@@ -1,8 +1,18 @@
 [package]
-name = "x86test_types"
+name = "x86test-types"
 version = "0.0.1"
 authors = ["Gerd Zellweger <mail@gerdzellweger.com>"]
-edition = "2018"
+
+repository = "https://github.com/gz/rust-x86"
+documentation = "https://docs.rs/x86test-types"
+
+keywords = ["vm", "os", "amd64", "kvm", "x86-64"]
+license = "MIT OR Apache-2.0"
+edition = '2018'
+
+description = """
+Common types for x86test runnter and the x86test procedural macro. 
+"""
 
 [dependencies]
 x86 = "0.20"
