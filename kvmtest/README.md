@@ -73,7 +73,7 @@ The kvmtest attribute currently supports the following parameters:
 
 * ioport(port, val): Reads to `port` will return `val`.
 * ram(from, to): Adds physical memory in address range `from` -- `to`
-* should_panic: Set if a test is expected to panic.
+* `#[should_panic]`: Can be added if a test is expected to panic.
 
 ## Code Organization
 
