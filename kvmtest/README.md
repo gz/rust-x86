@@ -22,8 +22,8 @@ println!, but a custom sprintln! macro is provided).
 
 ## An example
 
-This is particularly helpful to test the x86 crate. For example say we have a function
-like this:
+This is particularly helpful to test the [x86 crate](https://github.com/gz/rust-x86). 
+For example say we have a function like this:
 
 ```rust
 /// Read 16 bits from port
