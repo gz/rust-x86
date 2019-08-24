@@ -97,14 +97,12 @@ fn should_panic(fun: &ItemFn) -> bool {
 /// ```
 #[proc_macro_attribute]
 pub fn x86test(args: TokenStream, input: TokenStream) -> TokenStream {
-    let ico = input.clone();
-
     let args: Vec<NestedMeta> = syn::parse_macro_input!(args as AttributeArgs);
     let input_fn = syn::parse_macro_input!(input as ItemFn);
 
     let mut physical_memory: (u64, u64) = (0, 0);
     let mut ioport_reads: (u64, u64) = (0, 0);
-    let mut should_panic = should_panic(&input_fn);
+    let should_panic = should_panic(&input_fn);
 
     // Parse the arguments of x86test:
     // #[x86test(ram(0xdead, 12), ioport(0x1, 0xfe))]

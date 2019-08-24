@@ -110,7 +110,6 @@ impl fmt::Display for MapAction {
 pub struct VSpace<'a> {
     pub pml4: &'a mut PML4,
     pmem: &'a mut PhysicalMemory,
-    pmem_offset: usize
 }
 
 impl<'a> VSpace<'a> {
@@ -121,7 +120,7 @@ impl<'a> VSpace<'a> {
         let pml4_ptr = pmem.alloc_pages(1);
         let pml4 = unsafe { transmute::<*mut u8, &mut PML4>(pml4_ptr) };
 
-        VSpace { pml4: pml4, pmem: pmem, pmem_offset: 0 }
+        VSpace { pml4: pml4, pmem: pmem }
     }
 
     /// Constructs an identity map but with an offset added to the region.
@@ -419,11 +418,9 @@ impl<'a> VSpace<'a> {
     ///
     /// Zeroes the memory we allocate.
     /// Returns a `u64` containing the base to that.
-    pub(crate) fn allocate_pages(&mut self, how_many: usize, typ: u64) -> PAddr {
-        unsafe {
-            let ptr = self.pmem.alloc_pages(how_many as u64);
-            PAddr::from(ptr as u64)
-        }
+    pub(crate) fn allocate_pages(&mut self, how_many: usize, _typ: u64) -> PAddr {
+        let ptr = self.pmem.alloc_pages(how_many as u64);
+        PAddr::from(ptr as u64)
     }
 
     fn new_pt(&mut self) -> PDEntry {
@@ -456,6 +453,7 @@ impl<'a> VSpace<'a> {
         unsafe { transmute::<VAddr, &mut PDPT>(paddr_to_vaddr(entry.address())) }
     }
 
+    #[allow(unused)]
     pub(crate) fn resolve_addr(&self, addr: VAddr) -> Option<PAddr> {
         let pml4_idx = pml4_index(addr);
         if self.pml4[pml4_idx].is_present() {
@@ -507,6 +505,7 @@ impl<'a> VSpace<'a> {
     }
 }
 
+#[allow(unused)]
 pub unsafe fn dump_table(pml4_table: &PML4) {
     for (pml_idx, pml_item) in pml4_table.iter().enumerate() {
         if pml_item.is_present() {

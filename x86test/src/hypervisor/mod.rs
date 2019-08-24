@@ -2,7 +2,6 @@
 use std::fs::File;
 use std::io;
 use std::io::{BufRead, BufReader, Write};
-use std::slice;
 
 use kvm::{Capability, IoDirection, Segment, System, Vcpu, VirtualMachine};
 use mmap::{MemoryMap, MapOption};
@@ -19,6 +18,7 @@ pub(crate) struct PhysicalMemory {
     offset: usize,
     allocated: usize,
     size: usize,
+    #[allow(unused)]
     backing_memory: MemoryMap,
 }
 
@@ -39,10 +39,6 @@ impl PhysicalMemory {
         }
     }
 
-    fn as_mut_slice<'a>(&'a mut self) -> &'a mut [u8] {
-        unsafe { slice::from_raw_parts_mut(self.backing_memory.data(), self.size) }
-    }
-
     fn len(&self) -> usize {
         self.size
     }
@@ -61,6 +57,7 @@ impl PhysicalMemory {
 
 pub(crate) struct TestEnvironment<'a> {
     sys: &'a System,
+    #[allow(unused)]
     heap: &'a mut PhysicalMemory,
     stack: &'a mut PhysicalMemory,
     vspace: VSpace<'a>,
