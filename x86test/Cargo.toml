@@ -6,7 +6,7 @@ authors = ["Gerd Zellweger <mail@gerdzellweger.com>"]
 [dependencies]
 x86test_macro = { path = "x86test_macro" }
 x86test_types = { path = "x86test_types" }
-kvm = { git = "https://github.com/gz/kvm.git" }
+kvm-sys = "0.3.0"
 x86 = "0.19"
 mmap = "0.1.1"
 log = "0.4"

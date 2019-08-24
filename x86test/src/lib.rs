@@ -1,7 +1,7 @@
 //! x86test infrastructure to run rust unit tests in guest-ring 0.
 #![feature(lang_items, const_fn)]
 
-extern crate kvm;
+extern crate kvm_sys as kvm;
 extern crate mmap;
 extern crate x86;
 
