@@ -49,7 +49,7 @@ pub struct TaskStateSegment {
 }
 
 impl TaskStateSegment {
-    pub fn new() -> TaskStateSegment {
+    pub const fn new() -> TaskStateSegment {
         TaskStateSegment {
             link: 0,
             reserved0: 0,
