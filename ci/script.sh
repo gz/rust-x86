@@ -15,8 +15,8 @@ main() {
     cross test --target $TARGET --features utest
     cross test --target $TARGET --release --features utest
 
-    # Run KVM tests
-    RUSTFLAGS="-C relocation-model=dynamic-no-pic -C code-model=kernel" RUST_BACKTRACE=1 cross test --target $TARGET --features vmtest
+    # Run KVM tests: Disabled for now since travis doesn't support KVM :/
+    # RUSTFLAGS="-C relocation-model=dynamic-no-pic -C code-model=kernel" RUST_BACKTRACE=1 cross test --target $TARGET --features vmtest
 }
 
 # we don't run the "test phase" when doing deploys
