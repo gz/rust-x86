@@ -18,3 +18,25 @@ pub unsafe fn flush_all() {
     use crate::controlregs::{cr3, cr3_write};
     cr3_write(cr3())
 }
+
+#[cfg(all(test, feature = "vmtest"))]
+mod x86testing {
+    use super::*;
+    use x86test::*;
+
+    #[x86test]
+    fn check_flush_all() {
+        unsafe {
+            flush_all();
+        }
+    }
+
+    #[x86test]
+    fn check_flush() {
+        // A better test would be:
+        // map page, read page, unmap page, read page, flush, read page -> pfault
+        unsafe {
+            flush(0xdeadbeef);
+        }
+    }
+}
