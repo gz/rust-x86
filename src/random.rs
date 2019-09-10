@@ -183,6 +183,13 @@ mod test {
 
     #[test]
     fn rdrand64_test() {
+        let has_rdrand = crate::cpuid::CpuId::new()
+            .get_feature_info()
+            .map_or(false, |finfo| finfo.has_rdrand());
+        if !has_rdrand {
+            return;
+        }
+
         unsafe {
             let mut buf: [u64; 4] = [0, 0, 0, 0];
             rdrand_slice(&mut buf);
@@ -196,6 +203,13 @@ mod test {
 
     #[test]
     fn rdrand32_test() {
+        let has_rdrand = crate::cpuid::CpuId::new()
+            .get_feature_info()
+            .map_or(false, |finfo| finfo.has_rdrand());
+        if !has_rdrand {
+            return;
+        }
+
         unsafe {
             let mut buf: [u32; 4] = [0, 0, 0, 0];
             rdrand_slice(&mut buf);
@@ -209,6 +223,13 @@ mod test {
 
     #[test]
     fn rdrand16_test() {
+        let has_rdrand = crate::cpuid::CpuId::new()
+            .get_feature_info()
+            .map_or(false, |finfo| finfo.has_rdrand());
+        if !has_rdrand {
+            return;
+        }
+
         unsafe {
             let mut buf: [u16; 4] = [0, 0, 0, 0];
             rdrand_slice(&mut buf);
@@ -221,6 +242,13 @@ mod test {
 
     #[test]
     fn rdseed64_test() {
+        let has_rdrand = crate::cpuid::CpuId::new()
+            .get_feature_info()
+            .map_or(false, |finfo| finfo.has_rdrand());
+        if !has_rdrand {
+            return;
+        }
+
         unsafe {
             let mut buf: [u64; 4] = [0, 0, 0, 0];
             rdseed_slice(&mut buf);
@@ -234,6 +262,13 @@ mod test {
 
     #[test]
     fn rdseed32_test() {
+        let has_rdrand = crate::cpuid::CpuId::new()
+            .get_feature_info()
+            .map_or(false, |finfo| finfo.has_rdrand());
+        if !has_rdrand {
+            return;
+        }
+
         unsafe {
             let mut buf: [u32; 4] = [0, 0, 0, 0];
             rdseed_slice(&mut buf);
@@ -247,6 +282,13 @@ mod test {
 
     #[test]
     fn rdseed16_test() {
+        let has_rdrand = crate::cpuid::CpuId::new()
+            .get_feature_info()
+            .map_or(false, |finfo| finfo.has_rdrand());
+        if !has_rdrand {
+            return;
+        }
+
         unsafe {
             let mut buf: [u16; 4] = [0, 0, 0, 0];
             rdseed_slice(&mut buf);
