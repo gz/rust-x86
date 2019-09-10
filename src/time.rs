@@ -43,15 +43,29 @@ mod test {
 
     #[test]
     fn check_rdtsc() {
-        unsafe {
-            assert!(rdtsc() > 0, "rdtsc returned 0, unlikely!");
+        let cpuid = crate::cpuid::CpuId::new();
+        let has_tsc = cpuid
+            .get_feature_info()
+            .map_or(false, |finfo| finfo.has_tsc());
+
+        if has_tsc {
+            unsafe {
+                assert!(rdtsc() > 0, "rdtsc returned 0, unlikely!");
+            }
         }
     }
 
     #[test]
     fn check_rdtscp() {
-        unsafe {
-            assert!(rdtscp() > 0, "rdtscp returned 0, unlikely!");
+        let cpuid = crate::cpuid::CpuId::new();
+        let has_tsc = cpuid
+            .get_feature_info()
+            .map_or(false, |finfo| finfo.has_tsc());
+
+        if has_tsc {
+            unsafe {
+                assert!(rdtscp() > 0, "rdtscp returned 0, unlikely!");
+            }
         }
     }
 }
