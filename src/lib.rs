@@ -3,6 +3,8 @@
 #![feature(const_fn, asm, repr_transparent)]
 #![no_std]
 #![cfg_attr(test, allow(unused_features))]
+#![cfg_attr(all(test, feature = "vmtest"), feature(custom_test_frameworks))]
+#![cfg_attr(all(test, feature = "vmtest"), test_runner(x86test::runner::runner))]
 
 #[cfg(target_arch = "x86")]
 pub(crate) use core::arch::x86 as arch;
@@ -54,6 +56,11 @@ mod std {
     pub use core::option;
 }
 
+#[cfg(all(test, feature = "vmtest"))]
+extern crate klogger;
+#[cfg(all(test, feature = "vmtest"))]
+extern crate x86test;
+
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
 #[repr(u8)]
 /// x86 Protection levels
@@ -83,6 +90,20 @@ pub unsafe fn halt() {
     asm!("hlt" :::: "volatile");
 }
 
+#[cfg(all(test, feature = "vmtest"))]
+mod x86testing {
+    use super::*;
+    use x86test::*;
+
+    #[x86test(should_halt)]
+    fn should_halt() {
+        unsafe { halt() }
+    }
+
+    #[x86test]
+    fn should_not_halt() {}
+}
+
 /// Read Processor ID
 ///
 /// Reads the value of the IA32_TSC_AUX MSR (address C0000103H)
@@ -97,7 +118,7 @@ pub unsafe fn rdpid() -> u64 {
     return pid;
 }
 
-#[cfg(test)]
+#[cfg(all(test, feature = "utest"))]
 mod test {
     use super::*;
 

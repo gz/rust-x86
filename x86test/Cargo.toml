@@ -22,3 +22,4 @@ kvm-sys = "0.3.0"
 x86 = "0.19"
 mmap = "0.1.1"
 log = "0.4"
+klogger = { git = "https://github.com/gz/rust-klogger.git", features = ["use_ioports"] }

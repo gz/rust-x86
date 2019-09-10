@@ -21,6 +21,18 @@ Currently supports
 
 This library depends on libcore so it can be used in kernel level code.
 
+## Testing
+
+We use two forms of tests for the crate. Regular tests with `#[test]` than run in as a regular process
+and `#[x86test]` tests that run in a VM (and require a privileged execution environment).
+
+```
+# To execute x86tests run:
+$ RUSTFLAGS="-C relocation-model=dynamic-no-pic -C code-model=kernel" RUST_BACKTRACE=1 cargo test --features vmtest
+
+# To execute the regular tests, run:
+$ cargo test --features utest
+```
 ## Features
 
   * performance-counter: Includes the performance counter information. Note this feature

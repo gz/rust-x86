@@ -177,7 +177,7 @@ pub unsafe fn rdseed_slice<T: RdSeed>(buffer: &mut [T]) -> bool {
     worked
 }
 
-#[cfg(test)]
+#[cfg(all(test, feature = "utest"))]
 mod test {
     use super::*;
 

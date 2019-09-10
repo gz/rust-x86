@@ -47,10 +47,18 @@ fn parse_two_ints(args: Punctuated<NestedMeta, Comma>) -> (u64, u64) {
     (a, b)
 }
 
+/// Checks is ItemFn is annotated with #[should_panic]
 fn should_panic(fun: &ItemFn) -> bool {
-    fun.attrs.iter().find(|&attr| {
-        attr.path.segments.iter().find(|&path_segment| path_segment.ident == "should_panic").is_some()
-    }).is_some()
+    fun.attrs
+        .iter()
+        .find(|&attr| {
+            attr.path
+                .segments
+                .iter()
+                .find(|&path_segment| path_segment.ident == "should_panic")
+                .is_some()
+        })
+        .is_some()
 }
 
 /// The `x86test` macro adds and initializes a `X86TestFn` struct for
@@ -86,7 +94,7 @@ fn should_panic(fun: &ItemFn) -> bool {
 ///     ignore: false,
 ///     identity_map: true,
 ///     physical_memory: (0x10000, 0x11000),
-///     ioport_reads: (0x1, 0xfe),
+///     ioport_enable: (0x1, 0xfe),
 ///     should_panic: true,
 ///     testfn: x86test::StaticTestFn(|| {
 ///         use_the_port()
@@ -101,13 +109,15 @@ pub fn x86test(args: TokenStream, input: TokenStream) -> TokenStream {
     let input_fn = syn::parse_macro_input!(input as ItemFn);
 
     let mut physical_memory: (u64, u64) = (0, 0);
-    let mut ioport_reads: (u64, u64) = (0, 0);
+    let mut ioport_enable: (u64, u64) = (0, 0);
     let should_panic = should_panic(&input_fn);
+    let mut should_halt = false;
 
     // Parse the arguments of x86test:
     // #[x86test(ram(0xdead, 12), ioport(0x1, 0xfe))]
-    // will push (0xdead, 12) to physical_memory and (0x1, 0xfe) to ioport_reads:
+    // will push (0xdead, 12) to physical_memory and (0x1, 0xfe) to ioport_enable:
     for arg in args {
+        //println!("arg {:#?}", arg);
         if let NestedMeta::Meta(Meta::List(MetaList {
             ident,
             paren_token: _,
@@ -119,9 +129,14 @@ pub fn x86test(args: TokenStream, input: TokenStream) -> TokenStream {
                     physical_memory = parse_two_ints(nested);
                 }
                 "ioport" => {
-                    ioport_reads = parse_two_ints(nested);
+                    ioport_enable = parse_two_ints(nested);
                 }
-                _ => unreachable!("unsupported attribute"),
+                x => unreachable!("unsupported attribute: {}", x),
+            }
+        } else if let NestedMeta::Meta(Meta::Word(ident)) = arg {
+            match ident.to_string().as_str() {
+                "should_halt" => should_halt = true,
+                x => unreachable!("unsupported attribute: {}", x),
             }
         }
     }
@@ -131,8 +146,8 @@ pub fn x86test(args: TokenStream, input: TokenStream) -> TokenStream {
         quote! { (#a, #b) }
     };
 
-    let ioport_reads_tuple = {
-        let (a, b) = ioport_reads;
+    let ioport_enable_tuple = {
+        let (a, b) = ioport_enable;
         quote! { (#a as u16, #b as u32) }
     };
 
@@ -142,25 +157,26 @@ pub fn x86test(args: TokenStream, input: TokenStream) -> TokenStream {
     let fn_ident = input_fn.ident.clone();
 
     let ast = quote! {
-        #[allow(non_upper_case_globals, unused_attributes)]
-        #[test_case]
-        static #struct_ident: X86TestFn = X86TestFn {
-            name: #test_name,
-            ignore: false,
-            identity_map: true,
-            physical_memory: #physical_memory_tuple,
-            ioport_reads: #ioport_reads_tuple,
-            should_panic: #should_panic,
-            testfn: x86test::StaticTestFn(|| {
-                #fn_ident();
-                // Tell our "hypervisor" that we finished the test
-                unsafe { x86::io::outw(0xf4, 0x00); }
-            })
-        };
+            #[allow(non_upper_case_globals, unused_attributes)]
+            #[test_case]
+            static #struct_ident: X86TestFn = X86TestFn {
+                name: #test_name,
+                ignore: false,
+                identity_map: true,
+                physical_memory: #physical_memory_tuple,
+                ioport_enable: #ioport_enable_tuple,
+                should_panic: #should_panic,
+                should_halt: #should_halt,
+                testfn: x86test::StaticTestFn(|| {
+                    #fn_ident();
+                    // Tell our "hypervisor" that we finished the test
+                    unsafe { x86test::outw(0xf4, 0x00); }
+                })
+            };
 
-        // Suppress unused attribute #[should_panic] warning (XXX: there is probably a better way to do this)
-        #[allow(unused_attributes)]
-        #input_fn
+            // Suppress unused attribute #[should_panic] warning (XXX: there is probably a better way to do this)
+            #[allow(unused_attributes)]
+            #input_fn
     };
 
     ast.into()

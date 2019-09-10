@@ -1,6 +1,7 @@
 //! x86test infrastructure to run rust unit tests in guest-ring 0.
 #![feature(lang_items, const_fn)]
 
+extern crate klogger;
 extern crate kvm_sys as kvm;
 extern crate mmap;
 extern crate x86;
@@ -16,3 +17,6 @@ pub mod runner;
 
 pub use x86test_macro::x86test;
 pub use x86test_types::*;
+
+pub use klogger::{sprint, sprintln};
+pub use x86::io::outw;

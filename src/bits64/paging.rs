@@ -1165,7 +1165,7 @@ impl PTEntry {
                 is_instruction_fetching_disabled, PTFlags::XD);
 }
 
-#[cfg(test)]
+#[cfg(all(test, feature = "utest"))]
 mod test {
     use super::*;
 

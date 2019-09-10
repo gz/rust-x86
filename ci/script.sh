@@ -2,7 +2,7 @@
 
 set -ex
 
-# TODO This is the "test phase", tweak it as you see fit
+# This is the "test phase", tweak it as you see fit
 main() {
     cross build --target $TARGET
     cross build --target $TARGET --release
@@ -11,11 +11,12 @@ main() {
         return
     fi
 
-    cross test --target $TARGET
-    cross test --target $TARGET --release
+    # Run user-space tests
+    cross test --target $TARGET --features utest
+    cross test --target $TARGET --release --features utest
 
-    cross run --target $TARGET
-    cross run --target $TARGET --release
+    # Run KVM tests
+    RUSTFLAGS="-C relocation-model=dynamic-no-pic -C code-model=kernel" RUST_BACKTRACE=1 cross test --target $TARGET --features vmtest
 }
 
 # we don't run the "test phase" when doing deploys

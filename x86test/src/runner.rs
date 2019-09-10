@@ -93,7 +93,9 @@ pub fn runner(tests: &[&X86TestFn]) {
                                 test_panicked = true;
                             }
                             Result::Err(err) => {
-                                println!("Test failed due to unexpected IO: {:?}", err);
+                                if !test.should_panic {
+                                    println!("Test failed due to unexpected IO: {:?}", err);
+                                }
                                 vm_is_done = true;
                                 test_panicked = true;
                             }
@@ -104,9 +106,13 @@ pub fn runner(tests: &[&X86TestFn]) {
                             "Exit::Shutdown cpu.get_regs() {:#x}",
                             vcpu.get_regs().unwrap().rip
                         );
-                        println!("Exit::Shutdown cpu.get_sregs() {:#?}", vcpu.get_sregs()); // 0x7ffff732fad0
+                        println!("Exit::Shutdown cpu.get_sregs() {:#?}", vcpu.get_sregs());
                         vm_is_done = true;
                         test_panicked = true;
+                    }
+                    Exit::Hlt => {
+                        vm_is_done = true;
+                        test_panicked = if test.should_halt { false } else { true };
                     }
                     _ => {
                         test_panicked = true;

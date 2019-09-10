@@ -603,7 +603,7 @@ pub fn gs() -> SegmentSelector {
     SegmentSelector::from_raw(segment)
 }
 
-#[cfg(test)]
+#[cfg(all(test, feature = "utest"))]
 mod test {
     use super::*;
     use crate::Ring;

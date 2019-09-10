@@ -26,10 +26,12 @@ edition = '2018'
 
 [features]
 performance-counter = ["phf", "phf_codegen", "csv", "serde_json"]
-
-#[[test]]
-#name = "no_std_build"
-#harness = false
+# Note we have to choose between regular tests and x86test at the moment, so we use features
+# (limitation in https://github.com/rust-lang/rust/issues/50297)
+# Run user-space tests, i.e. regular #[test]
+utest = []
+# Run VM tests, i.e., the #[x86test] ones
+vmtest = []
 
 [[test]]
 name = "kvm"
@@ -53,3 +55,4 @@ features = ["core"]
 klogger = { git = "https://github.com/gz/rust-klogger.git", features = ["use_ioports"] }
 x86test = { path = "x86test" }
 libc = "0.2.*"
+

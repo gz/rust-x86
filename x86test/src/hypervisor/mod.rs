@@ -257,7 +257,7 @@ pub(crate) fn handle_ioexit(
     printer: &mut SerialPrinter,
 ) -> Result<IoHandleStatus, IoHandleError> {
     let io = unsafe { *run.io() };
-
+    //println!("io = {:?}", io);
     match io.direction {
         IoDirection::In => {
             let mut regs = cpu.get_regs().unwrap();
@@ -269,8 +269,8 @@ pub(crate) fn handle_ioexit(
                 regs.rax = 0x20; // Mark serial line ready to write
                 cpu.set_regs(&regs).unwrap();
                 return Ok(IoHandleStatus::Handled);
-            } else if io.port == meta.ioport_reads.0 {
-                regs.rax = meta.ioport_reads.1 as u64;
+            } else if io.port == meta.ioport_enable.0 {
+                regs.rax = meta.ioport_enable.1 as u64;
                 cpu.set_regs(&regs).unwrap();
                 return Ok(IoHandleStatus::Handled);
             }
@@ -289,6 +289,8 @@ pub(crate) fn handle_ioexit(
                 // The line unsafe { x86::shared::io::outw(0xf4, 0x00); }
                 // is automatically inserted at the end of every test!
                 return Ok(IoHandleStatus::TestSuccessful);
+            } else if io.port == meta.ioport_enable.0 && regs.rax == meta.ioport_enable.1 as u64 {
+                return Ok(IoHandleStatus::Handled);
             } else if io.port == 0xf4 {
                 return Ok(IoHandleStatus::TestPanic(regs.rax as u8));
             }

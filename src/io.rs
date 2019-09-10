@@ -42,50 +42,81 @@ pub unsafe fn inl(port: u16) -> u32 {
     ret
 }
 
-/// Write 8-bit array to port
-#[inline]
-pub unsafe fn outsb(port: u16, buf: &[u8]) {
-    asm!("rep outsb (%esi), %dx"
-         :: "{ecx}"(buf.len()), "{dx}"(port), "{esi}"(buf.as_ptr())
-         : "ecx", "edi");
-}
+#[cfg(all(test, feature = "vmtest"))]
+mod x86testing {
+    use super::*;
+    use x86test::*;
 
-/// Read 8-bit array from port
-#[inline]
-pub unsafe fn insb(port: u16, buf: &mut [u8]) {
-    asm!("rep insb %dx, (%edi)"
-         :: "{ecx}"(buf.len()), "{dx}"(port), "{edi}"(buf.as_ptr())
-         : "ecx", "edi" : "volatile");
-}
+    #[x86test(ioport(0x0, 0xaf))]
+    fn check_outb() {
+        unsafe {
+            outb(0x0, 0xaf);
+            // hypervisor will fail here if port 0x0 doesn't see 0xaf
+        }
+    }
 
-/// Write 16-bit array to port
-#[inline]
-pub unsafe fn outsw(port: u16, buf: &[u16]) {
-    asm!("rep outsw (%esi), %dx"
-         :: "{ecx}"(buf.len()), "{dx}"(port), "{esi}"(buf.as_ptr())
-         : "ecx", "edi");
-}
+    #[x86test(ioport(0x0, 0xaf))]
+    #[should_panic]
+    fn check_outb_wrong_value() {
+        unsafe {
+            outb(0x0, 0xff);
+        }
+    }
 
-/// Read 16-bit array from port
-#[inline]
-pub unsafe fn insw(port: u16, buf: &mut [u16]) {
-    asm!("rep insw %dx, (%edi)"
-         :: "{ecx}"(buf.len()), "{dx}"(port), "{edi}"(buf.as_ptr())
-         : "ecx", "edi" : "volatile");
-}
+    #[x86test(ioport(0x1, 0xad))]
+    fn check_inb() {
+        unsafe {
+            kassert!(
+                inb(0x1) == 0xad,
+                "`inb` instruction didn't read the correct value"
+            );
+        }
+    }
 
-/// Write 32-bit array to port
-#[inline]
-pub unsafe fn outsl(port: u16, buf: &[u32]) {
-    asm!("rep outsl (%esi), %dx"
-         :: "{ecx}"(buf.len()), "{dx}"(port), "{esi}"(buf.as_ptr())
-         : "ecx", "edi");
-}
+    #[x86test(ioport(0x2, 0xad))]
+    #[should_panic]
+    fn check_inb_wrong_port() {
+        unsafe {
+            kassert!(
+                inb(0x1) == 0xad,
+                "`inb` instruction didn't read the correct value"
+            );
+        }
+    }
 
-/// Read 32-bit array from port
-#[inline]
-pub unsafe fn insl(port: u16, buf: &mut [u32]) {
-    asm!("rep insl %dx, (%edi)"
-         :: "{ecx}"(buf.len()), "{dx}"(port), "{edi}"(buf.as_ptr())
-         : "ecx", "edi" : "volatile");
+    #[x86test(ioport(0x2, 0x99))]
+    fn check_outw() {
+        unsafe {
+            super::outw(0x2, 0x99);
+            // hypervisor will fail here if port 0x2 doesn't see 0x99
+        }
+    }
+
+    #[x86test(ioport(0x3, 0xfefe))]
+    fn check_inw() {
+        unsafe {
+            kassert!(
+                inw(0x3) == 0xfefe,
+                "`inw` instruction didn't read the correct value"
+            );
+        }
+    }
+
+    #[x86test(ioport(0x5, 0xbeefaaaa))]
+    fn check_outl() {
+        unsafe {
+            outl(0x5, 0xbeefaaaa);
+            // hypervisor will fail here if port 0x5 doesn't see 0xbeefaaaa
+        }
+    }
+
+    #[x86test(ioport(0x4, 0xdeadbeef))]
+    fn check_inl() {
+        unsafe {
+            kassert!(
+                inl(0x4) == 0xdeadbeef,
+                "`inl` instruction didn't read the correct value"
+            );
+        }
+    }
 }
