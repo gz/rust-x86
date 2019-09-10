@@ -36,3 +36,22 @@ pub unsafe fn rdtscp() -> u64 {
     let mut _aux = 0;
     __rdtscp(&mut _aux)
 }
+
+#[cfg(all(test, feature = "utest"))]
+mod test {
+    use super::*;
+
+    #[test]
+    fn check_rdtsc() {
+        unsafe {
+            assert!(rdtsc() > 0, "rdtsc returned 0, unlikely!");
+        }
+    }
+
+    #[test]
+    fn check_rdtscp() {
+        unsafe {
+            assert!(rdtscp() > 0, "rdtscp returned 0, unlikely!");
+        }
+    }
+}
