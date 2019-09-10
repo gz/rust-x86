@@ -258,6 +258,7 @@ pub unsafe fn enable() {
 pub unsafe fn disable() {
     asm!("cli");
 }
+
 /// Generate a software interrupt.
 /// This is a macro argument needs to be an immediate.
 #[macro_export]
