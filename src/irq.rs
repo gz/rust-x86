@@ -258,6 +258,14 @@ pub unsafe fn enable() {
 pub unsafe fn disable() {
     asm!("cli");
 }
+/// Generate a software interrupt.
+/// This is a macro argument needs to be an immediate.
+#[macro_export]
+macro_rules! int {
+    ($x:expr) => {{
+        asm!("int $0" :: "N" ($x));
+    }};
+}
 
 #[cfg(all(test, feature = "utest"))]
 mod test {
@@ -271,13 +279,4 @@ mod test {
         assert!(PageFaultError::WR.bits() == 0b10);
         assert!(PageFaultError::P.bits() == 0b1);
     }
-
-    /// Generate a software interrupt.
-    /// This is a macro argument needs to be an immediate.
-    #[macro_export]
-    macro_rules! int {
-    ($x:expr) => {{
-        asm!("int $0" :: "N" ($x));
-    }};
-}
 }
