@@ -58,11 +58,11 @@ mod test {
     #[test]
     fn check_rdtscp() {
         let cpuid = crate::cpuid::CpuId::new();
-        let has_tsc = cpuid
-            .get_feature_info()
-            .map_or(false, |finfo| finfo.has_tsc());
+        let has_rdtscp = cpuid
+            .get_extended_function_info()
+            .map_or(false, |einfo| einfo.has_rdtscp());
 
-        if has_tsc {
+        if has_rdtscp {
             unsafe {
                 assert!(rdtscp() > 0, "rdtscp returned 0, unlikely!");
             }
