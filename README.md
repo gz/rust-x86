@@ -24,7 +24,7 @@ This library depends on libcore so it can be used in kernel level code.
 ## Testing
 
 We use two forms of tests for the crate. Regular tests with `#[test]` that run in a ring 3 process
-and `#[x86test]` tests that run in a VM (and therefore grant a privileged execution environment) (see [x86test](https://github.com/gz/rust-x86/tree/master/x86test)).
+and `#[x86test]` tests that run in a VM (and therefore grant a privileged execution environment, see [x86test](https://github.com/gz/rust-x86/tree/master/x86test)).
 
 ```
 # To execute x86tests run:
