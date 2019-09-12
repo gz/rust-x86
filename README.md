@@ -10,7 +10,7 @@ Currently supports
   * Segmentation
   * Descriptor-tables (GDT, LDT, IDT)
   * IA32-e page table layout
-  * Interrupts (with xAPIC and x2APIC registers)
+  * Interrupts (with xAPIC and x2APIC, I/O APIC drivers)
   * Task state
   * Performance counter information
   * Intel SGX: Software Guard Extensions
