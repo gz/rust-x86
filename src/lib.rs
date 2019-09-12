@@ -1,6 +1,6 @@
 #![cfg(any(target_arch = "x86", target_arch = "x86_64"))]
 #![allow(stable_features)]
-#![feature(const_fn, asm, repr_transparent)]
+#![feature(const_fn, asm, repr_transparent, core_intrinsics)]
 #![no_std]
 #![cfg_attr(test, allow(unused_features))]
 #![cfg_attr(all(test, feature = "vmtest"), feature(custom_test_frameworks))]
@@ -21,6 +21,7 @@ pub mod bits16;
 pub mod bits32;
 pub mod bits64;
 
+pub mod apic;
 pub mod controlregs;
 pub mod dtables;
 pub mod io;
@@ -31,7 +32,6 @@ pub mod segmentation;
 pub mod task;
 pub mod time;
 pub mod tlb;
-pub mod xapic;
 
 #[cfg(feature = "performance-counter")]
 pub mod perfcnt;

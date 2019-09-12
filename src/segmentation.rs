@@ -561,6 +561,8 @@ pub unsafe fn load_gs(sel: SegmentSelector) {
     asm!("movw $0, %gs " :: "r" (sel.bits()) : "memory");
 }
 
+pub use crate::current::segmentation::load_cs;
+
 /// Returns the current value of the code segment register.
 pub fn cs() -> SegmentSelector {
     let segment: u16;
