@@ -1,6 +1,7 @@
 //! x2APIC, the most recent APIC on x86 for large servers with more than 255 cores.
 use bit_field::BitField;
 
+use super::{ApicControl, ApicId, Icr};
 use crate::msr::{
     rdmsr, wrmsr, IA32_APIC_BASE, IA32_TSC_DEADLINE, IA32_X2APIC_APICID, IA32_X2APIC_ESR,
     IA32_X2APIC_LVT_LINT0, IA32_X2APIC_LVT_TIMER, IA32_X2APIC_SELF_IPI, IA32_X2APIC_VERSION,
@@ -51,36 +52,68 @@ impl X2APIC {
         }
     }
 
-    /// Are we the BSP core?
-    pub fn bsp(&self) -> bool {
+    /// Send an IPI to yourself.
+    pub unsafe fn send_self_ipi(&self, vector: u64) {
+        wrmsr(IA32_X2APIC_SELF_IPI, vector);
+    }
+}
+
+/// Abstracts common interface of APIC (x2APIC, xAPIC) hardware devices.
+impl ApicControl for X2APIC {
+    /// Is a bootstrap processor?
+    fn bsp(&self) -> bool {
         (self.base & (1 << 8)) > 0
     }
 
     /// Read local APIC ID.
-    pub fn id(&self) -> u32 {
+    fn id(&self) -> u32 {
         unsafe { rdmsr(IA32_X2APIC_APICID) as u32 }
     }
 
     /// Read APIC version.
-    pub fn version(&self) -> u32 {
+    fn version(&self) -> u32 {
         unsafe { rdmsr(IA32_X2APIC_VERSION) as u32 }
     }
 
     /// Enable TSC timer
-    pub unsafe fn tsc_enable(&self) {
-        let mut lvt: u64 = rdmsr(IA32_X2APIC_LVT_TIMER);
-        lvt |= 0 << 17;
-        lvt |= 1 << 18;
-        wrmsr(IA32_X2APIC_LVT_TIMER, lvt);
+    fn tsc_enable(&mut self) {
+        unsafe {
+            let mut lvt: u64 = rdmsr(IA32_X2APIC_LVT_TIMER);
+            lvt |= 0 << 17;
+            lvt |= 1 << 18;
+            wrmsr(IA32_X2APIC_LVT_TIMER, lvt);
+        }
     }
 
     /// Set tsc deadline.
-    pub unsafe fn tsc_set(&self, value: u64) {
-        wrmsr(IA32_TSC_DEADLINE, value);
+    fn tsc_set(&self, value: u64) {
+        unsafe {
+            wrmsr(IA32_TSC_DEADLINE, value);
+        }
     }
 
-    /// Send an IPI to yourself.
-    pub unsafe fn send_self_ipi(&self, vector: u64) {
-        wrmsr(IA32_X2APIC_SELF_IPI, vector);
+    /// End Of Interrupt -- Acknowledge interrupt delivery.
+    fn eoi(&mut self) {
+        unreachable!("NYI");
+    }
+
+    /// Send a INIT IPI to a core.
+    unsafe fn ipi_init(&mut self, core: ApicId) {
+        unreachable!("NYI");
+    }
+
+    /// Deassert INIT IPI.
+    unsafe fn ipi_init_deassert(&mut self) {
+        unreachable!("NYI");
+    }
+
+    /// Send a STARTUP IPI to a core.
+    unsafe fn ipi_startup(&mut self, core: ApicId, start_page: u8) {
+        unreachable!("NYI");
+    }
+
+    /// Send a generic IPI.
+    unsafe fn send_ipi(&mut self, icr: Icr) {
+        unreachable!("NYI");
     }
 }

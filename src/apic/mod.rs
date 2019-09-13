@@ -4,6 +4,8 @@ pub mod ioapic;
 pub mod x2apic;
 pub mod xapic;
 
+/// Specify IPI Delivery Mode
+#[derive(Debug, Eq, PartialEq)]
 #[repr(u64)]
 pub enum DeliveryMode {
     /// Delivers the interrupt specified in the vector field to the target processor or processors.
@@ -32,30 +34,40 @@ pub enum DeliveryMode {
     StartUp = 0b110,
 }
 
+/// Sepcify IPI Destination Mode.
+#[derive(Debug, Eq, PartialEq)]
 #[repr(u64)]
 pub enum DestinationMode {
     Physical = 0,
     Logical = 1,
 }
 
+/// Specify Delivery Status
+#[derive(Debug, Eq, PartialEq)]
 #[repr(u64)]
 pub enum DeliveryStatus {
     Idle = 0,
     SendPending = 1,
 }
 
+/// IPI Level
+#[derive(Debug, Eq, PartialEq)]
 #[repr(u64)]
 pub enum Level {
     Deassert = 0,
     Assert = 1,
 }
 
+/// IPI Trigger Mode
+#[derive(Debug, Eq, PartialEq)]
 #[repr(u64)]
 pub enum TriggerMode {
     Edge = 0,
     Level = 1,
 }
 
+/// IPI Destination Shorthand
+#[derive(Debug, Eq, PartialEq)]
 #[repr(u64)]
 pub enum DestinationShorthand {
     NoShorthand = 0b00,
@@ -64,12 +76,16 @@ pub enum DestinationShorthand {
     AllExcludingSelf = 0b11,
 }
 
+/// Abstract the IPI control register
+#[derive(Debug, Eq, PartialEq)]
 pub struct Icr(u64);
 
 impl Icr {
+    /// Short-hand to create a Icr value.
+    #[allow(clippy::too_many_arguments)]
     pub fn new(
         vector: u8,
-        destination: u8,
+        destination: ApicId,
         destination_shorthand: DestinationShorthand,
         delivery_mode: DeliveryMode,
         destination_mode: DestinationMode,
@@ -77,6 +93,13 @@ impl Icr {
         level: Level,
         trigger_mode: TriggerMode,
     ) -> Icr {
+        let destination: u8 = match destination {
+            ApicId::XApic(d) => d,
+            ApicId::X2Apic(_d) => {
+                unreachable!("x2APIC destinations currently unsupported, adjust Icr construction!")
+            }
+        };
+
         Icr((destination as u64) << 56
             | (destination_shorthand as u64) << 18
             | (trigger_mode as u64) << 15
@@ -87,11 +110,55 @@ impl Icr {
             | (vector as u64))
     }
 
+    /// Get lower 32-bits of the Icr register.
     pub fn lower(&self) -> u32 {
         self.0 as u32
     }
 
+    /// Get upper 32-bits of the Icr register.
     pub fn upper(&self) -> u32 {
         (self.0 >> 32) as u32
     }
+}
+
+/// Encodes the id of a core.
+#[derive(Debug, Eq, PartialEq)]
+pub enum ApicId {
+    /// A core destination encoded as an xAPIC ID.
+    XApic(u8),
+    /// A core destination encoded as an x2APIC ID.
+    X2Apic(u32),
+}
+
+/// Abstracts common interface of local APIC (x2APIC, xAPIC) hardware devices.
+pub trait ApicControl {
+    /// Is a bootstrap processor?
+    fn bsp(&self) -> bool;
+
+    /// Return APIC ID.
+    fn id(&self) -> u32;
+
+    /// Read APIC version
+    fn version(&self) -> u32;
+
+    /// End Of Interrupt -- Acknowledge interrupt delivery.
+    fn eoi(&mut self);
+
+    /// Enable TSC deadline timer.
+    fn tsc_enable(&mut self);
+
+    /// Set TSC deadline value.
+    fn tsc_set(&self, value: u64);
+
+    /// Send a INIT IPI to a core.
+    unsafe fn ipi_init(&mut self, core: ApicId);
+
+    /// Deassert INIT IPI.
+    unsafe fn ipi_init_deassert(&mut self);
+
+    /// Send a STARTUP IPI to a core.
+    unsafe fn ipi_startup(&mut self, core: ApicId, start_page: u8);
+
+    /// Send a generic IPI.
+    unsafe fn send_ipi(&mut self, icr: Icr);
 }

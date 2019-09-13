@@ -3,7 +3,12 @@
 //! Table 10-1 Local APIC Register Address Map
 //! the MMIO base values are found in this file.
 
+use core::intrinsics::{volatile_load, volatile_store};
+
 use bit_field::BitField;
+
+use super::*;
+use crate::msr::{rdmsr, wrmsr, IA32_APIC_BASE, IA32_TSC_DEADLINE};
 
 ///	Local APIC ID register. Read-only. See Section 10.12.5.1 for initial values.
 pub const XAPIC_ID: u32 = 0x020;
@@ -137,10 +142,6 @@ pub const XAPIC_TIMER_CURRENT_COUNT: u32 = 0x390;
 /// Divide Configuration Register (DCR; for Timer). Read/write. See Figure 10-10 for reserved bits.
 pub const XAPIC_TIMER_DIV_CONF: u32 = 0x3E0;
 
-use super::*;
-use crate::msr::{rdmsr, wrmsr, IA32_APIC_BASE, IA32_TSC_DEADLINE};
-use core::intrinsics::{volatile_load, volatile_store};
-
 #[derive(Copy, Clone)]
 #[allow(dead_code, non_camel_case_types)]
 enum ApicRegister {
@@ -245,29 +246,31 @@ impl XAPIC {
         let index = offset as usize / 4;
         unsafe { volatile_store(&mut self.mmio_region[index], val) }
     }
+}
 
+impl ApicControl for XAPIC {
     /// Is this the bootstrap core?
-    pub fn bsp(&self) -> bool {
+    fn bsp(&self) -> bool {
         (self.base & (1 << 8)) > 0
     }
 
     /// Read local APIC ID.
-    pub fn id(&self) -> u32 {
+    fn id(&self) -> u32 {
         self.read(ApicRegister::XAPIC_ID)
     }
 
-    /// Read APIC version.
-    pub fn version(&self) -> u32 {
+    /// Read APIC version
+    fn version(&self) -> u32 {
         self.read(ApicRegister::XAPIC_VERSION)
     }
 
-    /// Acknowledge interrupt delivery.
-    pub fn eoi(&mut self) {
+    /// End Of Interrupt -- Acknowledge interrupt delivery.
+    fn eoi(&mut self) {
         self.write(ApicRegister::XAPIC_EOI, 0);
     }
 
     /// Enable TSC timer.
-    pub unsafe fn tsc_enable(&mut self) {
+    fn tsc_enable(&mut self) {
         let mut lvt: u32 = self.read(ApicRegister::XAPIC_LVT_TIMER);
         lvt.set_bit(17, false);
         lvt.set_bit(18, true);
@@ -275,18 +278,17 @@ impl XAPIC {
     }
 
     /// Set TSC deadline value.
-    pub unsafe fn tsc_set(&self, value: u64) {
-        wrmsr(IA32_TSC_DEADLINE, value);
+    fn tsc_set(&self, value: u64) {
+        unsafe {
+            wrmsr(IA32_TSC_DEADLINE, value);
+        }
     }
 
-    /// Send an init IPI.
-    ///
-    /// TODO: hard-coded target core.
-    /// TODO: Interface will change.
-    pub unsafe fn ipi_init(&mut self) {
+    /// Send a INIT IPI to a core.
+    unsafe fn ipi_init(&mut self, core: ApicId) {
         let icr = Icr::new(
             0,
-            1,
+            core,
             DestinationShorthand::NoShorthand,
             DeliveryMode::Init,
             DestinationMode::Physical,
@@ -297,14 +299,11 @@ impl XAPIC {
         self.send_ipi(icr);
     }
 
-    /// De-assert init IPI.
-    ///
-    /// TODO: hard-coded target core.
-    /// TODO: probably interface will change.
-    pub unsafe fn ipi_init_deassert(&mut self) {
+    /// Deassert INIT IPI.
+    unsafe fn ipi_init_deassert(&mut self) {
         let icr = Icr::new(
             0,
-            0,
+            ApicId::XApic(0),
             // INIT deassert is always sent to everyone, so we are supposed to specify:
             DestinationShorthand::AllIncludingSelf,
             DeliveryMode::Init,
@@ -316,14 +315,11 @@ impl XAPIC {
         self.send_ipi(icr);
     }
 
-    /// Send startup IPI.
-    ///
-    /// TODO: hard-coded target core.
-    /// TODO: probably interface will change.
-    pub unsafe fn ipi_startup(&mut self, start_page: u8) {
+    /// Send a STARTUP IPI to a core.
+    unsafe fn ipi_startup(&mut self, core: ApicId, start_page: u8) {
         let icr = Icr::new(
             start_page,
-            1,
+            core,
             DestinationShorthand::NoShorthand,
             DeliveryMode::StartUp,
             DestinationMode::Physical,
@@ -334,7 +330,7 @@ impl XAPIC {
         self.send_ipi(icr);
     }
 
-    /// Send generic IPI.
+    /// Send a generic IPI.
     unsafe fn send_ipi(&mut self, icr: Icr) {
         self.write(ApicRegister::XAPIC_ESR, 0);
         self.write(ApicRegister::XAPIC_ESR, 0);
