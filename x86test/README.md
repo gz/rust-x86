@@ -71,9 +71,9 @@ I expect the custom `RUSTFLAGS` to not be necessary in the future.
 
 The x86test attribute currently supports the following parameters:
 
-* ioport(port, val): Reads to `port` will return `val`, writes to `port` other than `val` will fail the test.
-* ram(from, to): Adds physical memory in address range `from` -- `to`
-* should_halt: To tell the hypervisor that the test will halt (note: use like this `#[x86test(should_halt)]`).
+* `ioport(port, val)`: Reads to `port` will return `val`, writes to `port` other than `val` will fail the test.
+* `ram(from, to)`: Adds physical memory in address range `from` -- `to`
+* `should_halt`: To tell the hypervisor that the test will halt (note: use like this `#[x86test(should_halt)]`).
 * `#[should_panic]`: Can be added if a test is expected to panic.
 
 ## Code Organization
