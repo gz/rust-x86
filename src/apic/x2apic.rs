@@ -98,7 +98,7 @@ impl ApicControl for X2APIC {
     }
 
     /// Send a INIT IPI to a core.
-    unsafe fn ipi_init(&mut self, core: ApicId) {
+    unsafe fn ipi_init(&mut self, _core: ApicId) {
         unreachable!("NYI");
     }
 
@@ -108,12 +108,12 @@ impl ApicControl for X2APIC {
     }
 
     /// Send a STARTUP IPI to a core.
-    unsafe fn ipi_startup(&mut self, core: ApicId, start_page: u8) {
+    unsafe fn ipi_startup(&mut self, _core: ApicId, _start_page: u8) {
         unreachable!("NYI");
     }
 
     /// Send a generic IPI.
-    unsafe fn send_ipi(&mut self, icr: Icr) {
+    unsafe fn send_ipi(&mut self, _icr: Icr) {
         unreachable!("NYI");
     }
 }
