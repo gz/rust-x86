@@ -122,7 +122,7 @@ impl Icr {
 }
 
 /// Encodes the id of a core.
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Eq, PartialEq, Copy, Clone)]
 pub enum ApicId {
     /// A core destination encoded as an xAPIC ID.
     XApic(u8),
