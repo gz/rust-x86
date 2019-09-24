@@ -5,6 +5,10 @@ use crate::vmx::{Result, VmFail};
 
 /// Helper used to extract VMX-specific Result in accordance with
 /// conventions described in Intel SDM, Volume 3C, Section 30.2.
+// We inline this to provide an obstruction-free path from this function's
+// call site to the moment where `rflags::read()` reads RFLAGS. Otherwise it's
+// possible for RFLAGS register to be clobbered by a function prologue,
+// see https://github.com/gz/rust-x86/pull/50.
 #[inline(always)]
 fn vmx_capture_status() -> Result<()> {
     let flags = unsafe { rflags::read() };
