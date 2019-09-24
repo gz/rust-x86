@@ -9,3 +9,5 @@ pub mod segmentation;
 pub mod sgx;
 pub mod syscall;
 pub mod task;
+#[cfg(target_arch = "x86_64")]
+pub mod vmx;
