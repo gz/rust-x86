@@ -22,14 +22,12 @@ fn vmx_capture_status() -> Result<()> {
 ///
 /// `addr` specifies a 4KB-aligned physical address of VMXON region initialized
 /// in accordance with Intel SDM, Volume 3C, Section 24.11.5.
-#[inline(always)]
 pub unsafe fn vmxon(addr: u64) -> Result<()> {
     asm!("vmxon $0" : /* no outputs */ : "m"(addr));
     vmx_capture_status()
 }
 
 /// Disable VMX operation.
-#[inline(always)]
 pub unsafe fn vmxoff() -> Result<()> {
     asm!("vmxoff");
     vmx_capture_status()
@@ -39,7 +37,6 @@ pub unsafe fn vmxoff() -> Result<()> {
 ///
 /// Ensures that VMCS data maintained on the processor is copied to the VMCS region
 /// located at 4KB-aligned physical address `addr` and initializes some parts of it.
-#[inline(always)]
 pub unsafe fn vmclear(addr: u64) -> Result<()> {
     asm!("vmclear $0" : /* no outputs */ : "m"(addr));
     vmx_capture_status()
@@ -48,14 +45,12 @@ pub unsafe fn vmclear(addr: u64) -> Result<()> {
 /// Load current VMCS pointer.
 ///
 /// Marks the current-VMCS pointer valid and loads it with the physical address `addr`.
-#[inline(always)]
 pub unsafe fn vmptrld(addr: u64) -> Result<()> {
     asm!("vmptrld $0" : /* no outputs */ : "m"(addr));
     vmx_capture_status()
 }
 
 /// Return current VMCS pointer.
-#[inline(always)]
 pub unsafe fn vmptrst() -> Result<u64> {
     let value: u64 = 0;
     asm!("vmptrst ($0)" : /* no outputs */ : "r"(&value) : "memory");
@@ -63,7 +58,6 @@ pub unsafe fn vmptrst() -> Result<u64> {
 }
 
 /// Read a specified field from a VMCS.
-#[inline(always)]
 pub unsafe fn vmread(field: u32) -> Result<u64> {
     let field: u64 = field.into();
     let value: u64;
@@ -72,7 +66,6 @@ pub unsafe fn vmread(field: u32) -> Result<u64> {
 }
 
 /// Write to a specified field in a VMCS.
-#[inline(always)]
 pub unsafe fn vmwrite(field: u32, value: u64) -> Result<()> {
     let field: u64 = field.into();
     asm!("vmwrite $1, $0" : /* no outputs */ : "r"(field), "r"(value));
@@ -80,14 +73,12 @@ pub unsafe fn vmwrite(field: u32, value: u64) -> Result<()> {
 }
 
 /// Launch virtual machine.
-#[inline(always)]
 pub unsafe fn vmlaunch() -> Result<()> {
     asm!("vmlaunch");
     vmx_capture_status()
 }
 
 /// Resume virtual machine.
-#[inline(always)]
 pub unsafe fn vmresume() -> Result<()> {
     asm!("vmresume");
     vmx_capture_status()
