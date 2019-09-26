@@ -1,6 +1,6 @@
 [package]
 name = "x86"
-version = "0.24.0"
+version = "0.25.0"
 authors = [
   "Gerd Zellweger <mail@gerdzellweger.com>",
   "Eric Kidd <git@randomhacks.net>",
