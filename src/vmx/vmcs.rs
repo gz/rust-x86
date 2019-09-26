@@ -4,6 +4,8 @@
 
 /// VM-execution, VM-exit, and VM-entry control fields.
 pub mod control {
+    use bitflags::bitflags;
+
     // B.1.1.: 16-bit control fields
     /// Virtual-processor identifier (VPID).
     pub const VPID: u32 = 0x0;
@@ -173,6 +175,206 @@ pub mod control {
     pub const CR3_TARGET_VALUE2: u32 = 0x600C;
     /// CR3-target value 3.
     pub const CR3_TARGET_VALUE3: u32 = 0x600E;
+
+    bitflags! {
+        /// Pin-based VM-execution controls.
+        ///
+        /// A set of bitmask flags useful when setting up [`PINBASED_EXEC_CONTROLS`] VMCS field.
+        ///
+        /// See Intel SDM, Volume 3C, Section 24.6.1.
+        pub struct PinbasedControls: u32 {
+            /// External-interrupt exiting.
+            const EXTERNAL_INTERRUPT_EXITING = 1 << 0;
+            /// NMI exiting.
+            const NMI_EXITING = 1 << 3;
+            /// Virtual NMIs.
+            const VIRTUAL_NMIS = 1 << 5;
+            /// Activate VMX-preemption timer.
+            const VMX_PREEMPTION_TIMER = 1 << 6;
+            /// Process posted interrupts.
+            const POSTED_INTERRUPTS = 1 << 7;
+        }
+    }
+
+    bitflags! {
+        /// Primary processor-based VM-execution controls.
+        ///
+        /// A set of bitmask flags useful when setting up [`PRIMARY_PROCBASED_EXEC_CONTROLS`] VMCS field.
+        ///
+        /// See Intel SDM, Volume 3C, Section 24.6.2, Table 24-6.
+        pub struct PrimaryControls: u32 {
+            /// Interrupt-window exiting.
+            const INTERRUPT_WINDOW_EXITING = 1 << 2;
+            /// Use TSC offsetting.
+            const USE_TSC_OFFSETTING = 1 << 3;
+            /// HLT exiting.
+            const HLT_EXITING = 1 << 7;
+            /// INVLPG exiting.
+            const INVLPG_EXITING = 1 << 9;
+            /// MWAIT exiting.
+            const MWAIT_EXITING = 1 << 10;
+            /// RDPMC exiting.
+            const RDPMC_EXITING = 1 << 11;
+            /// RDTSC exiting.
+            const RDTSC_EXITING = 1 << 12;
+            /// CR3-load exiting.
+            const CR3_LOAD_EXITING = 1 << 15;
+            /// CR3-store exiting.
+            const CR3_STORE_EXITING = 1 << 16;
+            /// CR8-load exiting.
+            const CR8_LOAD_EXITING = 1 << 19;
+            /// CR8-store exiting.
+            const CR8_STORE_EXITING = 1 << 20;
+            /// Use TPR shadow.
+            const USE_TPR_SHADOW = 1 << 21;
+            /// NMI-window exiting.
+            const NMI_WINDOW_EXITING = 1 << 22;
+            /// MOV-DR exiting
+            const MOV_DR_EXITING = 1 << 23;
+            /// Unconditional I/O exiting.
+            const UNCOND_IO_EXITING = 1 << 24;
+            /// Use I/O bitmaps.
+            const USE_IO_BITMAPS = 1 << 25;
+            /// Monitor trap flag.
+            const MONITOR_TRAP_FLAG = 1 << 27;
+            /// Use MSR bitmaps.
+            const USE_MSR_BITMAPS = 1 << 28;
+            /// MONITOR exiting.
+            const MONITOR_EXITING = 1 << 29;
+            /// PAUSE exiting.
+            const PAUSE_EXITING = 1 << 30;
+            /// Activate secondary controls.
+            const SECONDARY_CONTROLS = 1 << 31;
+        }
+    }
+
+    bitflags! {
+        /// Secondary processor-based VM-execution controls.
+        ///
+        /// A set of bitmask flags useful when setting up [`SECONDARY_PROCBASED_EXEC_CONTROLS`] VMCS field.
+        ///
+        /// See Intel SDM, Volume 3C, Section 24.6.2, Table 24-7.
+        pub struct SecondaryControls: u32 {
+            /// Virtualize APIC accesses.
+            const VIRTUALIZE_APIC = 1 << 0;
+            /// Enable EPT.
+            const ENABLE_EPT = 1 << 1;
+            /// Descriptor-table exiting.
+            const DTABLE_EXITING = 1 << 2;
+            /// Enable RDTSCP.
+            const ENABLE_RDTSCP = 1 << 3;
+            /// Virtualize x2APIC mode.
+            const VIRTUALIZE_X2APIC = 1 << 4;
+            /// Enable VPID.
+            const ENABLE_VPID = 1 << 5;
+            /// WBINVD exiting.
+            const WBINVD_EXITING = 1 << 6;
+            /// Unrestricted guest.
+            const UNRESTRICTED_GUEST = 1 << 7;
+            /// APIC-register virtualization.
+            const VIRTUALIZE_APIC_REGISTER = 1 << 8;
+            /// Virtual-interrupt delivery.
+            const VIRTUAL_INTERRUPT_DELIVERY = 1 << 9;
+            /// PAUSE-loop exiting.
+            const PAUSE_LOOP_EXITING = 1 << 10;
+            /// RDRAND exiting.
+            const RDRAND_EXITING = 1 << 11;
+            /// Enable INVPCID.
+            const ENABLE_INVPCID = 1 << 12;
+            /// Enable VM functions.
+            const ENABLE_VM_FUNCTIONS = 1 << 13;
+            /// VMCS shadowing.
+            const VMCS_SHADOWING = 1 << 14;
+            /// Enable ENCLS exiting.
+            const ENCLS_EXITING = 1 << 15;
+            /// RDSEED exiting.
+            const RDSEED_EXITING = 1 << 16;
+            /// Enable PML.
+            const ENABLE_PML = 1 << 17;
+            /// EPT-violation #VE.
+            const EPT_VIOLATION_VE = 1 << 18;
+            /// Conceal VMX from PT.
+            const CONCEAL_VMX_FROM_PT = 1 << 19;
+            /// Enable XSAVES/XRSTORS.
+            const ENABLE_XSAVES_XRSTORS = 1 << 20;
+            /// Mode-based execute control for EPT.
+            const MODE_BASED_EPT = 1 << 22;
+            /// Sub-page write permissions for EPT.
+            const SUB_PAGE_EPT = 1 << 23;
+            /// Intel PT uses guest physical addresses.
+            const INTEL_PT_GUEST_PHYSICAL = 1 << 24;
+            /// Use TSC scaling.
+            const USE_TSC_SCALING = 1 << 25;
+            /// Enable user wait and pause.
+            const ENABLE_USER_WAIT_PAUSE = 1 << 26;
+            /// Enable ENCLV exiting.
+            const ENCLV_EXITING = 1 << 28;
+        }
+    }
+
+    bitflags! {
+        /// VM-entry controls.
+        ///
+        /// A set of bitmask flags useful when setting up [`VMENTRY_CONTROLS`] VMCS field.
+        ///
+        /// See Intel SDM, Volume 3C, Section 24.8.
+        pub struct EntryControls: u32 {
+            /// Load debug controls.
+            const LOAD_DEBUG_CONTROLS = 1 << 2;
+            /// IA-32e mode guest.
+            const IA32E_MODE_GUEST = 1 << 9;
+            /// Entry to SMM.
+            const ENTRY_TO_SMM = 1 << 10;
+            /// Deactivate dual-monitor treatment.
+            const DEACTIVATE_DUAL_MONITOR = 1 << 11;
+            /// Load IA32_PERF_GLOBAL_CTRL.
+            const LOAD_IA32_PERF_GLOBAL_CTRL = 1 << 13;
+            /// Load IA32_PAT.
+            const LOAD_IA32_PAT = 1 << 14;
+            /// Load IA32_EFER.
+            const LOAD_IA32_EFER = 1 << 15;
+            /// Load IA32_BNDCFGS.
+            const LOAD_IA32_BNDCFGS = 1 << 16;
+            /// Conceal VMX from PT.
+            const CONCEAL_VMX_FROM_PT = 1 << 17;
+            /// Load IA32_RTIT_CTL.
+            const LOAD_IA32_RTIT_CTL = 1 << 18;
+        }
+    }
+
+    bitflags! {
+        /// VM-exit controls.
+        ///
+        /// A set of bitmask flags useful when setting up [`VMEXIT_CONTROLS`] VMCS field.
+        ///
+        /// See Intel SDM, Volume 3C, Section 24.7.
+        pub struct ExitControls: u32 {
+            /// Save debug controls.
+            const SAVE_DEBUG_CONTROLS = 1 << 2;
+            /// Host address-space size.
+            const HOST_ADDRESS_SPACE_SIZE = 1 << 9;
+            /// Load IA32_PERF_GLOBAL_CTRL.
+            const LOAD_IA32_PERF_GLOBAL_CTRL = 1 << 12;
+            /// Acknowledge interrupt on exit.
+            const ACK_INTERRUPT_ON_EXIT = 1 << 15;
+            /// Save IA32_PAT.
+            const SAVE_IA32_PAT = 1 << 18;
+            /// Load IA32_PAT.
+            const LOAD_IA32_PAT = 1 << 19;
+            /// Save IA32_EFER.
+            const SAVE_IA32_EFER = 1 << 20;
+            /// Load IA32_EFER.
+            const LOAD_IA32_EFER = 1 << 21;
+            /// Save VMX-preemption timer.
+            const SAVE_VMX_PREEMPTION_TIMER = 1 << 22;
+            /// Clear IA32_BNDCFGS.
+            const CLEAR_IA32_BNDCFGS = 1 << 23;
+            /// Conceal VMX from PT.
+            const CONCEAL_VMX_FROM_PT = 1 << 24;
+            /// Clear IA32_RTIT_CTL.
+            const CLEAR_IA32_RTIT_CTL = 1 << 25;
+        }
+    }
 }
 
 /// Fields used to access guest-state area.
