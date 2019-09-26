@@ -242,10 +242,10 @@ mod test {
 
     #[test]
     fn rdseed64_test() {
-        let has_rdrand = crate::cpuid::CpuId::new()
-            .get_feature_info()
-            .map_or(false, |finfo| finfo.has_rdrand());
-        if !has_rdrand {
+        let has_rdseed = crate::cpuid::CpuId::new()
+            .get_extended_feature_info()
+            .map_or(false, |efinfo| efinfo.has_rdseed());
+        if !has_rdseed {
             return;
         }
 
@@ -262,10 +262,10 @@ mod test {
 
     #[test]
     fn rdseed32_test() {
-        let has_rdrand = crate::cpuid::CpuId::new()
-            .get_feature_info()
-            .map_or(false, |finfo| finfo.has_rdrand());
-        if !has_rdrand {
+        let has_rdseed = crate::cpuid::CpuId::new()
+            .get_extended_feature_info()
+            .map_or(false, |efinfo| efinfo.has_rdseed());
+        if !has_rdseed {
             return;
         }
 
@@ -282,10 +282,10 @@ mod test {
 
     #[test]
     fn rdseed16_test() {
-        let has_rdrand = crate::cpuid::CpuId::new()
-            .get_feature_info()
-            .map_or(false, |finfo| finfo.has_rdrand());
-        if !has_rdrand {
+        let has_rdseed = crate::cpuid::CpuId::new()
+            .get_extended_feature_info()
+            .map_or(false, |efinfo| efinfo.has_rdseed());
+        if !has_rdseed {
             return;
         }
 
