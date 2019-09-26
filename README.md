@@ -3,7 +3,8 @@
 
 Library to program x86 (amd64) hardware. Contains x86 specific data structure descriptions, data-tables, as well as convenience function to call assembly instructions typically not exposed in higher level languages.
 
-Currently supports
+Currently supports:
+
   * I/O registers
   * Control registers
   * MSR registers
@@ -18,6 +19,7 @@ Currently supports
   * Time (rdtsc, rdtscp)
   * Querying CPUID (uses [raw_cpuid](https://github.com/gz/rust-cpuid) library)
   * Transactional memory (Intel RTM and HLE)
+  * Virtualization (Intel VMX)
 
 This library depends on libcore so it can be used in kernel level code.
 
