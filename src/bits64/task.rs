@@ -1,6 +1,8 @@
 //! Helpers to program the task state segment.
 //! See Intel 3a, Chapter 7, Section 7
 
+use crate::Ring;
+
 /// Although hardware task-switching is not supported in 64-bit mode,
 /// a 64-bit task state segment (TSS) must exist.
 ///
@@ -30,7 +32,7 @@
 /// It must execute the LTR instruction (in 64-bit mode) to load the TR register with a
 /// pointer to the 64-bit TSS responsible for both 64-bitmode programs and
 /// compatibility-mode programs ([load_tr](crate::task::load_tr)).
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Default)]
 #[repr(C, packed)]
 pub struct TaskStateSegment {
     pub reserved: u32,
@@ -46,6 +48,7 @@ pub struct TaskStateSegment {
 }
 
 impl TaskStateSegment {
+    /// Creates a new empty TSS.
     pub const fn new() -> TaskStateSegment {
         TaskStateSegment {
             reserved: 0,
@@ -55,6 +58,33 @@ impl TaskStateSegment {
             reserved3: 0,
             reserved4: 0,
             iomap_base: 0,
+        }
+    }
+
+    /// Sets the stack pointer (`stack_ptr`) to be used for when
+    /// an interrupt causes the CPU to change RPL to `pl`.
+    pub fn set_rsp(&mut self, pl: Ring, stack_ptr: u64) {
+        match pl {
+            Ring::Ring0 => self.rsp[0] = stack_ptr,
+            Ring::Ring1 => self.rsp[1] = stack_ptr,
+            Ring::Ring2 => self.rsp[2] = stack_ptr,
+            Ring::Ring3 => unreachable!("Can't set stack for PL3"),
+        }
+    }
+
+    /// Sets the stack pointer (`stack_ptr`) to be used when
+    /// an interrupt with a corresponding IST entry in the Interrupt
+    /// Descriptor table pointing to the given `index` is raised.
+    pub fn set_ist(&mut self, index: usize, stack_ptr: u64) {
+        match index {
+            0 => self.ist[0] = stack_ptr,
+            1 => self.ist[1] = stack_ptr,
+            2 => self.ist[2] = stack_ptr,
+            3 => self.ist[3] = stack_ptr,
+            4 => self.ist[4] = stack_ptr,
+            5 => self.ist[5] = stack_ptr,
+            6 => self.ist[6] = stack_ptr,
+            _ => unreachable!("Can't set IST for this index (out of bounds)."),
         }
     }
 }
