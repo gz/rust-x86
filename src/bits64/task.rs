@@ -9,7 +9,10 @@
 ///
 /// # RSPn
 /// The full 64-bit canonical forms of the stack pointers (RSP) for privilege levels 0-2.
-/// RSPx is loaded in whenever an interrupt causes the CPU to change PL to x.
+/// RSPx is loaded in whenever an interrupt causes the CPU to change RPL to x.
+/// Note on a syscall entry this field is not used to load a stack, setting the stack there
+/// is the handler's responsibility (however when using the int instruction in user-space,
+/// we load the stack from RSPn).
 ///
 /// # ISTn
 /// The full 64-bit canonical forms of the interrupt stack table (IST) pointers.
