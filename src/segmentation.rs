@@ -38,6 +38,11 @@ impl SegmentSelector {
         }
     }
 
+    /// Returns segment selector's index in GDT or LDT.
+    pub fn index(&self) -> u16 {
+        self.bits >> 3
+    }
+
     /// Make a new segment selector from a untyped u16 value.
     pub const fn from_raw(bits: u16) -> SegmentSelector {
         SegmentSelector { bits: bits }
