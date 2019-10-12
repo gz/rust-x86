@@ -25,52 +25,73 @@ impl fmt::Display for InterruptDescription {
     }
 }
 
-/// x86 External Interrupts (1-16).
-pub static EXCEPTIONS: [InterruptDescription; 21] = [
+pub const DIVIDE_ERROR_VECTOR: u8 = 0;
+pub const DEBUG_VECTOR: u8 = 1;
+pub const NONMASKABLE_INTERRUPT_VECTOR: u8 = 2;
+pub const BREAKPOINT_VECTOR: u8 = 3;
+pub const OVERFLOW_VECTOR: u8 = 4;
+pub const BOUND_RANGE_EXCEEDED_VECTOR: u8 = 5;
+pub const INVALID_OPCODE_VECTOR: u8 = 6;
+pub const DEVICE_NOT_AVAILABLE_VECTOR: u8 = 7;
+pub const DOUBLE_FAULT_VECTOR: u8 = 8;
+pub const COPROCESSOR_SEGMENT_OVERRUN_VECTOR: u8 = 9;
+pub const INVALID_TSS_VECTOR: u8 = 10;
+pub const SEGMENT_NOT_PRESENT_VECTOR: u8 = 11;
+pub const STACK_SEGEMENT_FAULT_VECTOR: u8 = 12;
+pub const GENERAL_PROTECTION_FAULT_VECTOR: u8 = 13;
+pub const PAGE_FAULT_VECTOR: u8 = 14;
+pub const X87_FPU_VECTOR: u8 = 16;
+pub const ALIGNMENT_CHECK_VECTOR: u8 = 17;
+pub const MACHINE_CHECK_VECTOR: u8 = 18;
+pub const SIMD_FLOATING_POINT_VECTOR: u8 = 19;
+pub const VIRTUALIZATION_VECTOR: u8 = 20;
+
+/// x86 External Interrupts (1-32).
+pub static EXCEPTIONS: [InterruptDescription; 32] = [
     InterruptDescription {
-        vector: 0,
+        vector: DIVIDE_ERROR_VECTOR,
         mnemonic: "#DE",
         description: "Divide Error",
         irqtype: "Fault",
         source: "DIV and IDIV instructions.",
     },
     InterruptDescription {
-        vector: 1,
+        vector: DEBUG_VECTOR,
         mnemonic: "#DB",
         description: "Debug",
         irqtype: "Fault / Trap",
         source: "Debug condition",
     },
     InterruptDescription {
-        vector: 2,
+        vector: NONMASKABLE_INTERRUPT_VECTOR,
         mnemonic: "NMI",
         description: "Nonmaskable Interrupt",
         irqtype: "Interrupt",
         source: "Nonmaskable external interrupt.",
     },
     InterruptDescription {
-        vector: 3,
+        vector: BREAKPOINT_VECTOR,
         mnemonic: "#BP",
         description: "Breakpoint",
         irqtype: "Trap",
         source: "INT 3 instruction.",
     },
     InterruptDescription {
-        vector: 4,
+        vector: OVERFLOW_VECTOR,
         mnemonic: "#OF",
         description: "Overflow",
         irqtype: "Trap",
         source: "INTO instruction.",
     },
     InterruptDescription {
-        vector: 5,
+        vector: BOUND_RANGE_EXCEEDED_VECTOR,
         mnemonic: "#BR",
         description: "BOUND Range Exceeded",
         irqtype: "Fault",
         source: "BOUND instruction.",
     },
     InterruptDescription {
-        vector: 6,
+        vector: INVALID_OPCODE_VECTOR,
         mnemonic: "#UD",
         description: "Invalid Opcode (Undefined \
                       Opcode)",
@@ -79,7 +100,7 @@ pub static EXCEPTIONS: [InterruptDescription; 21] = [
                  opcode.",
     },
     InterruptDescription {
-        vector: 7,
+        vector: DEVICE_NOT_AVAILABLE_VECTOR,
         mnemonic: "#NM",
         description: "Device Not Available (No \
                       Math Coprocessor)",
@@ -88,7 +109,7 @@ pub static EXCEPTIONS: [InterruptDescription; 21] = [
                  instruction.",
     },
     InterruptDescription {
-        vector: 8,
+        vector: DOUBLE_FAULT_VECTOR,
         mnemonic: "#DF",
         description: "Double Fault",
         irqtype: "Abort",
@@ -97,21 +118,21 @@ pub static EXCEPTIONS: [InterruptDescription; 21] = [
                  or an INTR.",
     },
     InterruptDescription {
-        vector: 9,
+        vector: COPROCESSOR_SEGMENT_OVERRUN_VECTOR,
         mnemonic: "",
         description: "Coprocessor Segment Overrun",
         irqtype: "Fault",
         source: "Floating-point instruction.",
     },
     InterruptDescription {
-        vector: 10,
+        vector: INVALID_TSS_VECTOR,
         mnemonic: "#TS",
         description: "Invalid TSS",
         irqtype: "Fault",
         source: "Task switch or TSS access.",
     },
     InterruptDescription {
-        vector: 11,
+        vector: SEGMENT_NOT_PRESENT_VECTOR,
         mnemonic: "#NP",
         description: "Segment Not Present",
         irqtype: "Fault",
@@ -119,7 +140,7 @@ pub static EXCEPTIONS: [InterruptDescription; 21] = [
                  accessing system segments.",
     },
     InterruptDescription {
-        vector: 12,
+        vector: STACK_SEGEMENT_FAULT_VECTOR,
         mnemonic: "#SS",
         description: "Stack-Segment Fault",
         irqtype: "Fault",
@@ -127,7 +148,7 @@ pub static EXCEPTIONS: [InterruptDescription; 21] = [
                  loads.",
     },
     InterruptDescription {
-        vector: 13,
+        vector: GENERAL_PROTECTION_FAULT_VECTOR,
         mnemonic: "#GP",
         description: "General Protection",
         irqtype: "Fault",
@@ -135,7 +156,7 @@ pub static EXCEPTIONS: [InterruptDescription; 21] = [
                  protection checks.",
     },
     InterruptDescription {
-        vector: 14,
+        vector: PAGE_FAULT_VECTOR,
         mnemonic: "#PF",
         description: "Page Fault",
         irqtype: "Fault",
@@ -149,39 +170,116 @@ pub static EXCEPTIONS: [InterruptDescription; 21] = [
         source: "None.",
     },
     InterruptDescription {
-        vector: 16,
+        vector: X87_FPU_VECTOR,
         mnemonic: "#MF",
         description: "x87 FPU Floating-Point",
         irqtype: "Fault",
         source: "x87 FPU instructions.",
     },
     InterruptDescription {
-        vector: 17,
+        vector: ALIGNMENT_CHECK_VECTOR,
         mnemonic: "#AC",
         description: "Alignment Check",
         irqtype: "Fault",
         source: "Unaligned memory access.",
     },
     InterruptDescription {
-        vector: 18,
+        vector: MACHINE_CHECK_VECTOR,
         mnemonic: "#MC",
         description: "Machine Check",
         irqtype: "Abort",
         source: "Internal machine error.",
     },
     InterruptDescription {
-        vector: 19,
+        vector: SIMD_FLOATING_POINT_VECTOR,
         mnemonic: "#XM",
         description: "SIMD Floating-Point",
         irqtype: "Fault",
         source: "SSE SIMD instructions.",
     },
     InterruptDescription {
-        vector: 20,
+        vector: VIRTUALIZATION_VECTOR,
         mnemonic: "#VE",
         description: "Virtualization",
         irqtype: "Fault",
         source: "EPT violation.",
+    },
+    InterruptDescription {
+        vector: 21,
+        mnemonic: "",
+        description: "RESERVED",
+        irqtype: "",
+        source: ".",
+    },
+    InterruptDescription {
+        vector: 22,
+        mnemonic: "",
+        description: "RESERVED",
+        irqtype: "",
+        source: ".",
+    },
+    InterruptDescription {
+        vector: 23,
+        mnemonic: "",
+        description: "RESERVED",
+        irqtype: "",
+        source: ".",
+    },
+    InterruptDescription {
+        vector: 24,
+        mnemonic: "",
+        description: "RESERVED",
+        irqtype: "",
+        source: ".",
+    },
+    InterruptDescription {
+        vector: 25,
+        mnemonic: "",
+        description: "RESERVED",
+        irqtype: "",
+        source: ".",
+    },
+    InterruptDescription {
+        vector: 26,
+        mnemonic: "",
+        description: "RESERVED",
+        irqtype: "",
+        source: ".",
+    },
+    InterruptDescription {
+        vector: 27,
+        mnemonic: "",
+        description: "RESERVED",
+        irqtype: "",
+        source: "",
+    },
+    InterruptDescription {
+        vector: 28,
+        mnemonic: "",
+        description: "",
+        irqtype: "",
+        source: "",
+    },
+    InterruptDescription {
+        vector: 29,
+        mnemonic: "",
+        description: "RESERVED",
+        irqtype: "",
+        source: ".",
+    },
+    InterruptDescription {
+        vector: 30,
+        mnemonic: "",
+        description: "RESERVED",
+        irqtype: "",
+        source: "",
+    },
+    InterruptDescription {
+        vector: 31,
+        mnemonic: "",
+        description: "RESERVED",
+        irqtype: "",
+        source: "",
     },
 ];
 
@@ -250,11 +348,17 @@ impl fmt::Display for PageFaultError {
 }
 
 /// Enable Interrupts.
+///
+/// # Safety
+/// Only allowed if we have IO privileges for the current operating level in RFlags.
 pub unsafe fn enable() {
     asm!("sti");
 }
 
 /// Disable Interrupts.
+///
+/// # Safety
+/// Only allowed if we have IO privileges for the current operating level in RFlags.
 pub unsafe fn disable() {
     asm!("cli");
 }
