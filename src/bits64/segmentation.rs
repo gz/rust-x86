@@ -59,9 +59,10 @@ impl Descriptor64 {
 
 impl GateDescriptorBuilder<u64> for DescriptorBuilder {
     fn tss_descriptor(base: u64, limit: u64, available: bool) -> DescriptorBuilder {
-        let typ = match available {
-            true => DescriptorType::System64(SystemDescriptorTypes64::TssAvailable),
-            false => DescriptorType::System64(SystemDescriptorTypes64::TssBusy),
+        let typ = if available {
+            DescriptorType::System64(SystemDescriptorTypes64::TssAvailable)
+        } else {
+            DescriptorType::System64(SystemDescriptorTypes64::TssBusy)
         };
 
         DescriptorBuilder::with_base_limit(base, limit).set_type(typ)
@@ -105,6 +106,11 @@ impl BuildDescriptor<Descriptor64> for DescriptorBuilder {
                 {
                     assert!(!self.db);
                 }
+
+                if typ == SystemDescriptorTypes64::InterruptGate {
+                    desc.set_ist(self.ist);
+                }
+
                 typ as u8
             }
             Some(DescriptorType::System32(_typ)) => {

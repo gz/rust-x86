@@ -239,6 +239,8 @@ pub struct DescriptorBuilder {
     pub(crate) limit_granularity_4k: bool,
     /// 64-bit code segment (IA-32e mode only)
     pub(crate) l: bool,
+    /// Interrupt stack table (IST) selector (IA-32e mode only)
+    pub(crate) ist: u8,
 }
 
 impl DescriptorBuilder {
@@ -254,6 +256,7 @@ impl DescriptorBuilder {
             db: false,
             limit_granularity_4k: false,
             l: false,
+            ist: 0,
         }
     }
 
@@ -272,6 +275,7 @@ impl DescriptorBuilder {
             db: false,
             limit_granularity_4k: false,
             l: false,
+            ist: 0,
         }
     }
 
@@ -315,6 +319,13 @@ impl DescriptorBuilder {
     /// contains native 64-bit code. A value of 1 indicates instructions in this code segment are executed in 64-bit mode.
     pub fn l(mut self) -> DescriptorBuilder {
         self.l = true;
+        self
+    }
+
+    /// Set a the interrupt stack table index (only if this ends up being a 64-bit interrupt descriptor).
+    pub fn ist(mut self, index: u8) -> DescriptorBuilder {
+        debug_assert!(index <= 7);
+        self.ist = index;
         self
     }
 }
