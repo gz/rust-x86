@@ -77,12 +77,14 @@ pub unsafe fn vmwrite(field: u32, value: u64) -> Result<()> {
 }
 
 /// Launch virtual machine.
+#[inline(always)]
 pub unsafe fn vmlaunch() -> Result<()> {
     asm!("vmlaunch");
     vmx_capture_status()
 }
 
 /// Resume virtual machine.
+#[inline(always)]
 pub unsafe fn vmresume() -> Result<()> {
     asm!("vmresume");
     vmx_capture_status()
