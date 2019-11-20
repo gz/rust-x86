@@ -541,6 +541,24 @@ impl ops::Add<usize> for VAddr {
     }
 }
 
+impl ops::AddAssign for VAddr {
+    fn add_assign(&mut self, other: VAddr) {
+        *self = VAddr::from(self.0 + other.0);
+    }
+}
+
+impl ops::AddAssign<u64> for VAddr {
+    fn add_assign(&mut self, offset: u64) {
+        *self = VAddr::from(self.0 + offset);
+    }
+}
+
+impl ops::AddAssign<usize> for VAddr {
+    fn add_assign(&mut self, offset: usize) {
+        *self = VAddr::from(self.0 + offset as u64);
+    }
+}
+
 impl ops::Sub for VAddr {
     type Output = VAddr;
 
