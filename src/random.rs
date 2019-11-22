@@ -8,7 +8,6 @@
 //!
 //! * RDRAND: Cryptographically secure pseudorandom number generator	NIST:SP 800-90A
 //! * RDSEED: Non-deterministic random bit generator	NIST: SP 800-90B & C (drafts)
-//!
 #[cfg(target_arch = "x86_64")]
 use core::arch::x86_64::{
     _rdrand16_step, _rdrand32_step, _rdrand64_step, _rdseed16_step, _rdseed32_step, _rdseed64_step,
@@ -52,6 +51,19 @@ pub trait RdRand {
     /// # Unsafe
     /// RDRAND is not supported on all architctures, so using this may crash you.
     unsafe fn fill_random(&mut self) -> bool;
+}
+
+impl RdRand for u8 {
+    /// Fills the 16-bit value with a random bit string
+    ///
+    /// # Unsafe
+    /// Will crash if RDSEED instructions are not supported.
+    unsafe fn fill_random(&mut self) -> bool {
+        let mut r: u16 = 0;
+        let ret = rdrand16(&mut r);
+        *self = r as u8;
+        ret
+    }
 }
 
 impl RdRand for u16 {
@@ -134,6 +146,19 @@ pub trait RdSeed {
     unsafe fn fill_random(&mut self) -> bool;
 }
 
+impl RdSeed for u8 {
+    /// Fills the 16-bit value with a random bit string
+    ///
+    /// # Unsafe
+    /// Will crash if RDSEED instructions are not supported.
+    unsafe fn fill_random(&mut self) -> bool {
+        let mut r: u16 = 0;
+        let ret = rdseed16(&mut r);
+        *self = r as u8;
+        ret
+    }
+}
+
 impl RdSeed for u16 {
     /// Fills the 16-bit value with a random bit string
     ///
@@ -182,7 +207,7 @@ mod test {
     use super::*;
 
     #[test]
-    fn rdrand64_test() {
+    fn rdrand_u64() {
         let has_rdrand = crate::cpuid::CpuId::new()
             .get_feature_info()
             .map_or(false, |finfo| finfo.has_rdrand());
@@ -202,7 +227,7 @@ mod test {
     }
 
     #[test]
-    fn rdrand32_test() {
+    fn rdrand_u32() {
         let has_rdrand = crate::cpuid::CpuId::new()
             .get_feature_info()
             .map_or(false, |finfo| finfo.has_rdrand());
@@ -222,7 +247,7 @@ mod test {
     }
 
     #[test]
-    fn rdrand16_test() {
+    fn rdrand_u16() {
         let has_rdrand = crate::cpuid::CpuId::new()
             .get_feature_info()
             .map_or(false, |finfo| finfo.has_rdrand());
@@ -241,7 +266,7 @@ mod test {
     }
 
     #[test]
-    fn rdseed64_test() {
+    fn rdseed_u64() {
         let has_rdseed = crate::cpuid::CpuId::new()
             .get_extended_feature_info()
             .map_or(false, |efinfo| efinfo.has_rdseed());
@@ -261,7 +286,7 @@ mod test {
     }
 
     #[test]
-    fn rdseed32_test() {
+    fn rdseed_u32() {
         let has_rdseed = crate::cpuid::CpuId::new()
             .get_extended_feature_info()
             .map_or(false, |efinfo| efinfo.has_rdseed());
@@ -281,7 +306,7 @@ mod test {
     }
 
     #[test]
-    fn rdseed16_test() {
+    fn rdseed_u16() {
         let has_rdseed = crate::cpuid::CpuId::new()
             .get_extended_feature_info()
             .map_or(false, |efinfo| efinfo.has_rdseed());
@@ -291,6 +316,44 @@ mod test {
 
         unsafe {
             let mut buf: [u16; 4] = [0, 0, 0, 0];
+            rdseed_slice(&mut buf);
+            assert_ne!(buf[0], 0);
+            assert_ne!(buf[1], 0);
+            assert_ne!(buf[2], 0);
+            assert_ne!(buf[3], 0);
+        }
+    }
+
+    #[test]
+    fn rdrand_u8() {
+        let has_rdseed = crate::cpuid::CpuId::new()
+            .get_extended_feature_info()
+            .map_or(false, |efinfo| efinfo.has_rdseed());
+        if !has_rdseed {
+            return;
+        }
+
+        unsafe {
+            let mut buf: [u8; 4] = [0, 0, 0, 0];
+            rdrand_slice(&mut buf);
+            assert_ne!(buf[0], 0);
+            assert_ne!(buf[1], 0);
+            assert_ne!(buf[2], 0);
+            assert_ne!(buf[3], 0);
+        }
+    }
+
+    #[test]
+    fn rdseed_u8() {
+        let has_rdseed = crate::cpuid::CpuId::new()
+            .get_extended_feature_info()
+            .map_or(false, |efinfo| efinfo.has_rdseed());
+        if !has_rdseed {
+            return;
+        }
+
+        unsafe {
+            let mut buf: [u8; 4] = [0, 0, 0, 0];
             rdseed_slice(&mut buf);
             assert_ne!(buf[0], 0);
             assert_ne!(buf[1], 0);
