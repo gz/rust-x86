@@ -322,7 +322,7 @@ impl fmt::Display for PAddr {
 
 impl fmt::Debug for PAddr {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        self.0.fmt(f)
+        write!(f, "{:#x}", self.0)
     }
 }
 
@@ -695,13 +695,13 @@ impl fmt::Binary for VAddr {
 
 impl fmt::Display for VAddr {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        self.0.fmt(f)
+        write!(f, "{:#x}", self.0)
     }
 }
 
 impl fmt::Debug for VAddr {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        self.0.fmt(f)
+        write!(f, "{:#x}", self.0)
     }
 }
 
