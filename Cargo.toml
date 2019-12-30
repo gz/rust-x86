@@ -1,6 +1,6 @@
 [package]
 name = "x86"
-version = "0.28.0"
+version = "0.29.0"
 authors = [
   "Gerd Zellweger <mail@gerdzellweger.com>",
   "Eric Kidd <git@randomhacks.net>",
@@ -10,7 +10,8 @@ authors = [
   "Rex Lunae <rexlunae@gmail.com>",
   "Brian Martin <bmartin@twitter.com>",
   "Caleb Boylan <calebboylan@gmail.com>",
-  "Nikolay Edigaryev <edigaryev@gmail.com>"
+  "Nikolay Edigaryev <edigaryev@gmail.com>",
+  "Stefan Lankes <stlankes@users.noreply.github.com>"
 ]
 
 description = "Library to program x86 (amd64) hardware. Contains x86 specific data structure descriptions, data-tables, as well as convenience function to call assembly instructions typically not exposed in higher level languages."
