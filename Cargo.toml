@@ -12,7 +12,7 @@ authors = [
   "Caleb Boylan <calebboylan@gmail.com>",
   "Nikolay Edigaryev <edigaryev@gmail.com>",
   "Stefan Lankes <stlankes@users.noreply.github.com>",
-  Jonathan Klimt <jonathan.klimt@rwth-aachen.de>
+  "Jonathan Klimt <jonathan.klimt@rwth-aachen.de>"
 ]
 
 description = "Library to program x86 (amd64) hardware. Contains x86 specific data structure descriptions, data-tables, as well as convenience function to call assembly instructions typically not exposed in higher level languages."
