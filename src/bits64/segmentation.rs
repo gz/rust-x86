@@ -176,6 +176,20 @@ pub unsafe fn rdfsbase() -> u64 {
     fs_base
 }
 
+/// "Dereferences" the fs register at offset 0.
+pub unsafe fn fs_deref() -> u64 {
+    let fs: u64;
+    asm!("movq %fs:0x0, $0" : "=r" (fs) );
+    fs
+}
+
+/// "Dereferences" the gs register at offset 0.
+pub unsafe fn gs_deref() -> u64 {
+    let gs: u64;
+    asm!("movq %gs:0x0, $0" : "=r" (gs) );
+    gs
+}
+
 /// Swap the GS register.
 ///
 /// Exchanges the current GS base register value with the value contained
