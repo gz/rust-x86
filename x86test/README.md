@@ -30,7 +30,7 @@ For example say we have a function like this:
 #[inline]
 pub unsafe fn inw(port: u16) -> u16 {
     let ret: u16;
-    asm!("inw %dx, %ax" : "={ax}"(ret) : "{dx}"(port) :: "volatile");
+    llvm_asm!("inw %dx, %ax" : "={ax}"(ret) : "{dx}"(port) :: "volatile");
     ret
 }
 ```

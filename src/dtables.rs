@@ -56,12 +56,12 @@ impl<T> fmt::Debug for DescriptorTablePointer<T> {
 
 /// Load the GDTR register with the specified base and limit.
 pub unsafe fn lgdt<T>(gdt: &DescriptorTablePointer<T>) {
-    asm!("lgdt ($0)" :: "r" (gdt) : "memory");
+    llvm_asm!("lgdt ($0)" :: "r" (gdt) : "memory");
 }
 
 /// Retrieve base and limit from the GDTR register.
 pub unsafe fn sgdt<T>(idt: &mut DescriptorTablePointer<T>) {
-    asm!("sgdt ($0)" : "=r" (idt as *mut DescriptorTablePointer<T>) :: "memory");
+    llvm_asm!("sgdt ($0)" : "=r" (idt as *mut DescriptorTablePointer<T>) :: "memory");
 }
 
 /// Loads the segment selector into the selector field of the local
@@ -72,7 +72,7 @@ pub unsafe fn sgdt<T>(idt: &mut DescriptorTablePointer<T>) {
 /// the segment descriptor for the LDT in the global
 /// descriptor table (GDT).
 pub unsafe fn load_ldtr(selector: SegmentSelector) {
-    asm!("lldt $0" :: "r" (selector.bits()) : "memory");
+    llvm_asm!("lldt $0" :: "r" (selector.bits()) : "memory");
 }
 
 /// Returns the segment selector from the local descriptor table register (LDTR).
@@ -81,16 +81,16 @@ pub unsafe fn load_ldtr(selector: SegmentSelector) {
 /// (located in the GDT) for the current LDT.
 pub unsafe fn ldtr() -> SegmentSelector {
     let selector: u16;
-    asm!("sldt $0" : "=r"(selector));
+    llvm_asm!("sldt $0" : "=r"(selector));
     SegmentSelector::from_raw(selector)
 }
 
 /// Load the IDTR register with the specified base and limit.
 pub unsafe fn lidt<T>(idt: &DescriptorTablePointer<T>) {
-    asm!("lidt ($0)" :: "r" (idt) : "memory");
+    llvm_asm!("lidt ($0)" :: "r" (idt) : "memory");
 }
 
 /// Retrieve base and limit from the IDTR register.
 pub unsafe fn sidt<T>(idt: &mut DescriptorTablePointer<T>) {
-    asm!("sidt ($0)" : "=r" (idt as *mut DescriptorTablePointer<T>) :: "memory");
+    llvm_asm!("sidt ($0)" : "=r" (idt as *mut DescriptorTablePointer<T>) :: "memory");
 }

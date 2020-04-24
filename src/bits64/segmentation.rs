@@ -137,7 +137,7 @@ impl BuildDescriptor<Descriptor64> for DescriptorBuilder {
 /// to reload cs and continue at 1:.
 #[cfg(target_arch = "x86_64")]
 pub unsafe fn load_cs(sel: SegmentSelector) {
-    asm!("pushq $0; \
+    llvm_asm!("pushq $0; \
           leaq  1f(%rip), %rax; \
           pushq %rax; \
           lretq; \
@@ -148,14 +148,14 @@ pub unsafe fn load_cs(sel: SegmentSelector) {
 /// Needs FSGSBASE-Enable Bit (bit 16 of CR4) set.
 #[cfg(target_arch = "x86_64")]
 pub unsafe fn wrgsbase(base: u64) {
-    asm!("wrgsbase $0" :: "r" (base) : "memory");
+    llvm_asm!("wrgsbase $0" :: "r" (base) : "memory");
 }
 
 /// Write FS Segment Base
 /// Needs FSGSBASE-Enable Bit (bit 16 of CR4) set.
 #[cfg(target_arch = "x86_64")]
 pub unsafe fn wrfsbase(base: u64) {
-    asm!("wrfsbase $0" :: "r" (base) : "memory");
+    llvm_asm!("wrfsbase $0" :: "r" (base) : "memory");
 }
 
 /// Read GS Segment Base
@@ -163,7 +163,7 @@ pub unsafe fn wrfsbase(base: u64) {
 #[cfg(target_arch = "x86_64")]
 pub unsafe fn rdgsbase() -> u64 {
     let gs_base: u64;
-    asm!("rdgsbase $0" : "=r" (gs_base) );
+    llvm_asm!("rdgsbase $0" : "=r" (gs_base) );
     gs_base
 }
 
@@ -172,21 +172,21 @@ pub unsafe fn rdgsbase() -> u64 {
 #[cfg(target_arch = "x86_64")]
 pub unsafe fn rdfsbase() -> u64 {
     let fs_base: u64;
-    asm!("rdfsbase $0" : "=r" (fs_base) );
+    llvm_asm!("rdfsbase $0" : "=r" (fs_base) );
     fs_base
 }
 
 /// "Dereferences" the fs register at offset 0.
 pub unsafe fn fs_deref() -> u64 {
     let fs: u64;
-    asm!("movq %fs:0x0, $0" : "=r" (fs) );
+    llvm_asm!("movq %fs:0x0, $0" : "=r" (fs) );
     fs
 }
 
 /// "Dereferences" the gs register at offset 0.
 pub unsafe fn gs_deref() -> u64 {
     let gs: u64;
-    asm!("movq %gs:0x0, $0" : "=r" (gs) );
+    llvm_asm!("movq %gs:0x0, $0" : "=r" (gs) );
     gs
 }
 
@@ -201,5 +201,5 @@ pub unsafe fn gs_deref() -> u64 {
 /// The SWAPGS instruction is a privileged instruction intended for use by system software.
 #[cfg(target_arch = "x86_64")]
 pub unsafe fn swapgs() {
-    asm!("swapgs" ::: "gs");
+    llvm_asm!("swapgs" ::: "gs");
 }

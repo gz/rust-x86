@@ -3,7 +3,7 @@
 pub fn rip() -> u64 {
     let rip: u64;
     unsafe {
-        asm!("leaq 0(%rip), $0" : "=r" (rip) ::);
+        llvm_asm!("leaq 0(%rip), $0" : "=r" (rip) ::);
     }
     rip
 }
@@ -13,7 +13,7 @@ pub fn rip() -> u64 {
 pub fn rsp() -> u64 {
     let rsp: u64;
     unsafe {
-        asm!("mov %rsp, $0" : "=r" (rsp) ::);
+        llvm_asm!("mov %rsp, $0" : "=r" (rsp) ::);
     }
     return rsp;
 }
@@ -23,7 +23,7 @@ pub fn rsp() -> u64 {
 pub fn rbp() -> u64 {
     let rbp: u64;
     unsafe {
-        asm!("mov %rbp, $0" : "=r" (rbp) ::);
+        llvm_asm!("mov %rbp, $0" : "=r" (rbp) ::);
     }
     return rbp;
 }

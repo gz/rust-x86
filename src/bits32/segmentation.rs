@@ -8,7 +8,7 @@ use crate::segmentation::SegmentSelector;
 /// to reload cs and continue at 1:.
 #[cfg(target_arch = "x86")]
 pub unsafe fn load_cs(sel: SegmentSelector) {
-    asm!("pushl $0; \
+    llvm_asm!("pushl $0; \
           pushl $$1f; \
           lretl; \
           1:" :: "ri" (sel.bits() as u32) : "memory");

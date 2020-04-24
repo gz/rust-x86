@@ -70,14 +70,14 @@ impl EFlags {
 #[inline(always)]
 pub unsafe fn read() -> EFlags {
     let r: u32;
-    asm!("pushfl; popl $0" : "=r"(r) :: "memory");
+    llvm_asm!("pushfl; popl $0" : "=r"(r) :: "memory");
     EFlags::from_bits_truncate(r)
 }
 
 #[cfg(target_arch = "x86")]
 #[inline(always)]
 pub unsafe fn set(val: EFlags) {
-    asm!("pushl $0; popfl" :: "r"(val.bits()) : "memory" "flags");
+    llvm_asm!("pushl $0; popfl" :: "r"(val.bits()) : "memory" "flags");
 }
 
 /// Clears the AC flag bit in EFLAGS register.
@@ -92,7 +92,7 @@ pub unsafe fn set(val: EFlags) {
 /// that the CPU supports the instruction (check CPUID).
 #[inline(always)]
 pub unsafe fn clac() {
-    asm!("clac" ::: "memory" "flags" : "volatile");
+    llvm_asm!("clac" ::: "memory" "flags" : "volatile");
 }
 
 /// Sets the AC flag bit in EFLAGS register.
@@ -107,5 +107,5 @@ pub unsafe fn clac() {
 /// that the CPU supports the instruction (check CPUID).
 #[inline(always)]
 pub unsafe fn stac() {
-    asm!("stac" ::: "memory" "flags" : "volatile");
+    llvm_asm!("stac" ::: "memory" "flags" : "volatile");
 }

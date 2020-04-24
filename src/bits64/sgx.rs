@@ -22,7 +22,7 @@ macro_rules! encls {
 unsafe fn encls2(rax: u64, rbx: u64) -> (u32, u64) {
     let eax: u32;
     let out_rbx: u64;
-    asm!("encls" : "={eax}" (eax), "={rbx}" (out_rbx)
+    llvm_asm!("encls" : "={eax}" (eax), "={rbx}" (out_rbx)
                  : "{rax}" (rax), "{rbx}" (rbx));
     (eax, out_rbx)
 }
@@ -31,7 +31,7 @@ unsafe fn encls2(rax: u64, rbx: u64) -> (u32, u64) {
 unsafe fn encls3(rax: u64, rbx: u64, rcx: u64) -> (u32, u64) {
     let eax: u32;
     let out_rbx: u64;
-    asm!("encls" : "={eax}" (eax), "={rbx}" (out_rbx)
+    llvm_asm!("encls" : "={eax}" (eax), "={rbx}" (out_rbx)
                  : "{rax}" (rax), "{rbx}" (rbx), "{rcx}" (rcx));
     (eax, out_rbx)
 }
@@ -40,7 +40,7 @@ unsafe fn encls3(rax: u64, rbx: u64, rcx: u64) -> (u32, u64) {
 unsafe fn encls4(rax: u64, rbx: u64, rcx: u64, rdx: u64) -> (u32, u64) {
     let eax: u32;
     let out_rbx: u64;
-    asm!("encls" : "={eax}" (eax), "={rbx}" (out_rbx)
+    llvm_asm!("encls" : "={eax}" (eax), "={rbx}" (out_rbx)
                  : "{rax}" (rax), "{rbx}" (rbx), "{rcx}" (rcx), "{rdx}" (rdx));
     (eax, out_rbx)
 }
@@ -252,7 +252,7 @@ macro_rules! enclu {
 unsafe fn enclu3(rax: u64, rbx: u64, rcx: u64) -> (u32, u64) {
     let eax: u32;
     let out_rcx: u64;
-    asm!("enclu" : "={eax}" (eax), "={rcx}" (out_rcx)
+    llvm_asm!("enclu" : "={eax}" (eax), "={rcx}" (out_rcx)
                  : "{rax}" (rax), "{rbx}" (rbx), "{rcx}" (rcx));
     (eax, out_rcx)
 }
@@ -261,7 +261,7 @@ unsafe fn enclu3(rax: u64, rbx: u64, rcx: u64) -> (u32, u64) {
 unsafe fn enclu4(rax: u64, rbx: u64, rcx: u64, rdx: u64) -> (u32, u64) {
     let eax: u32;
     let out_rcx: u64;
-    asm!("enclu" : "={eax}" (eax), "={rcx}" (out_rcx)
+    llvm_asm!("enclu" : "={eax}" (eax), "={rcx}" (out_rcx)
                  : "{rax}" (rax), "{rbx}" (rbx), "{rcx}" (rcx), "{rdx}" (rdx));
     (eax, out_rcx)
 }

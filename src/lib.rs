@@ -1,6 +1,6 @@
 #![cfg(any(target_arch = "x86", target_arch = "x86_64"))]
 #![allow(stable_features)]
-#![feature(asm, core_intrinsics)]
+#![feature(llvm_asm, core_intrinsics)]
 #![no_std]
 #![cfg_attr(test, allow(unused_features))]
 #![cfg_attr(all(test, feature = "vmtest"), feature(custom_test_frameworks))]
@@ -88,7 +88,7 @@ pub enum Ring {
 /// Will cause a general protection fault if used outside of ring 0.
 #[inline(always)]
 pub unsafe fn halt() {
-    asm!("hlt" :::: "volatile");
+    llvm_asm!("hlt" :::: "volatile");
 }
 
 #[cfg(all(test, feature = "vmtest"))]
@@ -115,7 +115,7 @@ mod x86testing {
 #[inline(always)]
 pub unsafe fn rdpid() -> u64 {
     let mut pid: u64;
-    asm!("rdpid $0" : "=r"(pid));
+    llvm_asm!("rdpid $0" : "=r"(pid));
     return pid;
 }
 
