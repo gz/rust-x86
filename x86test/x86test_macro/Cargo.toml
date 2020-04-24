@@ -1,6 +1,6 @@
 [package]
 name = "x86test-macro"
-version = "0.0.2"
+version = "0.0.3"
 authors = ["Gerd Zellweger <mail@gerdzellweger.com>"]
 
 repository = "https://github.com/gz/rust-x86"
@@ -18,7 +18,7 @@ Procedural macro plugin for x86test.
 syn = { version = "0.15", features = ["full", "extra-traits"] }
 quote = "0.6"
 proc-macro2 = "0.4"
-x86test-types = { path = "../x86test_types", version = "0.0.2" }
+x86test-types = { path = "../x86test_types", version = "0.0.3" }
 
 [lib]
 proc-macro = true
