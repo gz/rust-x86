@@ -1,6 +1,6 @@
 [package]
 name = "x86test-types"
-version = "0.0.2"
+version = "0.0.3"
 authors = ["Gerd Zellweger <mail@gerdzellweger.com>"]
 
 repository = "https://github.com/gz/rust-x86"
@@ -15,4 +15,4 @@ Common types for x86test runnter and the x86test procedural macro.
 """
 
 [dependencies]
-x86 = "0.20"
+x86 = "0.32"
