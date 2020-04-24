@@ -1,6 +1,6 @@
 [package]
 name = "x86test"
-version = "0.0.2"
+version = "0.0.3"
 authors = ["Gerd Zellweger <mail@gerdzellweger.com>"]
 
 repository = "https://github.com/gz/rust-x86"
@@ -16,10 +16,10 @@ Custom test runner for bare-metal x86 tests.
 """
 
 [dependencies]
-x86test-macro = { path = "x86test_macro", version = "0.0.2" }
-x86test-types = { path = "x86test_types", version = "0.0.2" }
+x86test-macro = { path = "x86test_macro", version = "0.0.3" }
+x86test-types = { path = "x86test_types", version = "0.0.3" }
 kvm-sys = "0.3.0"
-x86 = "0.19"
+x86 = "0.32"
 mmap = "0.1.1"
 log = "0.4"
 klogger = { version = "0.0.4", features = ["use_ioports"] }

@@ -81,3 +81,12 @@ The x86test attribute currently supports the following parameters:
 * [x86test_macro](x86test_macro): contains a procedural macro implementation of `x86test`.
 * [x86test_types](x86test_types): contains implementations of kassert, kpanic and the X86TestFn struct.
 * [src](src): contains the custom test runner implementation.
+
+## Updating
+
+Should be done in the following order:
+
+* Release new version of `x86test-types`
+* Release new version of `x86test-macro` (adjust version dependency of x86test-types)
+* Release new version of `x86test` (adjust version dependency of x86test-types and x86test-macro)
+* Tag with `git tag x86test-0.0.x`
