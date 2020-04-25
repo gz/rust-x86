@@ -7,12 +7,12 @@ use core::fmt;
 use core::ops;
 
 macro_rules! check_flag {
-    ($doc:meta, $fun:ident, $flag:expr) => (
+    ($doc:meta, $fun:ident, $flag:expr) => {
         #[$doc]
         pub fn $fun(self) -> bool {
             self.flags().contains($flag)
         }
-    )
+    };
 }
 
 /// Align address downwards.

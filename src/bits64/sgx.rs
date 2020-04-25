@@ -95,7 +95,6 @@ pub unsafe fn encls_eblock(epc_page: u64) -> u32 {
 /// # Arguments
 ///  * Address of a PAGEINFO
 ///  * Address of the destination SECS page
-///
 pub unsafe fn encls_create(pageinfo: u64, secs_page: u64) {
     encls!(EnclsCommand::ECREATE as u64, pageinfo, secs_page);
 }
@@ -107,7 +106,6 @@ pub unsafe fn encls_create(pageinfo: u64, secs_page: u64) {
 ///
 /// # Arguments
 ///  * Address of source memory in the EPC
-///
 pub unsafe fn encls_edbgrd(source_address: u64) -> u64 {
     encls!(EnclsCommand::EDBGRD as u64, source_address).1
 }
@@ -117,7 +115,6 @@ pub unsafe fn encls_edbgrd(source_address: u64) -> u64 {
 /// # Arguments
 ///  * Data to be written to a debug enclave
 ///  * Address of Target memory in the EPC
-///
 pub unsafe fn encls_edbgwr(data: u64, target_address: u64) {
     encls!(EnclsCommand::EDBGWR as u64, data, target_address);
 }
@@ -137,7 +134,6 @@ pub unsafe fn encls_eextend(secs_chunk: u64, epc_chunk: u64) {
 ///  * Address of SIGSTRUCT
 ///  * Address of SECS
 ///  * Address of EINITTOKEN
-///
 pub unsafe fn encls_einit(sigstruct: u64, secs: u64, einittoken: u64) -> u32 {
     encls!(EnclsCommand::EINIT as u64, sigstruct, secs, einittoken).0
 }
@@ -148,7 +144,6 @@ pub unsafe fn encls_einit(sigstruct: u64, secs: u64, einittoken: u64) -> u32 {
 ///  * Address of the PAGEINFO
 ///  * Address of the EPC page
 ///  * Address of the version-array slot
-///
 pub unsafe fn encls_eldb(pageinfo: u64, epc_page: u64, verion_array_slot: u64) -> u32 {
     encls!(
         EnclsCommand::ELDB as u64,
@@ -165,7 +160,6 @@ pub unsafe fn encls_eldb(pageinfo: u64, epc_page: u64, verion_array_slot: u64) -
 ///  * Address of the PAGEINFO
 ///  * Address of the EPC page
 ///  * Address of the version-array slot
-///
 pub unsafe fn encls_eldu(pageinfo: u64, epc_page: u64, verion_array_slot: u64) -> u32 {
     encls!(
         EnclsCommand::ELDU as u64,
@@ -181,7 +175,6 @@ pub unsafe fn encls_eldu(pageinfo: u64, epc_page: u64, verion_array_slot: u64) -
 /// # Arguments
 ///  * Address of a SECINFO
 ///  * Address of the destination EPC page
-///
 pub unsafe fn encls_emodpr(secinfo: u64, epc_page: u64) -> u32 {
     encls!(EnclsCommand::EMODPR as u64, secinfo, epc_page).0
 }
@@ -191,7 +184,6 @@ pub unsafe fn encls_emodpr(secinfo: u64, epc_page: u64) -> u32 {
 /// # Arguments
 ///  * Address of a SECINFO
 ///  * Address of the destination EPC page
-///
 pub unsafe fn encls_emodt(secinfo: u64, epc_page: u64) -> u32 {
     encls!(EnclsCommand::EMODT as u64, secinfo, epc_page).0
 }
@@ -201,7 +193,6 @@ pub unsafe fn encls_emodt(secinfo: u64, epc_page: u64) -> u32 {
 /// # Arguments
 ///  * PT_VA Constant
 ///  * Effective address of the EPC page
-///
 pub unsafe fn encls_epa(pt_va: u64, epc_page: u64) {
     encls!(EnclsCommand::EPA as u64, pt_va, epc_page);
 }
@@ -210,7 +201,6 @@ pub unsafe fn encls_epa(pt_va: u64, epc_page: u64) {
 ///
 /// # Arguments
 ///  * Effective address of the EPC page
-///
 pub unsafe fn encls_eremove(epc_page: u64) {
     encls!(EnclsCommand::EREMOVE as u64, epc_page);
 }
@@ -219,7 +209,6 @@ pub unsafe fn encls_eremove(epc_page: u64) {
 ///
 /// # Arguments
 ///  * Pointer to the SECS of the EPC page.
-///
 pub unsafe fn encls_etrack(secs_pointer: u64) -> u32 {
     encls!(EnclsCommand::ETRACK as u64, secs_pointer).0
 }
@@ -229,7 +218,6 @@ pub unsafe fn encls_etrack(secs_pointer: u64) -> u32 {
 /// # Arguments
 ///  * Address of the EPC page.
 ///  * Address of a VA slot.
-///
 pub unsafe fn encls_ewb(pageinfo: u64, epc_page: u64, va_slot: u64) -> u32 {
     encls!(EnclsCommand::EWB as u64, pageinfo, epc_page, va_slot).0
 }
@@ -284,7 +272,6 @@ enum EncluCommand {
 ///  * Address of the destination EPC page.
 ///
 /// Returns an error code.
-///
 pub unsafe fn enclu_eaccept(secinfo: u64, epc_page: u64) -> u32 {
     enclu!(EncluCommand::EACCEPT as u64, secinfo, epc_page).0
 }
@@ -297,7 +284,6 @@ pub unsafe fn enclu_eaccept(secinfo: u64, epc_page: u64) -> u32 {
 ///  * Address of the source EPC page.
 ///
 /// Returns an error code.
-///
 pub unsafe fn enclu_eacceptcopy(
     secinfo: u64,
     destination_epc_page: u64,
@@ -320,7 +306,6 @@ pub unsafe fn enclu_eacceptcopy(
 ///  * Address of IP following EENTER.
 ///
 /// Returns content of RBX.CSSA and Address of IP following EENTER.
-///
 pub unsafe fn enclu_eenter(tcs: u64, aep: u64) -> (u32, u64) {
     enclu!(EncluCommand::EENTER as u64, tcs, aep)
 }
@@ -330,7 +315,6 @@ pub unsafe fn enclu_eenter(tcs: u64, aep: u64) -> (u32, u64) {
 /// # Arguments
 ///  * Target address outside the enclave
 ///  * Address of the current AEP
-///
 pub unsafe fn enclu_eexit(ip: u64, aep: u64) {
     enclu!(EncluCommand::EEXIT as u64, ip, aep);
 }
@@ -340,7 +324,6 @@ pub unsafe fn enclu_eexit(ip: u64, aep: u64) {
 /// # Arguments
 ///  * Address to a KEYREQUEST
 ///  * Address of the OUTPUTDATA
-///
 pub unsafe fn enclu_egetkey(keyrequest: u64, outputdata: u64) {
     enclu!(EncluCommand::EGETKEY as u64, keyrequest, outputdata);
 }
@@ -350,7 +333,6 @@ pub unsafe fn enclu_egetkey(keyrequest: u64, outputdata: u64) {
 /// # Arguments
 ///  * Address of a SECINFO
 ///  * Address of the destination EPC page
-///
 pub unsafe fn enclu_emodepe(secinfo: u64, epc_page: u64) {
     enclu!(EncluCommand::EMODEPE as u64, secinfo, epc_page);
 }
@@ -361,7 +343,6 @@ pub unsafe fn enclu_emodepe(secinfo: u64, epc_page: u64) {
 ///  * Address of TARGETINFO
 ///  * Address of REPORTDATA
 ///  * Address where the REPORT is written to in an OUTPUTDATA
-///
 pub unsafe fn enclu_ereport(targetinfo: u64, reportdata: u64, outputdata: u64) {
     enclu!(
         EncluCommand::EREPORT as u64,
@@ -376,7 +357,6 @@ pub unsafe fn enclu_ereport(targetinfo: u64, reportdata: u64, outputdata: u64) {
 /// # Arguments
 ///  * Address of a TCS.
 ///  * Address of AEP.
-///
 pub unsafe fn enclu_eresume(tcs: u64, aep: u64) {
     enclu!(EncluCommand::ERESUME as u64, tcs, aep);
 }
