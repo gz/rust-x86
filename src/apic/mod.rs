@@ -145,7 +145,7 @@ pub trait ApicControl {
     fn eoi(&mut self);
 
     /// Enable TSC deadline timer.
-    fn tsc_enable(&mut self);
+    fn tsc_enable(&mut self, vector: u8);
 
     /// Set TSC deadline value.
     fn tsc_set(&self, value: u64);

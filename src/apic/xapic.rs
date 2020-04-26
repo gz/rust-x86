@@ -270,8 +270,12 @@ impl ApicControl for XAPIC {
     }
 
     /// Enable TSC timer.
-    fn tsc_enable(&mut self) {
+    fn tsc_enable(&mut self, vector: u8) {
         let mut lvt: u32 = self.read(ApicRegister::XAPIC_LVT_TIMER);
+        lvt &= !0xff;
+        lvt |= vector as u32;
+        
+        lvt.set_bit(16, false);
         lvt.set_bit(17, false);
         lvt.set_bit(18, true);
         self.write(ApicRegister::XAPIC_LVT_TIMER, lvt);
