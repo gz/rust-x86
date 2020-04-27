@@ -3,6 +3,7 @@
 //! Table 10-1 Local APIC Register Address Map
 //! the MMIO base values are found in this file.
 
+use core::fmt;
 use core::intrinsics::{volatile_load, volatile_store};
 
 use bit_field::BitField;
@@ -192,12 +193,74 @@ enum ApicRegister {
 }
 
 /// State for the XAPIC driver.
-#[derive(Debug)]
 pub struct XAPIC {
     /// Reference to the xAPCI region
     mmio_region: &'static mut [u32],
     /// Initial APIC Base register value.
     base: u64,
+}
+
+impl fmt::Debug for XAPIC {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_struct("XAPIC")
+            .field("XAPIC_ID", &self.read(ApicRegister::XAPIC_ID))
+            .field("XAPIC_VERSION", &self.read(ApicRegister::XAPIC_VERSION))
+            .field("XAPIC_TPR", &self.read(ApicRegister::XAPIC_TPR))
+            .field("XAPIC_PPR", &self.read(ApicRegister::XAPIC_PPR))
+            .field("XAPIC_EOI", &self.read(ApicRegister::XAPIC_EOI))
+            .field("XAPIC_LDR", &self.read(ApicRegister::XAPIC_LDR))
+            .field("XAPIC_SVR", &self.read(ApicRegister::XAPIC_SVR))
+            .field("XAPIC_ISR0", &self.read(ApicRegister::XAPIC_ISR0))
+            .field("XAPIC_ISR1", &self.read(ApicRegister::XAPIC_ISR1))
+            .field("XAPIC_ISR2", &self.read(ApicRegister::XAPIC_ISR2))
+            .field("XAPIC_ISR3", &self.read(ApicRegister::XAPIC_ISR3))
+            .field("XAPIC_ISR4", &self.read(ApicRegister::XAPIC_ISR4))
+            .field("XAPIC_ISR5", &self.read(ApicRegister::XAPIC_ISR5))
+            .field("XAPIC_ISR6", &self.read(ApicRegister::XAPIC_ISR6))
+            .field("XAPIC_ISR7", &self.read(ApicRegister::XAPIC_ISR7))
+            .field("XAPIC_TMR0", &self.read(ApicRegister::XAPIC_TMR0))
+            .field("XAPIC_TMR1", &self.read(ApicRegister::XAPIC_TMR1))
+            .field("XAPIC_TMR2", &self.read(ApicRegister::XAPIC_TMR2))
+            .field("XAPIC_TMR3", &self.read(ApicRegister::XAPIC_TMR3))
+            .field("XAPIC_TMR4", &self.read(ApicRegister::XAPIC_TMR4))
+            .field("XAPIC_TMR5", &self.read(ApicRegister::XAPIC_TMR5))
+            .field("XAPIC_TMR6", &self.read(ApicRegister::XAPIC_TMR6))
+            .field("XAPIC_TMR7", &self.read(ApicRegister::XAPIC_TMR7))
+            .field("XAPIC_IRR0", &self.read(ApicRegister::XAPIC_IRR0))
+            .field("XAPIC_IRR1", &self.read(ApicRegister::XAPIC_IRR1))
+            .field("XAPIC_IRR2", &self.read(ApicRegister::XAPIC_IRR2))
+            .field("XAPIC_IRR3", &self.read(ApicRegister::XAPIC_IRR3))
+            .field("XAPIC_IRR4", &self.read(ApicRegister::XAPIC_IRR4))
+            .field("XAPIC_IRR5", &self.read(ApicRegister::XAPIC_IRR5))
+            .field("XAPIC_IRR6", &self.read(ApicRegister::XAPIC_IRR6))
+            .field("XAPIC_IRR7", &self.read(ApicRegister::XAPIC_IRR7))
+            .field("XAPIC_ESR", &self.read(ApicRegister::XAPIC_ESR))
+            .field("XAPIC_LVT_CMCI", &self.read(ApicRegister::XAPIC_LVT_CMCI))
+            .field("XAPIC_ICR0", &self.read(ApicRegister::XAPIC_ICR0))
+            .field("XAPIC_ICR1", &self.read(ApicRegister::XAPIC_ICR1))
+            .field("XAPIC_LVT_TIMER", &self.read(ApicRegister::XAPIC_LVT_TIMER))
+            .field(
+                "XAPIC_LVT_THERMAL",
+                &self.read(ApicRegister::XAPIC_LVT_THERMAL),
+            )
+            .field("XAPIC_LVT_PMI", &self.read(ApicRegister::XAPIC_LVT_PMI))
+            .field("XAPIC_LVT_LINT0", &self.read(ApicRegister::XAPIC_LVT_LINT0))
+            .field("XAPIC_LVT_LINT1", &self.read(ApicRegister::XAPIC_LVT_LINT1))
+            .field("XAPIC_LVT_ERROR", &self.read(ApicRegister::XAPIC_LVT_ERROR))
+            .field(
+                "XAPIC_TIMER_INIT_COUNT",
+                &self.read(ApicRegister::XAPIC_TIMER_INIT_COUNT),
+            )
+            .field(
+                "XAPIC_TIMER_CURRENT_COUNT",
+                &self.read(ApicRegister::XAPIC_TIMER_CURRENT_COUNT),
+            )
+            .field(
+                "XAPIC_TIMER_DIV_CONF",
+                &self.read(ApicRegister::XAPIC_TIMER_DIV_CONF),
+            )
+            .finish()
+    }
 }
 
 impl XAPIC {
@@ -218,9 +281,14 @@ impl XAPIC {
     pub fn attach(&mut self) {
         // Enable
         unsafe {
+            // Enable xAPIC globally
             self.base = rdmsr(IA32_APIC_BASE);
-            self.base.set_bit(11, true); // Enable xAPIC
+            self.base.set_bit(11, true);
             wrmsr(IA32_APIC_BASE, self.base);
+
+            // Enable this XAPIC (set bit 8, spurious IRQ vector 15)
+            let svr: u32 = 1 << 8 | 15;
+            self.write(ApicRegister::XAPIC_SVR, svr);
         }
     }
 
@@ -274,7 +342,7 @@ impl ApicControl for XAPIC {
         let mut lvt: u32 = self.read(ApicRegister::XAPIC_LVT_TIMER);
         lvt &= !0xff;
         lvt |= vector as u32;
-        
+
         lvt.set_bit(16, false);
         lvt.set_bit(17, false);
         lvt.set_bit(18, true);

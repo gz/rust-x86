@@ -4,7 +4,8 @@ use bit_field::BitField;
 use super::{ApicControl, ApicId, Icr};
 use crate::msr::{
     rdmsr, wrmsr, IA32_APIC_BASE, IA32_TSC_DEADLINE, IA32_X2APIC_APICID, IA32_X2APIC_ESR,
-    IA32_X2APIC_LVT_LINT0, IA32_X2APIC_LVT_TIMER, IA32_X2APIC_SELF_IPI, IA32_X2APIC_VERSION,
+    IA32_X2APIC_LVT_LINT0, IA32_X2APIC_LVT_TIMER, IA32_X2APIC_SELF_IPI, IA32_X2APIC_SIVR,
+    IA32_X2APIC_VERSION,
 };
 
 /// Represents an x2APIC driver instance.
@@ -28,10 +29,15 @@ impl X2APIC {
     pub fn attach(&mut self) {
         // Enable
         unsafe {
+            // Enable x2APIC mode globally
             self.base = rdmsr(IA32_APIC_BASE);
             self.base.set_bit(10, true); // Enable x2APIC
             self.base.set_bit(11, true); // Enable xAPIC
             wrmsr(IA32_APIC_BASE, self.base);
+
+            // Enable this XAPIC (set bit 8, spurious IRQ vector 15)
+            let svr: u64 = 1 << 8 | 15;
+            wrmsr(IA32_X2APIC_SIVR, svr);
 
             //TODO: let mut lint0 = rdmsr(IA32_X2APIC_LVT_LINT0);
             // TODO: Fix magic number
@@ -79,8 +85,14 @@ impl ApicControl for X2APIC {
     fn tsc_enable(&mut self, vector: u8) {
         unsafe {
             let mut lvt: u64 = rdmsr(IA32_X2APIC_LVT_TIMER);
-            lvt &= !(1 << 17);
-            lvt |= 1 << 18;
+            // Set vector
+            lvt &= !0xff;
+            lvt |= vector as u64;
+            // Unmask timer IRQ
+            lvt.set_bit(16, false);
+            // Enable TSC deadline mode
+            lvt.set_bit(17, false);
+            lvt.set_bit(18, false);
             wrmsr(IA32_X2APIC_LVT_TIMER, lvt);
         }
     }
