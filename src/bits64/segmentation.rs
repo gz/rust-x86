@@ -177,6 +177,7 @@ pub unsafe fn rdfsbase() -> u64 {
 }
 
 /// "Dereferences" the fs register at offset 0.
+#[cfg(target_arch = "x86_64")]
 pub unsafe fn fs_deref() -> u64 {
     let fs: u64;
     llvm_asm!("movq %fs:0x0, $0" : "=r" (fs) );
@@ -184,6 +185,7 @@ pub unsafe fn fs_deref() -> u64 {
 }
 
 /// "Dereferences" the gs register at offset 0.
+#[cfg(target_arch = "x86_64")]
 pub unsafe fn gs_deref() -> u64 {
     let gs: u64;
     llvm_asm!("movq %gs:0x0, $0" : "=r" (gs) );
