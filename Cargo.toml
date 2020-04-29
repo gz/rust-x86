@@ -1,6 +1,6 @@
 [package]
 name = "x86"
-version = "0.32.0"
+version = "0.33.0"
 authors = [
   "Gerd Zellweger <mail@gerdzellweger.com>",
   "Eric Kidd <git@randomhacks.net>",
@@ -47,7 +47,7 @@ serde_json = { version = "1.0.39", optional = true }
 [dependencies]
 bitflags = "1.*"
 bit_field = "0.10.0"
-raw-cpuid = "7.0.*"
+raw-cpuid = "8.0.*"
 
 [dependencies.phf]
 version = "0.7.7"
