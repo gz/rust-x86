@@ -11,7 +11,7 @@ authors = [
   "Brian Martin <bmartin@twitter.com>",
   "Caleb Boylan <calebboylan@gmail.com>",
   "Nikolay Edigaryev <edigaryev@gmail.com>",
-  "Stefan Lankes <stlankes@users.noreply.github.com>",
+  "Stefan Lankes <stlankes@eonerc.rwth-aachen.de>",
   "Jonathan Klimt <jonathan.klimt@rwth-aachen.de>"
 ]
 
@@ -47,7 +47,7 @@ serde_json = { version = "1.0.39", optional = true }
 [dependencies]
 bitflags = "1.*"
 bit_field = "0.10.0"
-raw-cpuid = "8.0.*"
+raw-cpuid = "8.1.*"
 
 [dependencies.phf]
 version = "0.7.7"
