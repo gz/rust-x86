@@ -4,6 +4,7 @@ use bitflags::*;
 
 use core::convert::{From, Into};
 use core::fmt;
+use core::hash::{Hash, Hasher};
 use core::ops;
 
 macro_rules! check_flag {
@@ -348,6 +349,12 @@ impl fmt::Pointer for PAddr {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         use core::fmt::LowerHex;
         self.0.fmt(f)
+    }
+}
+
+impl Hash for PAddr {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        self.0.hash(state);
     }
 }
 
@@ -727,6 +734,12 @@ impl fmt::Pointer for VAddr {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         use core::fmt::LowerHex;
         self.0.fmt(f)
+    }
+}
+
+impl Hash for VAddr {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        self.0.hash(state);
     }
 }
 
