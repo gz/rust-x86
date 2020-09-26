@@ -55,7 +55,7 @@ optional = true
 features = ["core"]
 
 [target.'cfg(target_family = "unix")'.dev-dependencies]
-klogger = { version = "0.0.4", features = ["use_ioports"] }
+klogger = { version = "0.0.6", features = ["use_ioports"] }
 x86test = { version = "0.0.2" }
 libc = "0.2.*"
 
