@@ -130,6 +130,15 @@ pub enum ApicId {
     X2Apic(u32),
 }
 
+impl Into<usize> for ApicId {
+    fn into(self) -> usize {
+        match self {
+            ApicId::XApic(id) => id as usize,
+            ApicId::X2Apic(id) => id as usize,
+        }
+    }
+}
+
 /// Abstracts common interface of local APIC (x2APIC, xAPIC) hardware devices.
 pub trait ApicControl {
     /// Is a bootstrap processor?
