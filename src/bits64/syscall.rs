@@ -14,7 +14,6 @@
 //! * Only values of class INTEGER or class MEMORY are passed to the kernel.
 //!
 //! This code is inspired by the syscall.rs (https://github.com/kmcallister/syscall.rs/) project.
-//!
 #[macro_export]
 macro_rules! syscall {
     ($arg0:expr) => {

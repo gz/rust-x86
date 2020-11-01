@@ -327,6 +327,10 @@ impl ApicControl for XAPIC {
         self.read(ApicRegister::XAPIC_ID)
     }
 
+    fn logical_id(&self) -> u32 {
+        self.read(ApicRegister::XAPIC_LDR)
+    }
+
     /// Read APIC version
     fn version(&self) -> u32 {
         self.read(ApicRegister::XAPIC_VERSION)
@@ -358,7 +362,7 @@ impl ApicControl for XAPIC {
 
     /// Send a INIT IPI to a core.
     unsafe fn ipi_init(&mut self, core: ApicId) {
-        let icr = Icr::new(
+        let icr = Icr::for_xapic(
             0,
             core,
             DestinationShorthand::NoShorthand,
@@ -373,7 +377,7 @@ impl ApicControl for XAPIC {
 
     /// Deassert INIT IPI.
     unsafe fn ipi_init_deassert(&mut self) {
-        let icr = Icr::new(
+        let icr = Icr::for_xapic(
             0,
             ApicId::XApic(0),
             // INIT deassert is always sent to everyone, so we are supposed to specify:
@@ -389,7 +393,7 @@ impl ApicControl for XAPIC {
 
     /// Send a STARTUP IPI to a core.
     unsafe fn ipi_startup(&mut self, core: ApicId, start_page: u8) {
-        let icr = Icr::new(
+        let icr = Icr::for_xapic(
             start_page,
             core,
             DestinationShorthand::NoShorthand,

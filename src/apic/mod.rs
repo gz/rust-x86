@@ -1,5 +1,7 @@
 //! Register information and driver to program xAPIC, X2APIC and I/O APIC
 
+use bit_field::BitField;
+
 pub mod ioapic;
 pub mod x2apic;
 pub mod xapic;
@@ -81,9 +83,31 @@ pub enum DestinationShorthand {
 pub struct Icr(u64);
 
 impl Icr {
-    /// Short-hand to create a Icr value.
-    #[allow(clippy::too_many_arguments)]
-    pub fn new(
+    fn id_to_xapic_destination(destination: ApicId) -> u64 {
+        // XApic destination are encoded in bytes 56--63 in the Icr
+        match destination {
+            ApicId::XApic(d) => (d as u64) << 56,
+            ApicId::X2Apic(_d) => {
+                unreachable!("x2APIC IDs are not supported for xAPIC (use the x2APIC controller)")
+            }
+        }
+    }
+
+    fn id_to_x2apic_destination(destination: ApicId) -> u64 {
+        // whereas, X2Apic destinations are encoded in bytes 32--63 in the Icr
+        // The ACPI tables will can name the first 255 processors
+        // with xAPIC IDs and no x2APIC entry exists in SRAT
+        // However, the IDs should be compatible (I hope)
+        let d: u64 = match destination {
+            ApicId::XApic(d) => d as u64,
+            ApicId::X2Apic(d) => d as u64,
+        };
+
+        d << 32
+    }
+
+    fn new(
+        dest_encoder: fn(ApicId) -> u64,
         vector: u8,
         destination: ApicId,
         destination_shorthand: DestinationShorthand,
@@ -93,14 +117,7 @@ impl Icr {
         level: Level,
         trigger_mode: TriggerMode,
     ) -> Icr {
-        let destination: u8 = match destination {
-            ApicId::XApic(d) => d,
-            ApicId::X2Apic(_d) => {
-                unreachable!("x2APIC destinations currently unsupported, adjust Icr construction!")
-            }
-        };
-
-        Icr((destination as u64) << 56
+        Icr(dest_encoder(destination)
             | (destination_shorthand as u64) << 18
             | (trigger_mode as u64) << 15
             | (level as u64) << 14
@@ -108,6 +125,55 @@ impl Icr {
             | (destination_mode as u64) << 11
             | (delivery_mode as u64) << 8
             | (vector as u64))
+    }
+
+    /// Short-hand to create a Icr value that will work for an x2APIC controller.
+    #[allow(clippy::too_many_arguments)]
+    pub fn for_x2apic(
+        vector: u8,
+        destination: ApicId,
+        destination_shorthand: DestinationShorthand,
+        delivery_mode: DeliveryMode,
+        destination_mode: DestinationMode,
+        delivery_status: DeliveryStatus,
+        level: Level,
+        trigger_mode: TriggerMode,
+    ) -> Icr {
+        Icr::new(
+            Icr::id_to_x2apic_destination,
+            vector,
+            destination,
+            destination_shorthand,
+            delivery_mode,
+            destination_mode,
+            delivery_status,
+            level,
+            trigger_mode,
+        )
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    pub fn for_xapic(
+        vector: u8,
+        destination: ApicId,
+        destination_shorthand: DestinationShorthand,
+        delivery_mode: DeliveryMode,
+        destination_mode: DestinationMode,
+        delivery_status: DeliveryStatus,
+        level: Level,
+        trigger_mode: TriggerMode,
+    ) -> Icr {
+        Icr::new(
+            Icr::id_to_xapic_destination,
+            vector,
+            destination,
+            destination_shorthand,
+            delivery_mode,
+            destination_mode,
+            delivery_status,
+            level,
+            trigger_mode,
+        )
     }
 
     /// Get lower 32-bits of the Icr register.
@@ -130,6 +196,43 @@ pub enum ApicId {
     X2Apic(u32),
 }
 
+impl ApicId {
+    /// Returns the Logical x2APIC ID.
+    ///
+    /// In x2APIC mode, the 32-bit logical x2APIC ID, which can be read from LDR,
+    /// is derived from the 32-bit local x2APIC ID:
+    /// Logical x2APIC ID = [(x2APIC ID[19:4] « 16) | (1 « x2APIC ID[3:0])]
+    pub fn x2apic_logical_id(&self) -> u32 {
+        self.x2apic_logical_cluster_id() << 16 | 1 << self.x2apic_logical_cluster_address()
+    }
+
+    /// Returns the logical address relative to a cluster
+    /// for a given APIC ID (assuming x2APIC addressing).
+    pub fn x2apic_logical_cluster_address(&self) -> u32 {
+        let d = match *self {
+            // We support conversion for XApic IDs too because ACPI can
+            // report <255 cores as XApic entries
+            ApicId::XApic(id) => id as u32,
+            ApicId::X2Apic(id) => id as u32,
+        };
+
+        d.get_bits(0..=3)
+    }
+
+    /// Returns the cluster ID a given APIC ID belongs to
+    /// (assuming x2APIC addressing).
+    pub fn x2apic_logical_cluster_id(&self) -> u32 {
+        let d = match *self {
+            // We support conversion for XApic IDs too because ACPI can
+            // report <255 cores as XApic entries
+            ApicId::XApic(id) => id as u32,
+            ApicId::X2Apic(id) => id as u32,
+        };
+
+        d.get_bits(4..=19)
+    }
+}
+
 impl Into<usize> for ApicId {
     fn into(self) -> usize {
         match self {
@@ -146,6 +249,9 @@ pub trait ApicControl {
 
     /// Return APIC ID.
     fn id(&self) -> u32;
+
+    /// Returns the logical APIC ID.
+    fn logical_id(&self) -> u32;
 
     /// Read APIC version
     fn version(&self) -> u32;
