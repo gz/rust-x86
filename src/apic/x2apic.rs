@@ -89,14 +89,14 @@ impl ApicControl for X2APIC {
     fn tsc_enable(&mut self, vector: u8) {
         unsafe {
             let mut lvt: u64 = rdmsr(IA32_X2APIC_LVT_TIMER);
-            // Set vector
             lvt &= !0xff;
             lvt |= vector as u64;
+
             // Unmask timer IRQ
             lvt.set_bit(16, false);
             // Enable TSC deadline mode
             lvt.set_bit(17, false);
-            lvt.set_bit(18, false);
+            lvt.set_bit(18, true);
             wrmsr(IA32_X2APIC_LVT_TIMER, lvt);
         }
     }
