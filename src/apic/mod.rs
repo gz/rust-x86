@@ -36,7 +36,7 @@ pub enum DeliveryMode {
     StartUp = 0b110,
 }
 
-/// Sepcify IPI Destination Mode.
+/// Specify IPI Destination Mode.
 #[derive(Debug, Eq, PartialEq)]
 #[repr(u64)]
 pub enum DestinationMode {
