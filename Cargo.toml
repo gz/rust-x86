@@ -40,22 +40,22 @@ name = "kvm"
 path = "tests/kvm/bin.rs"
 
 [build-dependencies]
-phf_codegen = { version = "0.7", optional = true }
-csv = { version = "1.0.7", optional = true }
-serde_json = { version = "1.0.39", optional = true }
+phf_codegen = { version = "0.8.0", optional = true }
+csv = { version = "1.1.5", optional = true }
+serde_json = { version = "1.0.61", optional = true }
 
 [dependencies]
 bitflags = "1.*"
-bit_field = "0.10.0"
-raw-cpuid = "8.1.*"
+bit_field = "0.10.1"
+raw-cpuid = "9.0.0"
 
 [dependencies.phf]
-version = "0.7.7"
+version = "0.8.0"
+default-features = false # So phf uses libcore instead of libstd
 optional = true
-features = ["core"]
 
 [target.'cfg(target_family = "unix")'.dev-dependencies]
-klogger = { version = "0.0.4", features = ["use_ioports"] }
-x86test = { version = "0.0.2" }
+klogger = { version = "0.0.6", features = ["use_ioports"] }
+x86test = { version = "0.0.3" }
 libc = "0.2.*"
 
