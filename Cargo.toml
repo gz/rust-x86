@@ -59,6 +59,6 @@ optional = true
 
 [target.'cfg(target_family = "unix")'.dev-dependencies]
 klogger = { version = "0.0.6", features = ["use_ioports"] }
-x86test = { version = "0.0.3" }
+x86test = { path = "x86test" }
 libc = "0.2.*"
 
