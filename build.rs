@@ -361,8 +361,7 @@ mod performance_counter {
                 );
             }
         }
-        builder.build(file).unwrap();
-        write!(file, ";\n").unwrap();
+        writeln!(file, "{};", builder.build()).unwrap();
         file.flush().ok();
         // Make sure builder entries stay around (see unsafe above), and we don't accidentially drop it
         assert!(builder_values.len() > 0);
@@ -457,15 +456,13 @@ mod performance_counter {
         }
 
         // Next, we write this hash-table (COUNTER_MAP) into our generated rust code file:
-        write!(
+        writeln!(
             &mut filewriter,
-            "pub static {}: phf::Map<&'static str, phf::Map<&'static str, \
-             EventDescription<'static>>> = ",
-            "COUNTER_MAP"
+            "pub static COUNTER_MAP: phf::Map<&'static str, phf::Map<&'static str, \
+             EventDescription<'static>>> = {};",
+            builder.build()
         )
         .unwrap();
-        builder.build(&mut filewriter).unwrap();
-        write!(&mut filewriter, ";\n").unwrap();
 
         // Now, parse all JSON files with event data for each architecture and generate hash-tables
         let mut architectures: HashMap<String, Vec<String>> = HashMap::new();
