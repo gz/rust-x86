@@ -15,4 +15,4 @@ Common types for x86test runnter and the x86test procedural macro.
 """
 
 [dependencies]
-x86 = "0.32"
+x86 = {path = "../.."}

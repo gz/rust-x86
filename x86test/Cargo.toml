@@ -16,8 +16,8 @@ Custom test runner for bare-metal x86 tests.
 """
 
 [dependencies]
-x86test-macro = { path = "x86test_macro", version = "0.0.3" }
-x86test-types = { path = "x86test_types", version = "0.0.3" }
+x86test-macro = { path = "x86test_macro" }
+x86test-types = { path = "x86test_types" }
 kvm-sys = "0.3.0"
 x86 = "0.36.0"
 mmap = "0.1.1"
