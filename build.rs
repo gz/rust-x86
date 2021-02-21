@@ -74,15 +74,15 @@ mod performance_counter {
 
     fn parse_counter_values(value_str: &str) -> u64 {
         value_str
-            .split(",")
+            .split(',')
             .map(|x| x.trim())
-            .filter(|x| x.len() > 0)
+            .filter(|x| !x.is_empty())
             .map(|x| match u64::from_str_radix(&x, 10) {
                 Ok(u) => u,
                 Err(e) => panic!("{}: Can not parse {} in {}", e, x, value_str),
             })
             .fold(0, |acc, c| {
-                if !(c < 8) {
+                if c >= 8 {
                     panic!("unexpected counter value: {}", value_str);
                 }
                 assert!(c < 8);
@@ -188,7 +188,7 @@ mod performance_counter {
                         let value_string = value.as_str().unwrap_or("unknown");
                         let value_str = string_to_static_str(value_string).trim();
                         let split_str_parts: Vec<&str> =
-                            value_string.split(",").map(|x| x.trim()).collect();
+                            value_string.split(',').map(|x| x.trim()).collect();
 
                         match key.as_str() {
                             "EventName" => {
@@ -333,11 +333,8 @@ mod performance_counter {
                     );
 
                     //println!("{:?}", ipcd.event_name);
-                    if do_insert == true {
-                        builder_values.insert(
-                            String::from(ipcd.event_name),
-                            String::from(format!("{:?}", ipcd)),
-                        );
+                    if do_insert {
+                        builder_values.insert(String::from(ipcd.event_name), format!("{:?}", ipcd));
                     }
                 }
             } else {
@@ -364,7 +361,7 @@ mod performance_counter {
         writeln!(file, "{};", builder.build()).unwrap();
         file.flush().ok();
         // Make sure builder entries stay around (see unsafe above), and we don't accidentially drop it
-        assert!(builder_values.len() > 0);
+        assert!(!builder_values.is_empty());
     }
 
     fn make_file_name<'a>(path: &'a Path) -> (String, String) {
@@ -444,10 +441,7 @@ mod performance_counter {
                 let (ref family_model, _, _): (String, String, String) = *data;
                 if !inserted.contains_key(&family_model.to_string()) {
                     // Hashes things like this: GenuineIntel-6-25 -> WESTMERE_EP_SP
-                    builder.entry(
-                        family_model.as_str(),
-                        format!("{}", variable_upper.as_str()).as_str(),
-                    );
+                    builder.entry(family_model.as_str(), variable_upper.as_str());
                     inserted.insert(family_model.clone(), true);
                 } else {
                     // ignore
@@ -466,7 +460,7 @@ mod performance_counter {
 
         // Now, parse all JSON files with event data for each architecture and generate hash-tables
         let mut architectures: HashMap<String, Vec<String>> = HashMap::new();
-        for (file, _) in &data_files {
+        for file in data_files.keys() {
             let path = Path::new(file.as_str());
             let (_, ref variable_upper) = make_file_name(&path);
 
