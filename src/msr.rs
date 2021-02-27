@@ -213,6 +213,9 @@ pub const MSR_BBL_CR_CTL: u32 = 0x119;
 
 pub const MSR_BBL_CR_CTL3: u32 = 0x11e;
 
+/// TSX Ctrl Register for TSX Async Abot (TAA) Migration. See Volume 3A, Section 2.1, Table 2-2.
+pub const MSR_IA32_TSX_CTRL: u32 = 0x122;
+
 /// CS register target for CPL 0 code (R/W) See Table 35-2. See Section 5.8.7, Performing Fast Calls to  System Procedures with the SYSENTER and  SYSEXIT Instructions.
 pub const IA32_SYSENTER_CS: u32 = 0x174;
 
