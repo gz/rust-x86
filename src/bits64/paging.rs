@@ -65,6 +65,11 @@ impl PAddr {
         self == PAddr::zero()
     }
 
+    /// Split `PAddr` into lower and higher 32-bits.
+    pub fn split(&self) -> (u32, u32) {
+        (self.0 as u32, (self.0 >> 32) as u32)
+    }
+
     fn align_up<U>(self, align: U) -> Self
     where
         U: Into<u64>,
