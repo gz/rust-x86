@@ -58,7 +58,7 @@ default-features = false # So phf uses libcore instead of libstd
 optional = true
 
 [target.'cfg(target_family = "unix")'.dev-dependencies]
-klogger = { version = "0.0.6", features = ["use_ioports"] }
+klogger = { version = "0.0.7", features = ["use_ioports"] }
 x86test = { path = "x86test" }
 libc = "0.2.*"
 
