@@ -7,6 +7,7 @@ pub mod x2apic;
 pub mod xapic;
 
 /// Specify IPI Delivery Mode
+#[allow(clippy::upper_case_acronyms)]
 #[derive(Debug, Eq, PartialEq)]
 #[repr(u64)]
 pub enum DeliveryMode {
@@ -106,6 +107,7 @@ impl Icr {
         d << 32
     }
 
+    #[allow(clippy::too_many_arguments)]
     fn new(
         dest_encoder: fn(ApicId) -> u64,
         vector: u8,
@@ -233,6 +235,7 @@ impl ApicId {
     }
 }
 
+#[allow(clippy::clippy::from_over_into)]
 impl Into<usize> for ApicId {
     fn into(self) -> usize {
         match self {
@@ -266,14 +269,26 @@ pub trait ApicControl {
     fn tsc_set(&self, value: u64);
 
     /// Send a INIT IPI to a core.
+    ///
+    /// # Safety
+    /// Should only be used to reset or boot a new core.
     unsafe fn ipi_init(&mut self, core: ApicId);
 
     /// Deassert INIT IPI.
+    ///
+    /// # Safety
+    /// Should only be used to reset or boot a new core.
     unsafe fn ipi_init_deassert(&mut self);
 
     /// Send a STARTUP IPI to a core.
+    ///
+    /// # Safety
+    /// Should only be used to reset or boot a new core.
     unsafe fn ipi_startup(&mut self, core: ApicId, start_page: u8);
 
     /// Send a generic IPI.
+    ///
+    /// # Safety
+    /// Interrupts one or multiple cores.
     unsafe fn send_ipi(&mut self, icr: Icr);
 }

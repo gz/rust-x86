@@ -71,22 +71,22 @@ impl RFlags {
     }
 
     pub const fn from_raw(bits: u64) -> RFlags {
-        RFlags { bits: bits }
+        RFlags { bits }
     }
 }
 
 #[cfg(target_arch = "x86_64")]
 #[inline(always)]
-pub unsafe fn read() -> RFlags {
+pub fn read() -> RFlags {
     let r: u64;
-    llvm_asm!("pushfq; popq $0" : "=r"(r) :: "memory");
+    unsafe { llvm_asm!("pushfq; popq $0" : "=r"(r) :: "memory") };
     RFlags::from_bits_truncate(r)
 }
 
 #[cfg(target_arch = "x86_64")]
 #[inline(always)]
-pub unsafe fn set(val: RFlags) {
-    llvm_asm!("pushq $0; popfq" :: "r"(val.bits()) : "memory" "flags");
+pub fn set(val: RFlags) {
+    unsafe { llvm_asm!("pushq $0; popfq" :: "r"(val.bits()) : "memory" "flags") };
 }
 
 // clac and stac are also usable in 64-bit mode

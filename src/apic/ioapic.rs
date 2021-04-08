@@ -34,6 +34,10 @@ pub struct IoApic {
 }
 
 impl IoApic {
+    /// Instantiate a new IoApic.
+    ///
+    /// # Safety
+    /// `addr` must point to the base of the IoApic.
     pub unsafe fn new(addr: usize) -> Self {
         IoApic {
             reg: addr as *mut u32,

@@ -178,12 +178,14 @@ impl From<i32> for PAddr {
     }
 }
 
+#[allow(clippy::clippy::from_over_into)]
 impl Into<u64> for PAddr {
     fn into(self) -> u64 {
         self.0
     }
 }
 
+#[allow(clippy::clippy::from_over_into)]
 impl Into<usize> for PAddr {
     fn into(self) -> usize {
         self.0 as usize
@@ -357,6 +359,7 @@ impl fmt::Pointer for PAddr {
     }
 }
 
+#[allow(clippy::clippy::derive_hash_xor_eq)]
 impl Hash for PAddr {
     fn hash<H: Hasher>(&self, state: &mut H) {
         self.0.hash(state);
@@ -511,6 +514,7 @@ impl From<i32> for VAddr {
     }
 }
 
+#[allow(clippy::clippy::from_over_into)]
 impl Into<u64> for VAddr {
     fn into(self) -> u64 {
         self.0
@@ -523,6 +527,7 @@ impl From<usize> for VAddr {
     }
 }
 
+#[allow(clippy::clippy::from_over_into)]
 impl Into<usize> for VAddr {
     fn into(self) -> usize {
         self.0 as usize
@@ -742,6 +747,7 @@ impl fmt::Pointer for VAddr {
     }
 }
 
+#[allow(clippy::clippy::derive_hash_xor_eq)]
 impl Hash for VAddr {
     fn hash<H: Hasher>(&self, state: &mut H) {
         self.0.hash(state);
@@ -789,6 +795,7 @@ pub const PAGE_SIZE_ENTRIES: usize = 512;
 pub type PML4 = [PML4Entry; PAGE_SIZE_ENTRIES];
 
 /// A page directory pointer table.
+#[allow(clippy::clippy::upper_case_acronyms)]
 pub type PDPT = [PDPTEntry; PAGE_SIZE_ENTRIES];
 
 /// A page directory.

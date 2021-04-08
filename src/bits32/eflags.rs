@@ -86,7 +86,7 @@ pub unsafe fn set(val: EFlags) {
 /// If the SMAP bit is set in the CR4 register, this disallows
 /// explicit supervisor-mode data accesses to user-mode pages.
 ///
-/// # Unsafe
+/// # Safety
 ///
 /// This instruction is only valid in Ring 0 and requires
 /// that the CPU supports the instruction (check CPUID).
@@ -101,7 +101,7 @@ pub unsafe fn clac() {
 /// This allows explicit supervisor-mode data accesses to user-mode
 /// pages even if the SMAP bit is set in the CR4 register.
 ///
-/// # Unsafe
+/// # Safety
 ///
 /// This instruction is only valid in Ring 0 and requires
 /// that the CPU supports the instruction (check CPUID).

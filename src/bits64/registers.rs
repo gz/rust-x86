@@ -15,7 +15,7 @@ pub fn rsp() -> u64 {
     unsafe {
         llvm_asm!("mov %rsp, $0" : "=r" (rsp) ::);
     }
-    return rsp;
+    rsp
 }
 
 /// Read the RBP register (base pointer register).
@@ -25,5 +25,5 @@ pub fn rbp() -> u64 {
     unsafe {
         llvm_asm!("mov %rbp, $0" : "=r" (rbp) ::);
     }
-    return rbp;
+    rbp
 }

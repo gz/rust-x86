@@ -11,22 +11,22 @@ use bit_field::BitField;
 use super::*;
 use crate::msr::{rdmsr, wrmsr, IA32_APIC_BASE, IA32_TSC_DEADLINE};
 
-///	Local APIC ID register. Read-only. See Section 10.12.5.1 for initial values.
+/// Local APIC ID register. Read-only. See Section 10.12.5.1 for initial values.
 pub const XAPIC_ID: u32 = 0x020;
 
-///	Local APIC Version register. Read-only. Same version used in xAPIC mode and x2APIC mode.
+/// Local APIC Version register. Read-only. Same version used in xAPIC mode and x2APIC mode.
 pub const XAPIC_VERSION: u32 = 0x030;
 
-///	Task Priority Register (TPR). Read/write. Bits 31:8 are reserved.
+/// Task Priority Register (TPR). Read/write. Bits 31:8 are reserved.
 pub const XAPIC_TPR: u32 = 0x080;
 
-///	Processor Priority Register (PPR). Read-only.
+/// Processor Priority Register (PPR). Read-only.
 pub const XAPIC_PPR: u32 = 0x0A0;
 
-///	EOI register. Write-only.
+/// EOI register. Write-only.
 pub const XAPIC_EOI: u32 = 0x0B0;
 
-///	Logical Destination Register (LDR). Read/write in xAPIC mode.
+/// Logical Destination Register (LDR). Read/write in xAPIC mode.
 pub const XAPIC_LDR: u32 = 0x0D0;
 
 /// Spurious Interrupt Vector Register (SVR). Read/write. See Section 10.9 for reserved bits.
@@ -193,6 +193,7 @@ enum ApicRegister {
 }
 
 /// State for the XAPIC driver.
+#[allow(clippy::clippy::upper_case_acronyms)]
 pub struct XAPIC {
     /// Reference to the xAPCI region
     mmio_region: &'static mut [u32],

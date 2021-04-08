@@ -84,7 +84,7 @@ pub enum Ring {
 /// the saved instruction pointer (CS:EIP) points to the instruction following
 /// the HLT instruction.
 ///
-/// # Unsafe
+/// # Safety
 /// Will cause a general protection fault if used outside of ring 0.
 #[inline(always)]
 pub unsafe fn halt() {
@@ -110,13 +110,13 @@ mod x86testing {
 /// Reads the value of the IA32_TSC_AUX MSR (address C0000103H)
 /// into the destination register.
 ///
-/// # Unsafe
+/// # Safety
 /// May fail with #UD if rdpid is not supported (check CPUID).
 #[inline(always)]
 pub unsafe fn rdpid() -> u64 {
     let mut pid: u64;
     llvm_asm!("rdpid $0" : "=r"(pid));
-    return pid;
+    pid
 }
 
 #[cfg(all(test, feature = "utest"))]

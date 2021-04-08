@@ -15,14 +15,20 @@ pub struct X2APIC {
     base: u64,
 }
 
-impl X2APIC {
-    /// Create a new x2APIC driver object for the local core.
-    pub fn new() -> X2APIC {
+impl Default for X2APIC {
+    fn default() -> Self {
         unsafe {
             X2APIC {
                 base: rdmsr(IA32_APIC_BASE),
             }
         }
+    }
+}
+
+impl X2APIC {
+    /// Create a new x2APIC driver object for the local core.
+    pub fn new() -> X2APIC {
+        Default::default()
     }
 
     /// Attach to APIC (enable x2APIC mode, initialize LINT0)
@@ -58,6 +64,9 @@ impl X2APIC {
     }
 
     /// Send an IPI to yourself.
+    ///
+    /// # Safety
+    /// Will interrupt core with `vector`.
     pub unsafe fn send_self_ipi(&self, vector: u64) {
         wrmsr(IA32_X2APIC_SELF_IPI, vector);
     }
