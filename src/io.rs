@@ -1,12 +1,18 @@
 //! I/O port functionality.
 
 /// Write 8 bits to port
+///
+/// # Safety
+/// Needs IO privileges.
 #[inline]
 pub unsafe fn outb(port: u16, val: u8) {
     llvm_asm!("outb %al, %dx" :: "{dx}"(port), "{al}"(val));
 }
 
 /// Read 8 bits from port
+///
+/// # Safety
+/// Needs IO privileges.
 #[inline]
 pub unsafe fn inb(port: u16) -> u8 {
     let ret: u8;
@@ -15,12 +21,18 @@ pub unsafe fn inb(port: u16) -> u8 {
 }
 
 /// Write 16 bits to port
+///
+/// # Safety
+/// Needs IO privileges.
 #[inline]
 pub unsafe fn outw(port: u16, val: u16) {
     llvm_asm!("outw %ax, %dx" :: "{dx}"(port), "{al}"(val));
 }
 
 /// Read 16 bits from port
+///
+/// # Safety
+/// Needs IO privileges.
 #[inline]
 pub unsafe fn inw(port: u16) -> u16 {
     let ret: u16;
@@ -29,12 +41,18 @@ pub unsafe fn inw(port: u16) -> u16 {
 }
 
 /// Write 32 bits to port
+///
+/// # Safety
+/// Needs IO privileges.
 #[inline]
 pub unsafe fn outl(port: u16, val: u32) {
     llvm_asm!("outl %eax, %dx" :: "{dx}"(port), "{al}"(val));
 }
 
 /// Read 32 bits from port
+///
+/// # Safety
+/// Needs IO privileges.
 #[inline]
 pub unsafe fn inl(port: u16) -> u32 {
     let ret: u32;

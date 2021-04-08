@@ -45,6 +45,7 @@ unsafe fn encls4(rax: u64, rbx: u64, rcx: u64, rdx: u64) -> (u32, u64) {
     (eax, out_rbx)
 }
 
+#[allow(clippy::upper_case_acronyms)]
 enum EnclsCommand {
     EADD = 0x01,
     EAUG = 0x0D,
@@ -69,6 +70,9 @@ enum EnclsCommand {
 /// # Arguments
 ///  * Address of a PAGEINFO.
 ///  * Address of the destination EPC page.
+///
+/// # Safety
+/// Requires SGX support.
 pub unsafe fn encls_eadd(pageinfo: u64, epc_page: u64) {
     encls!(EnclsCommand::EADD as u64, pageinfo, epc_page);
 }
@@ -78,6 +82,9 @@ pub unsafe fn encls_eadd(pageinfo: u64, epc_page: u64) {
 /// # Arguments
 ///  * Address of a SECINFO
 ///  * Address of the destination EPC page
+///
+/// # Safety
+/// Requires SGX support.
 pub unsafe fn encls_eaug(secinfo_address: u64, epc_page: u64) {
     encls!(EnclsCommand::EAUG as u64, secinfo_address, epc_page);
 }
@@ -86,6 +93,9 @@ pub unsafe fn encls_eaug(secinfo_address: u64, epc_page: u64) {
 ///
 /// # Arguments
 ///  * Effective address of the EPC page
+///
+/// # Safety
+/// Requires SGX support.
 pub unsafe fn encls_eblock(epc_page: u64) -> u32 {
     encls!(EnclsCommand::EBLOCK as u64, epc_page).0
 }
@@ -95,6 +105,9 @@ pub unsafe fn encls_eblock(epc_page: u64) -> u32 {
 /// # Arguments
 ///  * Address of a PAGEINFO
 ///  * Address of the destination SECS page
+///
+/// # Safety
+/// Requires SGX support.
 pub unsafe fn encls_create(pageinfo: u64, secs_page: u64) {
     encls!(EnclsCommand::ECREATE as u64, pageinfo, secs_page);
 }
@@ -106,6 +119,9 @@ pub unsafe fn encls_create(pageinfo: u64, secs_page: u64) {
 ///
 /// # Arguments
 ///  * Address of source memory in the EPC
+///
+/// # Safety
+/// Requires SGX support.
 pub unsafe fn encls_edbgrd(source_address: u64) -> u64 {
     encls!(EnclsCommand::EDBGRD as u64, source_address).1
 }
@@ -115,6 +131,9 @@ pub unsafe fn encls_edbgrd(source_address: u64) -> u64 {
 /// # Arguments
 ///  * Data to be written to a debug enclave
 ///  * Address of Target memory in the EPC
+///
+/// # Safety
+/// Requires SGX support.
 pub unsafe fn encls_edbgwr(data: u64, target_address: u64) {
     encls!(EnclsCommand::EDBGWR as u64, data, target_address);
 }
@@ -124,6 +143,9 @@ pub unsafe fn encls_edbgwr(data: u64, target_address: u64) {
 /// # Arguments
 ///  * Effective address of the SECS of the data chunk
 ///  * Effective address of a 256-byte chunk in the EPC
+///
+/// # Safety
+/// Requires SGX support.
 pub unsafe fn encls_eextend(secs_chunk: u64, epc_chunk: u64) {
     encls!(EnclsCommand::EEXTEND as u64, secs_chunk, epc_chunk);
 }
@@ -134,6 +156,9 @@ pub unsafe fn encls_eextend(secs_chunk: u64, epc_chunk: u64) {
 ///  * Address of SIGSTRUCT
 ///  * Address of SECS
 ///  * Address of EINITTOKEN
+///
+/// # Safety
+/// Requires SGX support.
 pub unsafe fn encls_einit(sigstruct: u64, secs: u64, einittoken: u64) -> u32 {
     encls!(EnclsCommand::EINIT as u64, sigstruct, secs, einittoken).0
 }
@@ -144,6 +169,9 @@ pub unsafe fn encls_einit(sigstruct: u64, secs: u64, einittoken: u64) -> u32 {
 ///  * Address of the PAGEINFO
 ///  * Address of the EPC page
 ///  * Address of the version-array slot
+///
+/// # Safety
+/// Requires SGX support.
 pub unsafe fn encls_eldb(pageinfo: u64, epc_page: u64, verion_array_slot: u64) -> u32 {
     encls!(
         EnclsCommand::ELDB as u64,
@@ -160,6 +188,9 @@ pub unsafe fn encls_eldb(pageinfo: u64, epc_page: u64, verion_array_slot: u64) -
 ///  * Address of the PAGEINFO
 ///  * Address of the EPC page
 ///  * Address of the version-array slot
+///
+/// # Safety
+/// Requires SGX support.
 pub unsafe fn encls_eldu(pageinfo: u64, epc_page: u64, verion_array_slot: u64) -> u32 {
     encls!(
         EnclsCommand::ELDU as u64,
@@ -175,6 +206,9 @@ pub unsafe fn encls_eldu(pageinfo: u64, epc_page: u64, verion_array_slot: u64) -
 /// # Arguments
 ///  * Address of a SECINFO
 ///  * Address of the destination EPC page
+///
+/// # Safety
+/// Requires SGX support.
 pub unsafe fn encls_emodpr(secinfo: u64, epc_page: u64) -> u32 {
     encls!(EnclsCommand::EMODPR as u64, secinfo, epc_page).0
 }
@@ -184,6 +218,9 @@ pub unsafe fn encls_emodpr(secinfo: u64, epc_page: u64) -> u32 {
 /// # Arguments
 ///  * Address of a SECINFO
 ///  * Address of the destination EPC page
+///
+/// # Safety
+/// Requires SGX support.
 pub unsafe fn encls_emodt(secinfo: u64, epc_page: u64) -> u32 {
     encls!(EnclsCommand::EMODT as u64, secinfo, epc_page).0
 }
@@ -193,6 +230,9 @@ pub unsafe fn encls_emodt(secinfo: u64, epc_page: u64) -> u32 {
 /// # Arguments
 ///  * PT_VA Constant
 ///  * Effective address of the EPC page
+///
+/// # Safety
+/// Requires SGX support.
 pub unsafe fn encls_epa(pt_va: u64, epc_page: u64) {
     encls!(EnclsCommand::EPA as u64, pt_va, epc_page);
 }
@@ -201,6 +241,9 @@ pub unsafe fn encls_epa(pt_va: u64, epc_page: u64) {
 ///
 /// # Arguments
 ///  * Effective address of the EPC page
+///
+/// # Safety
+/// Requires SGX support.
 pub unsafe fn encls_eremove(epc_page: u64) {
     encls!(EnclsCommand::EREMOVE as u64, epc_page);
 }
@@ -209,6 +252,9 @@ pub unsafe fn encls_eremove(epc_page: u64) {
 ///
 /// # Arguments
 ///  * Pointer to the SECS of the EPC page.
+///
+/// # Safety
+/// Requires SGX support.
 pub unsafe fn encls_etrack(secs_pointer: u64) -> u32 {
     encls!(EnclsCommand::ETRACK as u64, secs_pointer).0
 }
@@ -218,6 +264,9 @@ pub unsafe fn encls_etrack(secs_pointer: u64) -> u32 {
 /// # Arguments
 ///  * Address of the EPC page.
 ///  * Address of a VA slot.
+///
+/// # Safety
+/// Requires SGX support.
 pub unsafe fn encls_ewb(pageinfo: u64, epc_page: u64, va_slot: u64) -> u32 {
     encls!(EnclsCommand::EWB as u64, pageinfo, epc_page, va_slot).0
 }
@@ -255,14 +304,14 @@ unsafe fn enclu4(rax: u64, rbx: u64, rcx: u64, rdx: u64) -> (u32, u64) {
 }
 
 enum EncluCommand {
-    EACCEPT = 0x05,
-    EACCEPTCOPY = 0x07,
-    EENTER = 0x02,
-    EEXIT = 0x04,
-    EGETKEY = 0x01,
-    EMODEPE = 0x06,
-    EREPORT = 0x00,
-    ERESUME = 0x03,
+    EAccept = 0x05,
+    EAcceptCopy = 0x07,
+    EEnter = 0x02,
+    EExit = 0x04,
+    EGetKey = 0x01,
+    EModePE = 0x06,
+    EReport = 0x00,
+    EResume = 0x03,
 }
 
 /// Accept Changes to an EPC Page.
@@ -272,8 +321,11 @@ enum EncluCommand {
 ///  * Address of the destination EPC page.
 ///
 /// Returns an error code.
+///
+/// # Safety
+/// Requires SGX support.
 pub unsafe fn enclu_eaccept(secinfo: u64, epc_page: u64) -> u32 {
-    enclu!(EncluCommand::EACCEPT as u64, secinfo, epc_page).0
+    enclu!(EncluCommand::EAccept as u64, secinfo, epc_page).0
 }
 
 /// Initialize a Pending Page.
@@ -284,13 +336,16 @@ pub unsafe fn enclu_eaccept(secinfo: u64, epc_page: u64) -> u32 {
 ///  * Address of the source EPC page.
 ///
 /// Returns an error code.
+///
+/// # Safety
+/// Requires SGX support.
 pub unsafe fn enclu_eacceptcopy(
     secinfo: u64,
     destination_epc_page: u64,
     source_epc_page: u64,
 ) -> u32 {
     enclu!(
-        EncluCommand::EACCEPTCOPY as u64,
+        EncluCommand::EAcceptCopy as u64,
         secinfo,
         destination_epc_page,
         source_epc_page
@@ -303,11 +358,14 @@ pub unsafe fn enclu_eacceptcopy(
 /// # Arguments
 ///  * Address of a TCS.
 ///  * Address of AEP.
-///  * Address of IP following EENTER.
+///  * Address of IP following EEnter.
 ///
-/// Returns content of RBX.CSSA and Address of IP following EENTER.
+/// Returns content of RBX.CSSA and Address of IP following EEnter.
+///
+/// # Safety
+/// Requires SGX support.
 pub unsafe fn enclu_eenter(tcs: u64, aep: u64) -> (u32, u64) {
-    enclu!(EncluCommand::EENTER as u64, tcs, aep)
+    enclu!(EncluCommand::EEnter as u64, tcs, aep)
 }
 
 /// Exits an Enclave.
@@ -315,8 +373,11 @@ pub unsafe fn enclu_eenter(tcs: u64, aep: u64) -> (u32, u64) {
 /// # Arguments
 ///  * Target address outside the enclave
 ///  * Address of the current AEP
+///
+/// # Safety
+/// Requires SGX support.
 pub unsafe fn enclu_eexit(ip: u64, aep: u64) {
-    enclu!(EncluCommand::EEXIT as u64, ip, aep);
+    enclu!(EncluCommand::EExit as u64, ip, aep);
 }
 
 /// Retrieves a Cryptographic Key.
@@ -324,8 +385,11 @@ pub unsafe fn enclu_eexit(ip: u64, aep: u64) {
 /// # Arguments
 ///  * Address to a KEYREQUEST
 ///  * Address of the OUTPUTDATA
+///
+/// # Safety
+/// Requires SGX support.
 pub unsafe fn enclu_egetkey(keyrequest: u64, outputdata: u64) {
-    enclu!(EncluCommand::EGETKEY as u64, keyrequest, outputdata);
+    enclu!(EncluCommand::EGetKey as u64, keyrequest, outputdata);
 }
 
 /// Extend an EPC Page Permissions.
@@ -333,8 +397,11 @@ pub unsafe fn enclu_egetkey(keyrequest: u64, outputdata: u64) {
 /// # Arguments
 ///  * Address of a SECINFO
 ///  * Address of the destination EPC page
+///
+/// # Safety
+/// Requires SGX support.
 pub unsafe fn enclu_emodepe(secinfo: u64, epc_page: u64) {
-    enclu!(EncluCommand::EMODEPE as u64, secinfo, epc_page);
+    enclu!(EncluCommand::EModePE as u64, secinfo, epc_page);
 }
 
 /// Create a Cryptographic Report of the Enclave.
@@ -343,9 +410,12 @@ pub unsafe fn enclu_emodepe(secinfo: u64, epc_page: u64) {
 ///  * Address of TARGETINFO
 ///  * Address of REPORTDATA
 ///  * Address where the REPORT is written to in an OUTPUTDATA
+///
+/// # Safety
+/// Requires SGX support.
 pub unsafe fn enclu_ereport(targetinfo: u64, reportdata: u64, outputdata: u64) {
     enclu!(
-        EncluCommand::EREPORT as u64,
+        EncluCommand::EReport as u64,
         targetinfo,
         reportdata,
         outputdata
@@ -357,6 +427,9 @@ pub unsafe fn enclu_ereport(targetinfo: u64, reportdata: u64, outputdata: u64) {
 /// # Arguments
 ///  * Address of a TCS.
 ///  * Address of AEP.
+///
+/// # Safety
+/// Requires SGX support.
 pub unsafe fn enclu_eresume(tcs: u64, aep: u64) {
-    enclu!(EncluCommand::ERESUME as u64, tcs, aep);
+    enclu!(EncluCommand::EResume as u64, tcs, aep);
 }

@@ -11,6 +11,9 @@ pub fn tr() -> segmentation::SegmentSelector {
 }
 
 /// Loads the task register.
+///
+/// # Safety
+/// Needs CPL 0.
 pub unsafe fn load_tr(sel: segmentation::SegmentSelector) {
     llvm_asm!("ltr $0" :: "r" (sel.bits()));
 }

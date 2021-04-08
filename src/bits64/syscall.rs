@@ -88,6 +88,10 @@ macro_rules! syscall {
     };
 }
 
+/// Invoke a syscall.
+///
+/// # Safety
+/// Throws `#UD` if IA32_EFER.SCE = 0.
 #[cfg(target_arch = "x86_64")]
 #[inline(always)]
 #[allow(unused_mut)]
@@ -97,6 +101,10 @@ pub unsafe fn syscall0(arg0: u64) -> u64 {
     ret
 }
 
+/// Invoke a syscall.
+///
+/// # Safety
+/// Throws `#UD` if IA32_EFER.SCE = 0.
 #[cfg(target_arch = "x86_64")]
 #[inline(always)]
 #[allow(unused_mut)]
@@ -107,6 +115,10 @@ pub unsafe fn syscall1(arg0: u64, arg1: u64) -> u64 {
     ret
 }
 
+/// Invoke a syscall.
+///
+/// # Safety
+/// Throws `#UD` if IA32_EFER.SCE = 0.
 #[cfg(target_arch = "x86_64")]
 #[inline(always)]
 #[allow(unused_mut)]
@@ -117,6 +129,10 @@ pub unsafe fn syscall2(arg0: u64, arg1: u64, arg2: u64) -> u64 {
     ret
 }
 
+/// Invoke a syscall.
+///
+/// # Safety
+/// Throws `#UD` if IA32_EFER.SCE = 0.
 #[cfg(target_arch = "x86_64")]
 #[inline(always)]
 #[allow(unused_mut)]
@@ -127,6 +143,10 @@ pub unsafe fn syscall3(arg0: u64, arg1: u64, arg2: u64, arg3: u64) -> u64 {
     ret
 }
 
+/// Invoke a syscall.
+///
+/// # Safety
+/// Throws `#UD` if IA32_EFER.SCE = 0.
 #[cfg(target_arch = "x86_64")]
 #[inline(always)]
 #[allow(unused_mut)]
@@ -138,6 +158,10 @@ pub unsafe fn syscall4(arg0: u64, arg1: u64, arg2: u64, arg3: u64, arg4: u64) ->
     ret
 }
 
+/// Invoke a syscall.
+///
+/// # Safety
+/// Throws `#UD` if IA32_EFER.SCE = 0.
 #[cfg(target_arch = "x86_64")]
 #[inline(always)]
 #[allow(unused_mut)]
@@ -150,6 +174,10 @@ pub unsafe fn syscall5(arg0: u64, arg1: u64, arg2: u64, arg3: u64, arg4: u64, ar
     ret
 }
 
+/// Invoke a syscall.
+///
+/// # Safety
+/// Throws `#UD` if IA32_EFER.SCE = 0.
 #[cfg(target_arch = "x86_64")]
 #[inline(always)]
 #[allow(unused_mut)]

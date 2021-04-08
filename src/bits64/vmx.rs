@@ -11,7 +11,7 @@ use crate::vmx::{Result, VmFail};
 // see https://github.com/gz/rust-x86/pull/50.
 #[inline(always)]
 fn vmx_capture_status() -> Result<()> {
-    let flags = unsafe { rflags::read() };
+    let flags = rflags::read();
 
     if flags.contains(RFlags::FLAGS_ZF) {
         Err(VmFail::VmFailValid)
@@ -26,12 +26,18 @@ fn vmx_capture_status() -> Result<()> {
 ///
 /// `addr` specifies a 4KB-aligned physical address of VMXON region initialized
 /// in accordance with Intel SDM, Volume 3C, Section 24.11.5.
+///
+/// # Safety
+/// Needs CPL 0.
 pub unsafe fn vmxon(addr: u64) -> Result<()> {
     llvm_asm!("vmxon $0" : /* no outputs */ : "m"(addr));
     vmx_capture_status()
 }
 
 /// Disable VMX operation.
+///
+/// # Safety
+/// Needs CPL 0.
 pub unsafe fn vmxoff() -> Result<()> {
     llvm_asm!("vmxoff");
     vmx_capture_status()
@@ -41,6 +47,9 @@ pub unsafe fn vmxoff() -> Result<()> {
 ///
 /// Ensures that VMCS data maintained on the processor is copied to the VMCS region
 /// located at 4KB-aligned physical address `addr` and initializes some parts of it.
+///
+/// # Safety
+/// Needs CPL 0.
 pub unsafe fn vmclear(addr: u64) -> Result<()> {
     llvm_asm!("vmclear $0" : /* no outputs */ : "m"(addr));
     vmx_capture_status()
@@ -49,12 +58,18 @@ pub unsafe fn vmclear(addr: u64) -> Result<()> {
 /// Load current VMCS pointer.
 ///
 /// Marks the current-VMCS pointer valid and loads it with the physical address `addr`.
+///
+/// # Safety
+/// Needs CPL 0.
 pub unsafe fn vmptrld(addr: u64) -> Result<()> {
     llvm_asm!("vmptrld $0" : /* no outputs */ : "m"(addr));
     vmx_capture_status()
 }
 
 /// Return current VMCS pointer.
+///
+/// # Safety
+/// Needs CPL 0.
 pub unsafe fn vmptrst() -> Result<u64> {
     let value: u64 = 0;
     llvm_asm!("vmptrst ($0)" : /* no outputs */ : "r"(&value) : "memory");
@@ -62,6 +77,9 @@ pub unsafe fn vmptrst() -> Result<u64> {
 }
 
 /// Read a specified field from a VMCS.
+///
+/// # Safety
+/// Needs CPL 0.
 pub unsafe fn vmread(field: u32) -> Result<u64> {
     let field: u64 = field.into();
     let value: u64;
@@ -70,6 +88,9 @@ pub unsafe fn vmread(field: u32) -> Result<u64> {
 }
 
 /// Write to a specified field in a VMCS.
+///
+/// # Safety
+/// Needs CPL 0.
 pub unsafe fn vmwrite(field: u32, value: u64) -> Result<()> {
     let field: u64 = field.into();
     llvm_asm!("vmwrite $1, $0" : /* no outputs */ : "r"(field), "r"(value));
@@ -77,6 +98,9 @@ pub unsafe fn vmwrite(field: u32, value: u64) -> Result<()> {
 }
 
 /// Launch virtual machine.
+///
+/// # Safety
+/// Needs CPL 0.
 #[inline(always)]
 pub unsafe fn vmlaunch() -> Result<()> {
     llvm_asm!("vmlaunch");
@@ -84,6 +108,9 @@ pub unsafe fn vmlaunch() -> Result<()> {
 }
 
 /// Resume virtual machine.
+///
+/// # Safety
+/// Needs CPL 0.
 #[inline(always)]
 pub unsafe fn vmresume() -> Result<()> {
     llvm_asm!("vmresume");

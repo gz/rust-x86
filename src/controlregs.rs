@@ -88,6 +88,9 @@ bitflags! {
 }
 
 /// Read cr0
+///
+/// # Safety
+/// Needs CPL 0.
 pub unsafe fn cr0() -> Cr0 {
     let ret: usize;
     llvm_asm!("mov %cr0, $0" : "=r" (ret));
@@ -95,11 +98,17 @@ pub unsafe fn cr0() -> Cr0 {
 }
 
 /// Write cr0.
+///
+/// # Safety
+/// Needs CPL 0.
 pub unsafe fn cr0_write(val: Cr0) {
     llvm_asm!("mov $0, %cr0" :: "r" (val.bits) : "memory");
 }
 
 /// Contains page-fault linear address.
+///
+/// # Safety
+/// Needs CPL 0.
 pub unsafe fn cr2() -> usize {
     let ret: usize;
     llvm_asm!("mov %cr2, $0" : "=r" (ret));
@@ -107,11 +116,17 @@ pub unsafe fn cr2() -> usize {
 }
 
 /// Write cr2, for instance to reset cr2
+///
+/// # Safety
+/// Needs CPL 0.
 pub unsafe fn cr2_write(val: u64) {
     llvm_asm!("mov $0, %cr2" :: "r" (val) : "memory");
 }
 
 /// Contains page-table root pointer.
+///
+/// # Safety
+/// Needs CPL 0.
 pub unsafe fn cr3() -> u64 {
     let ret: u64;
     llvm_asm!("mov %cr3, $0" : "=r" (ret));
@@ -119,11 +134,17 @@ pub unsafe fn cr3() -> u64 {
 }
 
 /// Switch page-table PML4 pointer.
+///
+/// # Safety
+/// Needs CPL 0.
 pub unsafe fn cr3_write(val: u64) {
     llvm_asm!("mov $0, %cr3" :: "r" (val) : "memory");
 }
 
 /// Contains various flags to control operations in protected mode.
+///
+/// # Safety
+/// Needs CPL 0.
 pub unsafe fn cr4() -> Cr4 {
     let ret: usize;
     llvm_asm!("mov %cr4, $0" : "=r" (ret));
@@ -141,18 +162,27 @@ pub unsafe fn cr4() -> Cr4 {
 ///   cr4_write(cr4);
 /// }
 /// ```
+///
+/// # Safety
+/// Needs CPL 0.
 pub unsafe fn cr4_write(val: Cr4) {
     llvm_asm!("mov $0, %cr4" :: "r" (val.bits) : "memory");
 }
 
 /// Read Extended Control Register XCR0.
 /// Only supported if CR4_ENABLE_OS_XSAVE is set.
+///
+/// # Safety
+/// Needs CPL 0.
 pub unsafe fn xcr0() -> Xcr0 {
     Xcr0::from_bits_truncate(_xgetbv(0))
 }
 
 /// Write to Extended Control Register XCR0.
 /// Only supported if CR4_ENABLE_OS_XSAVE is set.
+///
+/// # Safety
+/// Needs CPL 0.
 pub unsafe fn xcr0_write(val: Xcr0) {
     _xsetbv(0, val.bits);
 }

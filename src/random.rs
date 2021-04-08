@@ -6,8 +6,8 @@
 //!
 //! See also: https://software.intel.com/en-us/blogs/2012/11/17/the-difference-between-rdrand-and-rdseed
 //!
-//! * RDRAND: Cryptographically secure pseudorandom number generator	NIST:SP 800-90A
-//! * RDSEED: Non-deterministic random bit generator	NIST: SP 800-90B & C (drafts)
+//! * RDRAND: Cryptographically secure pseudorandom number generator NIST:SP 800-90A
+//! * RDSEED: Non-deterministic random bit generator NIST: SP 800-90B & C (drafts)
 #[cfg(target_arch = "x86_64")]
 use core::arch::x86_64::{
     _rdrand16_step, _rdrand32_step, _rdrand64_step, _rdseed16_step, _rdseed32_step, _rdseed64_step,
@@ -18,7 +18,7 @@ use core::arch::x86::{_rdrand16_step, _rdrand32_step, _rdseed16_step, _rdseed32_
 
 /// Generates a 16-bit random value and stores it in `e`.
 ///
-/// # Unsafe
+/// # Safety
 /// Will crash if RDRAND instructions are not supported.
 #[inline(always)]
 pub unsafe fn rdrand16(e: &mut u16) -> bool {
@@ -27,7 +27,7 @@ pub unsafe fn rdrand16(e: &mut u16) -> bool {
 
 /// Generates a 32-bit random value and stores it in `e`.
 ///
-/// # Unsafe
+/// # Safety
 /// Will crash if RDRAND instructions are not supported.
 #[inline(always)]
 pub unsafe fn rdrand32(e: &mut u32) -> bool {
@@ -36,7 +36,7 @@ pub unsafe fn rdrand32(e: &mut u32) -> bool {
 
 /// Generates a 64-bit random value and stores it in `e`.
 ///
-/// # Unsafe
+/// # Safety
 /// Will crash if RDRAND instructions are not supported.
 #[cfg(target_arch = "x86_64")]
 #[inline(always)]
@@ -48,7 +48,7 @@ pub unsafe fn rdrand64(e: &mut u64) -> bool {
 pub trait RdRand {
     /// Fills `self` with random bits. Returns true on success or false otherwise
     ///
-    /// # Unsafe
+    /// # Safety
     /// RDRAND is not supported on all architctures, so using this may crash you.
     unsafe fn fill_random(&mut self) -> bool;
 }
@@ -56,7 +56,7 @@ pub trait RdRand {
 impl RdRand for u8 {
     /// Fills the 16-bit value with a random bit string
     ///
-    /// # Unsafe
+    /// # Safety
     /// Will crash if RDSEED instructions are not supported.
     unsafe fn fill_random(&mut self) -> bool {
         let mut r: u16 = 0;
@@ -69,7 +69,7 @@ impl RdRand for u8 {
 impl RdRand for u16 {
     /// Fills the 16-bit value with a random bit string
     ///
-    /// # Unsafe
+    /// # Safety
     /// Will crash if RDRAND instructions are not supported.
     unsafe fn fill_random(&mut self) -> bool {
         rdrand16(self)
@@ -79,7 +79,7 @@ impl RdRand for u16 {
 impl RdRand for u32 {
     /// Fills the 32-bit value with a random bit string
     ///
-    /// # Unsafe
+    /// # Safety
     /// Will crash if RDRAND instructions are not supported.
     unsafe fn fill_random(&mut self) -> bool {
         rdrand32(self)
@@ -90,7 +90,7 @@ impl RdRand for u32 {
 impl RdRand for u64 {
     /// Fills the 64-bit value with a random bit string
     ///
-    /// # Unsafe
+    /// # Safety
     /// Will crash if RDRAND instructions are not supported.
     unsafe fn fill_random(&mut self) -> bool {
         rdrand64(self)
@@ -101,6 +101,8 @@ impl RdRand for u64 {
 ///
 /// Returns true if the iterator was successfully filled with
 /// random values, otherwise false.
+/// # Safety
+/// Will crash if RDRAND instructions are not supported.
 pub unsafe fn rdrand_slice<T: RdRand>(buffer: &mut [T]) -> bool {
     let mut worked = true;
     for element in buffer {
@@ -111,7 +113,7 @@ pub unsafe fn rdrand_slice<T: RdRand>(buffer: &mut [T]) -> bool {
 
 /// Generates a 16-bit random value and stores it in `e`.
 ///
-/// # Unsafe
+/// # Safety
 /// Will crash if RDSEED instructions are not supported.
 #[inline(always)]
 pub unsafe fn rdseed16(e: &mut u16) -> bool {
@@ -120,7 +122,7 @@ pub unsafe fn rdseed16(e: &mut u16) -> bool {
 
 /// Generates a 32-bit random value and stores it in `e`.
 ///
-/// # Unsafe
+/// # Safety
 /// Will crash if RDSEED instructions are not supported.
 #[inline(always)]
 pub unsafe fn rdseed32(e: &mut u32) -> bool {
@@ -129,7 +131,7 @@ pub unsafe fn rdseed32(e: &mut u32) -> bool {
 
 /// Generates a 64-bit random value and stores it in `e`.
 ///
-/// # Unsafe
+/// # Safety
 /// Will crash if RDSEED instructions are not supported.
 #[cfg(target_arch = "x86_64")]
 #[inline(always)]
@@ -141,7 +143,7 @@ pub unsafe fn rdseed64(e: &mut u64) -> bool {
 pub trait RdSeed {
     /// Fills `self` with random bits. Returns true on success or false otherwise
     ///
-    /// # Unsafe
+    /// # Safety
     /// RDSEED is not supported on all architctures, so using this may crash you.
     unsafe fn fill_random(&mut self) -> bool;
 }
@@ -149,7 +151,7 @@ pub trait RdSeed {
 impl RdSeed for u8 {
     /// Fills the 16-bit value with a random bit string
     ///
-    /// # Unsafe
+    /// # Safety
     /// Will crash if RDSEED instructions are not supported.
     unsafe fn fill_random(&mut self) -> bool {
         let mut r: u16 = 0;
@@ -162,7 +164,7 @@ impl RdSeed for u8 {
 impl RdSeed for u16 {
     /// Fills the 16-bit value with a random bit string
     ///
-    /// # Unsafe
+    /// # Safety
     /// Will crash if RDSEED instructions are not supported.
     unsafe fn fill_random(&mut self) -> bool {
         rdseed16(self)
@@ -172,7 +174,7 @@ impl RdSeed for u16 {
 impl RdSeed for u32 {
     /// Fills the 32-bit value with a random bit string
     ///
-    /// # Unsafe
+    /// # Safety
     /// Will crash if RDSEED instructions are not supported.
     unsafe fn fill_random(&mut self) -> bool {
         rdseed32(self)
@@ -183,7 +185,7 @@ impl RdSeed for u32 {
 impl RdSeed for u64 {
     /// Fills the 64-bit value with a random bit string
     ///
-    /// # Unsafe
+    /// # Safety
     /// Will crash if RDSEED instructions are not supported.
     unsafe fn fill_random(&mut self) -> bool {
         rdseed64(self)
@@ -194,6 +196,9 @@ impl RdSeed for u64 {
 ///
 /// Returns true if the iterator was successfully filled with
 /// random values, otherwise false.
+///
+/// # Safety
+/// Will crash if RDSEED instructions are not supported.
 pub unsafe fn rdseed_slice<T: RdSeed>(buffer: &mut [T]) -> bool {
     let mut worked = true;
     for element in buffer {

@@ -87,6 +87,7 @@ impl fmt::Display for SegmentSelector {
 
 /// System-Segment and Gate-Descriptor Types 64-bit mode
 /// See also Intel 3a, Table 3-2 System Segment and Gate-Descriptor Types.
+#[allow(clippy::upper_case_acronyms)]
 #[repr(u8)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
 pub enum SystemDescriptorTypes64 {
@@ -110,6 +111,7 @@ pub enum SystemDescriptorTypes64 {
 
 /// System-Segment and Gate-Descriptor Types 32-bit mode.
 /// See also Intel 3a, Table 3-2 System Segment and Gate-Descriptor Types.
+#[allow(clippy::upper_case_acronyms)]
 #[repr(u8)]
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
 pub enum SystemDescriptorTypes32 {
@@ -435,11 +437,15 @@ impl Descriptor {
     }
 
     pub(crate) fn apply_builder_settings(&mut self, builder: &DescriptorBuilder) {
-        if let Some(ring) = builder.dpl { self.set_dpl(ring) }
-        if let Some((base, limit)) = builder
-            .base_limit { self.set_base_limit(base as u32, limit as u32) }
-        if let Some((selector, offset)) = builder
-            .selector_offset { self.set_selector_offset(selector, offset as u32) }
+        if let Some(ring) = builder.dpl {
+            self.set_dpl(ring)
+        }
+        if let Some((base, limit)) = builder.base_limit {
+            self.set_base_limit(base as u32, limit as u32)
+        }
+        if let Some((selector, offset)) = builder.selector_offset {
+            self.set_selector_offset(selector, offset as u32)
+        }
 
         if builder.present {
             self.set_p();
@@ -551,26 +557,41 @@ impl Descriptor {
 }
 
 /// Reload stack segment register.
+///
+/// # Safety
+/// Needs CPL 0.
 pub unsafe fn load_ss(sel: SegmentSelector) {
     llvm_asm!("movw $0, %ss " :: "r" (sel.bits()) : "memory");
 }
 
 /// Reload data segment register.
+///
+/// # Safety
+/// Needs CPL 0.
 pub unsafe fn load_ds(sel: SegmentSelector) {
     llvm_asm!("movw $0, %ds " :: "r" (sel.bits()) : "memory");
 }
 
 /// Reload es segment register.
+///
+/// # Safety
+/// Needs CPL 0.
 pub unsafe fn load_es(sel: SegmentSelector) {
     llvm_asm!("movw $0, %es " :: "r" (sel.bits()) : "memory");
 }
 
 /// Reload fs segment register.
+///
+/// # Safety
+/// Needs CPL 0.
 pub unsafe fn load_fs(sel: SegmentSelector) {
     llvm_asm!("movw $0, %fs " :: "r" (sel.bits()) : "memory");
 }
 
 /// Reload gs segment register.
+///
+/// # Safety
+/// Needs CPL 0.
 pub unsafe fn load_gs(sel: SegmentSelector) {
     llvm_asm!("movw $0, %gs " :: "r" (sel.bits()) : "memory");
 }

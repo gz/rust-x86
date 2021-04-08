@@ -26,10 +26,12 @@ impl Descriptor64 {
 
     pub(crate) fn apply_builder_settings(&mut self, builder: &DescriptorBuilder) {
         self.desc32.apply_builder_settings(builder);
-        if let Some((base, limit)) = builder
-            .base_limit { self.set_base_limit(base, limit) }
-        if let Some((selector, offset)) = builder
-            .selector_offset { self.set_selector_offset(selector, offset) }
+        if let Some((base, limit)) = builder.base_limit {
+            self.set_base_limit(base, limit)
+        }
+        if let Some((selector, offset)) = builder.selector_offset {
+            self.set_selector_offset(selector, offset)
+        }
     }
 
     /// Create a new segment, TSS or LDT descriptor
@@ -129,10 +131,14 @@ impl BuildDescriptor<Descriptor64> for DescriptorBuilder {
 }
 
 /// Reload code segment register.
+///
 /// Note this is special since we can not directly move
 /// to %cs. Instead we push the new segment selector
 /// and return value on the stack and use lretq
 /// to reload cs and continue at 1:.
+///
+/// # Safety
+/// Can cause a GP-fault with a bad `sel` value.
 #[cfg(target_arch = "x86_64")]
 pub unsafe fn load_cs(sel: SegmentSelector) {
     llvm_asm!("pushq $0; \
@@ -143,6 +149,8 @@ pub unsafe fn load_cs(sel: SegmentSelector) {
 }
 
 /// Write GS Segment Base
+///
+/// # Safety
 /// Needs FSGSBASE-Enable Bit (bit 16 of CR4) set.
 #[cfg(target_arch = "x86_64")]
 pub unsafe fn wrgsbase(base: u64) {
@@ -150,6 +158,8 @@ pub unsafe fn wrgsbase(base: u64) {
 }
 
 /// Write FS Segment Base
+///
+/// # Safety
 /// Needs FSGSBASE-Enable Bit (bit 16 of CR4) set.
 #[cfg(target_arch = "x86_64")]
 pub unsafe fn wrfsbase(base: u64) {
@@ -157,6 +167,8 @@ pub unsafe fn wrfsbase(base: u64) {
 }
 
 /// Read GS Segment Base
+///
+/// # Safety
 /// Needs FSGSBASE-Enable Bit (bit 16 of CR4) set.
 #[cfg(target_arch = "x86_64")]
 pub unsafe fn rdgsbase() -> u64 {
@@ -166,6 +178,8 @@ pub unsafe fn rdgsbase() -> u64 {
 }
 
 /// Read FS Segment Base
+///
+/// # Safety
 /// Needs FSGSBASE-Enable Bit (bit 16 of CR4) set.
 #[cfg(target_arch = "x86_64")]
 pub unsafe fn rdfsbase() -> u64 {
@@ -175,6 +189,9 @@ pub unsafe fn rdfsbase() -> u64 {
 }
 
 /// "Dereferences" the fs register at offset 0.
+///
+/// # Safety
+/// fs needs to point to valid address.
 #[cfg(target_arch = "x86_64")]
 pub unsafe fn fs_deref() -> u64 {
     let fs: u64;
@@ -183,6 +200,9 @@ pub unsafe fn fs_deref() -> u64 {
 }
 
 /// "Dereferences" the gs register at offset 0.
+///
+/// # Safety
+/// gs needs to point to valid address.
 #[cfg(target_arch = "x86_64")]
 pub unsafe fn gs_deref() -> u64 {
     let gs: u64;
@@ -197,7 +217,7 @@ pub unsafe fn gs_deref() -> u64 {
 ///
 /// The SWAPGS instruction is available only in 64-bit mode.
 ///
-/// # Unsafe
+/// # Safety
 /// The SWAPGS instruction is a privileged instruction intended for use by system software.
 #[cfg(target_arch = "x86_64")]
 pub unsafe fn swapgs() {
