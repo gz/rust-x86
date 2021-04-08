@@ -26,12 +26,10 @@ impl Descriptor64 {
 
     pub(crate) fn apply_builder_settings(&mut self, builder: &DescriptorBuilder) {
         self.desc32.apply_builder_settings(builder);
-        builder
-            .base_limit
-            .map(|(base, limit)| self.set_base_limit(base, limit));
-        builder
-            .selector_offset
-            .map(|(selector, offset)| self.set_selector_offset(selector, offset));
+        if let Some((base, limit)) = builder
+            .base_limit { self.set_base_limit(base, limit) }
+        if let Some((selector, offset)) = builder
+            .selector_offset { self.set_selector_offset(selector, offset) }
     }
 
     /// Create a new segment, TSS or LDT descriptor

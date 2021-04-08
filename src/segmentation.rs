@@ -45,7 +45,7 @@ impl SegmentSelector {
 
     /// Make a new segment selector from a untyped u16 value.
     pub const fn from_raw(bits: u16) -> SegmentSelector {
-        SegmentSelector { bits: bits }
+        SegmentSelector { bits }
     }
 }
 
@@ -337,7 +337,7 @@ impl GateDescriptorBuilder<u32> for DescriptorBuilder {
             false => DescriptorType::System32(SystemDescriptorTypes32::TssBusy32),
         };
 
-        DescriptorBuilder::with_base_limit(base.into(), limit.into()).set_type(typ)
+        DescriptorBuilder::with_base_limit(base, limit).set_type(typ)
     }
 
     fn call_gate_descriptor(selector: SegmentSelector, offset: u32) -> DescriptorBuilder {
@@ -435,13 +435,11 @@ impl Descriptor {
     }
 
     pub(crate) fn apply_builder_settings(&mut self, builder: &DescriptorBuilder) {
-        builder.dpl.map(|ring| self.set_dpl(ring));
-        builder
-            .base_limit
-            .map(|(base, limit)| self.set_base_limit(base as u32, limit as u32));
-        builder
-            .selector_offset
-            .map(|(selector, offset)| self.set_selector_offset(selector, offset as u32));
+        if let Some(ring) = builder.dpl { self.set_dpl(ring) }
+        if let Some((base, limit)) = builder
+            .base_limit { self.set_base_limit(base as u32, limit as u32) }
+        if let Some((selector, offset)) = builder
+            .selector_offset { self.set_selector_offset(selector, offset as u32) }
 
         if builder.present {
             self.set_p();
@@ -465,7 +463,7 @@ impl Descriptor {
     pub fn set_base_limit(&mut self, base: u32, limit: u32) {
         // Clear the base and limit fields in Descriptor
         self.lower = 0;
-        self.upper = self.upper & 0x00F0FF00;
+        self.upper &= 0x00F0FF00;
 
         // Set the new base
         self.lower |= base << 16;
@@ -483,7 +481,7 @@ impl Descriptor {
     pub fn set_selector_offset(&mut self, selector: SegmentSelector, offset: u32) {
         // Clear the selector and offset
         self.lower = 0;
-        self.upper = self.upper & 0x0000ffff;
+        self.upper &= 0x0000ffff;
 
         // Set selector
         self.lower |= (selector.bits() as u32) << 16;
