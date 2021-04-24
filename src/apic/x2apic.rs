@@ -116,7 +116,7 @@ impl ApicControl for X2APIC {
     /// Set tsc deadline.
     fn tsc_set(&self, value: u64) {
         unsafe {
-            llvm_asm!("mfence" ::: "memory");
+            crate::fence::mfence();
             wrmsr(IA32_TSC_DEADLINE, value);
         }
     }

@@ -33,6 +33,7 @@ pub mod task;
 pub mod time;
 pub mod tlb;
 pub mod vmx;
+pub mod fence;
 
 #[cfg(feature = "performance-counter")]
 pub mod perfcnt;
