@@ -1,5 +1,6 @@
 //! Data structures and functions used by 32-bit mode.
 
+pub mod paging;
 pub mod eflags;
 pub mod segmentation;
 pub mod task;
