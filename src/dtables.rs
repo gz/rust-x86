@@ -50,7 +50,7 @@ impl<T> DescriptorTablePointer<T> {
 
 impl<T> fmt::Debug for DescriptorTablePointer<T> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        unsafe { write!(f, "DescriptorTablePointer ({} {:?})", self.limit, self.base) }
+        write!(f, "DescriptorTablePointer ({} {:?})", { self.limit }, { self.base } )
     }
 }
 
