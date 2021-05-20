@@ -1,5 +1,5 @@
 //! x86test infrastructure to run rust unit tests in guest-ring 0.
-#![feature(lang_items, const_fn)]
+#![feature(lang_items)]
 
 extern crate klogger;
 extern crate kvm_sys as kvm;
