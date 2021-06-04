@@ -67,7 +67,7 @@ pub unsafe fn lgdt<T>(gdt: &DescriptorTablePointer<T>) {
 /// # Safety
 /// Needs CPL 0.
 pub unsafe fn sgdt<T>(idt: &mut DescriptorTablePointer<T>) {
-    llvm_asm!("sgdt ($0)" : "=r" (idt as *mut DescriptorTablePointer<T>) :: "memory");
+    llvm_asm!("sgdt ($0)" : "+r" (idt as *mut DescriptorTablePointer<T>) :: "memory");
 }
 
 /// Loads the segment selector into the selector field of the local
@@ -93,7 +93,7 @@ pub unsafe fn load_ldtr(selector: SegmentSelector) {
 /// Needs CPL 0.
 pub unsafe fn ldtr() -> SegmentSelector {
     let selector: u16;
-    llvm_asm!("sldt $0" : "=r"(selector));
+    llvm_asm!("sldt $0" : "+r"(selector));
     SegmentSelector::from_raw(selector)
 }
 
@@ -110,5 +110,5 @@ pub unsafe fn lidt<T>(idt: &DescriptorTablePointer<T>) {
 /// # Safety
 /// Needs CPL 0.
 pub unsafe fn sidt<T>(idt: &mut DescriptorTablePointer<T>) {
-    llvm_asm!("sidt ($0)" : "=r" (idt as *mut DescriptorTablePointer<T>) :: "memory");
+    llvm_asm!("sidt ($0)" : "+r" (idt as *mut DescriptorTablePointer<T>) :: "memory");
 }
