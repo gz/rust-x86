@@ -93,7 +93,7 @@ pub unsafe fn load_ldtr(selector: SegmentSelector) {
 /// Needs CPL 0.
 pub unsafe fn ldtr() -> SegmentSelector {
     let selector: u16;
-    llvm_asm!("sldt $0" : "+r"(selector));
+    llvm_asm!("sldt $0" : "=r"(selector));
     SegmentSelector::from_raw(selector)
 }
 
