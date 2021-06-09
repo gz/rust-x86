@@ -84,14 +84,9 @@ impl PAddr {
         self.0 & (BASE_PAGE_SIZE as u32 - 1)
     }
 
-    /// Offset within the 2 MiB page.
+    /// Offset within the 4 MiB page.
     pub fn large_page_offset(self) -> u32 {
         self.0 & (LARGE_PAGE_SIZE as u32 - 1)
-    }
-
-    /// Offset within the 1 GiB page.
-    pub fn huge_page_offset(self) -> u32 {
-        self.0 & (HUGE_PAGE_SIZE as u32 - 1)
     }
 
     /// Return address of nearest 4 KiB page (lower or equal than self).
@@ -99,14 +94,9 @@ impl PAddr {
         self.align_down(BASE_PAGE_SIZE as u32)
     }
 
-    /// Return address of nearest 2 MiB page (lower or equal than self).
+    /// Return address of nearest 4 MiB page (lower or equal than self).
     pub fn align_down_to_large_page(self) -> Self {
         self.align_down(LARGE_PAGE_SIZE as u32)
-    }
-
-    /// Return address of nearest 1 GiB page (lower or equal than self).
-    pub fn align_down_to_huge_page(self) -> Self {
-        self.align_down(HUGE_PAGE_SIZE as u32)
     }
 
     /// Return address of nearest 4 KiB page (higher or equal than self).
@@ -114,14 +104,9 @@ impl PAddr {
         self.align_up(BASE_PAGE_SIZE as u32)
     }
 
-    /// Return address of nearest 2 MiB page (higher or equal than self).
+    /// Return address of nearest 4 MiB page (higher or equal than self).
     pub fn align_up_to_large_page(self) -> Self {
         self.align_up(LARGE_PAGE_SIZE as u32)
-    }
-
-    /// Return address of nearest 1 GiB page (higher or equal than self).
-    pub fn align_up_to_huge_page(self) -> Self {
-        self.align_up(HUGE_PAGE_SIZE as u32)
     }
 
     /// Is this address aligned to a 4 KiB page?
@@ -129,14 +114,9 @@ impl PAddr {
         self.align_down(BASE_PAGE_SIZE as u32) == self
     }
 
-    /// Is this address aligned to a 2 MiB page?
+    /// Is this address aligned to a 4 MiB page?
     pub fn is_large_page_aligned(self) -> bool {
         self.align_down(LARGE_PAGE_SIZE as u32) == self
-    }
-
-    /// Is this address aligned to a 1 GiB page?
-    pub fn is_huge_page_aligned(self) -> bool {
-        self.align_down(HUGE_PAGE_SIZE as u32) == self
     }
 
     /// Is this address aligned to `align`?
@@ -407,14 +387,9 @@ impl IOAddr {
         self.0 & (BASE_PAGE_SIZE as u32 - 1)
     }
 
-    /// Offset within the 2 MiB page.
+    /// Offset within the 4 MiB page.
     pub fn large_page_offset(self) -> u32 {
         self.0 & (LARGE_PAGE_SIZE as u32 - 1)
-    }
-
-    /// Offset within the 1 GiB page.
-    pub fn huge_page_offset(self) -> u32 {
-        self.0 & (HUGE_PAGE_SIZE as u32 - 1)
     }
 
     /// Return address of nearest 4 KiB page (lower or equal than self).
@@ -422,14 +397,9 @@ impl IOAddr {
         self.align_down(BASE_PAGE_SIZE as u32)
     }
 
-    /// Return address of nearest 2 MiB page (lower or equal than self).
+    /// Return address of nearest 4 MiB page (lower or equal than self).
     pub fn align_down_to_large_page(self) -> Self {
         self.align_down(LARGE_PAGE_SIZE as u32)
-    }
-
-    /// Return address of nearest 1 GiB page (lower or equal than self).
-    pub fn align_down_to_huge_page(self) -> Self {
-        self.align_down(HUGE_PAGE_SIZE as u32)
     }
 
     /// Return address of nearest 4 KiB page (higher or equal than self).
@@ -437,14 +407,9 @@ impl IOAddr {
         self.align_up(BASE_PAGE_SIZE as u32)
     }
 
-    /// Return address of nearest 2 MiB page (higher or equal than self).
+    /// Return address of nearest 4 MiB page (higher or equal than self).
     pub fn align_up_to_large_page(self) -> Self {
         self.align_up(LARGE_PAGE_SIZE as u32)
-    }
-
-    /// Return address of nearest 1 GiB page (higher or equal than self).
-    pub fn align_up_to_huge_page(self) -> Self {
-        self.align_up(HUGE_PAGE_SIZE as u32)
     }
 
     /// Is this address aligned to a 4 KiB page?
@@ -452,14 +417,9 @@ impl IOAddr {
         self.align_down(BASE_PAGE_SIZE as u32) == self
     }
 
-    /// Is this address aligned to a 2 MiB page?
+    /// Is this address aligned to a 4 MiB page?
     pub fn is_large_page_aligned(self) -> bool {
         self.align_down(LARGE_PAGE_SIZE as u32) == self
-    }
-
-    /// Is this address aligned to a 1 GiB page?
-    pub fn is_huge_page_aligned(self) -> bool {
-        self.align_down(HUGE_PAGE_SIZE as u32) == self
     }
 
     /// Is this address aligned to `align`?
@@ -749,14 +709,9 @@ impl VAddr {
         self.0 & (BASE_PAGE_SIZE as u32 - 1)
     }
 
-    /// Offset within the 2 MiB page.
+    /// Offset within the 4 MiB page.
     pub fn large_page_offset(self) -> u32 {
         self.0 & (LARGE_PAGE_SIZE as u32 - 1)
-    }
-
-    /// Offset within the 1 GiB page.
-    pub fn huge_page_offset(self) -> u32 {
-        self.0 & (HUGE_PAGE_SIZE as u32 - 1)
     }
 
     /// Return address of nearest 4 KiB page (lower or equal than self).
@@ -764,14 +719,9 @@ impl VAddr {
         self.align_down(BASE_PAGE_SIZE as u32)
     }
 
-    /// Return address of nearest 2 MiB page (lower or equal than self).
+    /// Return address of nearest 4 MiB page (lower or equal than self).
     pub fn align_down_to_large_page(self) -> Self {
         self.align_down(LARGE_PAGE_SIZE as u32)
-    }
-
-    /// Return address of nearest 1 GiB page (lower or equal than self).
-    pub fn align_down_to_huge_page(self) -> Self {
-        self.align_down(HUGE_PAGE_SIZE as u32)
     }
 
     /// Return address of nearest 4 KiB page (higher or equal than self).
@@ -779,14 +729,9 @@ impl VAddr {
         self.align_up(BASE_PAGE_SIZE as u32)
     }
 
-    /// Return address of nearest 2 MiB page (higher or equal than self).
+    /// Return address of nearest 4 MiB page (higher or equal than self).
     pub fn align_up_to_large_page(self) -> Self {
         self.align_up(LARGE_PAGE_SIZE as u32)
-    }
-
-    /// Return address of nearest 1 GiB page (higher or equal than self).
-    pub fn align_up_to_huge_page(self) -> Self {
-        self.align_up(HUGE_PAGE_SIZE as u32)
     }
 
     /// Is this address aligned to a 4 KiB page?
@@ -794,14 +739,9 @@ impl VAddr {
         self.align_down(BASE_PAGE_SIZE as u32) == self
     }
 
-    /// Is this address aligned to a 2 MiB page?
+    /// Is this address aligned to a 4 MiB page?
     pub fn is_large_page_aligned(self) -> bool {
         self.align_down(LARGE_PAGE_SIZE as u32) == self
-    }
-
-    /// Is this address aligned to a 1 GiB page?
-    pub fn is_huge_page_aligned(self) -> bool {
-        self.align_down(HUGE_PAGE_SIZE as u32) == self
     }
 
     /// Is this address aligned to `align`?
@@ -1078,11 +1018,8 @@ pub const BASE_PAGE_SHIFT: usize = 12;
 /// Size of a base page (4 KiB)
 pub const BASE_PAGE_SIZE: usize = 4096;
 
-/// Size of a large page (2 MiB)
-pub const LARGE_PAGE_SIZE: usize = 1024 * 1024 * 2;
-
-/// Size of a huge page (1 GiB)
-pub const HUGE_PAGE_SIZE: usize = 1024 * 1024 * 1024;
+/// Size of a large page (4 MiB)
+pub const LARGE_PAGE_SIZE: usize = 1024 * 1024 * 4;
 
 /// Size of a cache-line
 pub const CACHE_LINE_SIZE: usize = 64;
@@ -1090,10 +1027,8 @@ pub const CACHE_LINE_SIZE: usize = 64;
 /// A type wrapping a base page with a 4 KiB buffer.
 pub struct Page([u8; BASE_PAGE_SIZE]);
 
-/// A type wrapping a large page with a 2 MiB buffer.
+/// A type wrapping a large page with a 4 MiB buffer.
 pub struct LargePage([u8; LARGE_PAGE_SIZE]);
-/// A type wrapping a huge page with a 1 GiB buffer.
-pub struct HugePage([u8; HUGE_PAGE_SIZE]);
 
 /// Mask to find the physical address of an entry in a page-table.
 const ADDRESS_MASK: u32 = !0xfff;
@@ -1123,27 +1058,27 @@ bitflags! {
     /// PD configuration bits description.
     #[repr(transparent)]
     pub struct PDFlags: u32 {
-        /// Present; must be 1 to map a 2-MByte page or reference a page table.
+        /// Present; must be 1 to map a 4-MByte page.
         const P       = bit!(0);
-        /// Read/write; if 0, writes may not be allowed to the 2-MByte region controlled by this entry
+        /// Read/write; if 0, writes may not be allowed to the 4-MByte page referenced by this entry.
         const RW      = bit!(1);
-        /// User/supervisor; user-mode accesses are not allowed to the 2-MByte region controlled by this entry.
+        /// User/supervisor; if 0, user-mode accesses are not allowed to the 4-MByte page referenced by this entry.
         const US      = bit!(2);
         /// Page-level write-through.
         const PWT     = bit!(3);
         /// Page-level cache disable.
         const PCD     = bit!(4);
-        /// Accessed; if PS set indicates whether software has accessed the 2-MByte page
-        /// else indicates whether this entry has been used for linear-address translation
+        /// Accessed; indicates whether software has accessed the 4-MByte page referenced by this entry.
         const A       = bit!(5);
-        /// Dirty; if PS indicates whether software has written to the 2-MByte page referenced by this entry.
-        /// else ignored.
+        /// Dirty; indicates whether software has written to the 4-MByte page referenced by this entry.
         const D       = bit!(6);
-        /// Page size; if set this entry maps a 2-MByte page; otherwise, this entry references a page directory.
+        /// Page size; if set this entry maps a 4-MByte page; otherwise, this entry references a page directory.
         const PS      = bit!(7);
-        /// Global; if PS && CR4.PGE = 1, determines whether the translation is global; ignored otherwise
-        /// if not PS this is ignored.
+        /// Global; if CR4.PGE = 1, determines whether the translation is global; ignored otherwise.
         const G       = bit!(8);
+        /// If the PAT is supported, indirectly determines the memory type used to access the 4-MByte page referenced by this entry;
+        /// otherwise, reserved (must be 0)
+        const PAT     = bit!(12);
     }
 }
 
@@ -1183,13 +1118,13 @@ impl PDEntry {
     }
 
     check_flag!(
-        doc = "Present; must be 1 to map a 2-MByte page or reference a page table.",
+        doc = "Present; must be 1 to map a 4-MByte page.",
         is_present,
         PDFlags::P
     );
-    check_flag!(doc = "Read/write; if 0, writes may not be allowed to the 2-MByte region controlled by this entry",
+    check_flag!(doc = "Read/write; if 0, writes may not be allowed to the 4-MByte page referenced by this entry.",
                 is_writeable, PDFlags::RW);
-    check_flag!(doc = "User/supervisor; user-mode accesses are not allowed to the 2-MByte region controlled by this entry.",
+    check_flag!(doc = "User/supervisor; if 0, user-mode accesses are not allowed to the 4-MByte page referenced by this entry.",
                 is_user_mode_allowed, PDFlags::US);
     check_flag!(
         doc = "Page-level write-through.",
@@ -1201,14 +1136,16 @@ impl PDEntry {
         is_page_level_cache_disabled,
         PDFlags::PCD
     );
-    check_flag!(doc = "Accessed; if PS set indicates whether software has accessed the 2-MByte page else indicates whether this entry has been used for linear-address translation.",
+    check_flag!(doc = "Accessed; indicates whether software has accessed the 4-MByte page referenced by this entry.",
                 is_accessed, PDFlags::A);
-    check_flag!(doc = "Dirty; if PS set indicates whether software has written to the 2-MByte page referenced by this entry else ignored.",
+    check_flag!(doc = "Dirty; indicates whether software has written to the 4-MByte page referenced by this entry.",
                 is_dirty, PDFlags::D);
-    check_flag!(doc = "Page size; if set this entry maps a 2-MByte page; otherwise, this entry references a page directory.",
+    check_flag!(doc = "Page size; if set this entry maps a 4-MByte page; otherwise, this entry references a page directory.",
                 is_page, PDFlags::PS);
-    check_flag!(doc = "Global; if PS && CR4.PGE = 1, determines whether the translation is global; ignored otherwise if not PS this is ignored.",
+    check_flag!(doc = "Global; if CR4.PGE = 1, determines whether the translation is global; ignored otherwise.",
                 is_global, PDFlags::G);
+    check_flag!(doc = "If the PAT is supported, indirectly determines the memory type used to access the 4-MByte page referenced by this entry; otherwise, reserved (must be 0)",
+                is_pat, PDFlags::PAT);
 }
 
 bitflags! {
@@ -1217,19 +1154,22 @@ bitflags! {
     pub struct PTFlags: u32 {
         /// Present; must be 1 to map a 4-KByte page.
         const P       = bit!(0);
-        /// Read/write; if 0, writes may not be allowed to the 4-KByte region controlled by this entry
+        /// Read/write; if 0, writes may not be allowed to the 4-KByte page referenced by this entry.
         const RW      = bit!(1);
-        /// User/supervisor; user-mode accesses are not allowed to the 4-KByte region controlled by this entry.
+        /// User/supervisor; if 0, user-mode accesses are not allowed to the 4-KByte page referenced by this entry.
         const US      = bit!(2);
         /// Page-level write-through.
         const PWT     = bit!(3);
         /// Page-level cache disable.
         const PCD     = bit!(4);
-        /// Accessed; indicates whether software has accessed the 4-KByte page
+        /// Accessed; indicates whether software has accessed the 4-KByte page referenced by this entry.
         const A       = bit!(5);
         /// Dirty; indicates whether software has written to the 4-KByte page referenced by this entry.
         const D       = bit!(6);
-        /// Global; if CR4.PGE = 1, determines whether the translation is global (see Section 4.10); ignored otherwise
+        /// If the PAT is supported, indirectly determines the memory type used to access the 4-KByte page referenced by this entry;
+        /// otherwise, reserved (must be 0)
+        const PAT     = bit!(7);
+        /// Global; if CR4.PGE = 1, determines whether the translation is global; ignored otherwise.
         const G       = bit!(8);
     }
 }
@@ -1270,13 +1210,13 @@ impl PTEntry {
     }
 
     check_flag!(
-        doc = "Present; must be 1 to map a 4-KByte page or reference a page table.",
+        doc = "Present; must be 1 to map a 4-KByte page.",
         is_present,
         PTFlags::P
     );
-    check_flag!(doc = "Read/write; if 0, writes may not be allowed to the 4-KByte region controlled by this entry",
+    check_flag!(doc = "Read/write; if 0, writes may not be allowed to the 4-KByte page referenced by this entry.",
                 is_writeable, PTFlags::RW);
-    check_flag!(doc = "User/supervisor; user-mode accesses are not allowed to the 4-KByte region controlled by this entry.",
+    check_flag!(doc = "User/supervisor; if 0, user-mode accesses are not allowed to the 4-KByte page referenced by this entry.",
                 is_user_mode_allowed, PTFlags::US);
     check_flag!(
         doc = "Page-level write-through.",
@@ -1288,11 +1228,13 @@ impl PTEntry {
         is_page_level_cache_disabled,
         PTFlags::PCD
     );
-    check_flag!(doc = "Accessed; if PS set indicates whether software has accessed the 4-KByte page else indicates whether this entry has been used for linear-address translation.",
+    check_flag!(doc = "Accessed; indicates whether software has accessed the 4-KByte page referenced by this entry.",
                 is_accessed, PTFlags::A);
-    check_flag!(doc = "Dirty; if PD_PS set indicates whether software has written to the 4-KByte page referenced by this entry else ignored.",
+    check_flag!(doc = "Dirty; indicates whether software has written to the 4-KByte page referenced by this entry.",
                 is_dirty, PTFlags::D);
-    check_flag!(doc = "Global; if PS && CR4.PGE = 1, determines whether the translation is global; ignored otherwise if not PS this is ignored.",
+    check_flag!(doc = "If the PAT is supported, indirectly determines the memory type used to access the 4-KByte page referenced by this entry; otherwise, reserved (must be 0)",
+                is_pat, PTFlags::PAT);
+    check_flag!(doc = "Global; if CR4.PGE = 1, determines whether the translation is global; ignored otherwise.",
                 is_global, PTFlags::G);
 }
 
@@ -1305,16 +1247,12 @@ mod test {
         let base = PAddr::from(0x1000);
         assert_eq!(base.base_page_offset(), 0x0);
         assert_eq!(base.large_page_offset(), 0x1000);
-        assert_eq!(base.huge_page_offset(), 0x1000);
         assert_eq!(base.align_down_to_base_page(), PAddr::from(0x1000));
         assert_eq!(base.align_down_to_large_page(), PAddr::from(0x0));
-        assert_eq!(base.align_down_to_huge_page(), PAddr::from(0x0));
         assert_eq!(base.align_up_to_base_page(), PAddr::from(0x1000));
-        assert_eq!(base.align_up_to_large_page(), PAddr::from(0x200000));
-        assert_eq!(base.align_up_to_huge_page(), PAddr::from(1073741824));
+        assert_eq!(base.align_up_to_large_page(), PAddr::from(0x400000));
         assert!(base.is_base_page_aligned());
         assert!(!base.is_large_page_aligned());
-        assert!(!base.is_huge_page_aligned());
         assert!(base.is_aligned(0x1u32));
         assert!(base.is_aligned(0x2u32));
         assert!(!base.is_aligned(0x3u32));
@@ -1323,52 +1261,40 @@ mod test {
         let base = PAddr::from(0x1001);
         assert_eq!(base.base_page_offset(), 0x1);
         assert_eq!(base.large_page_offset(), 0x1001);
-        assert_eq!(base.huge_page_offset(), 0x1001);
         assert_eq!(base.align_down_to_base_page(), PAddr::from(0x1000));
         assert_eq!(base.align_down_to_large_page(), PAddr::from(0x0));
-        assert_eq!(base.align_down_to_huge_page(), PAddr::from(0x0));
         assert_eq!(base.align_up_to_base_page(), PAddr::from(0x2000));
-        assert_eq!(base.align_up_to_large_page(), PAddr::from(0x200000));
-        assert_eq!(base.align_up_to_huge_page(), PAddr::from(1073741824));
+        assert_eq!(base.align_up_to_large_page(), PAddr::from(0x400000));
         assert!(!base.is_base_page_aligned());
         assert!(!base.is_large_page_aligned());
-        assert!(!base.is_huge_page_aligned());
         assert!(base.is_aligned(0x1u32));
         assert!(!base.is_aligned(0x2u32));
         assert!(!base.is_aligned(0x3u32));
         assert!(!base.is_aligned(0x4u32));
 
-        let base = PAddr::from(0x200000);
+        let base = PAddr::from(0x400000);
         assert_eq!(base.base_page_offset(), 0x0);
         assert_eq!(base.large_page_offset(), 0x0);
-        assert_eq!(base.huge_page_offset(), 0x200000);
-        assert_eq!(base.align_down_to_base_page(), PAddr::from(0x200000));
-        assert_eq!(base.align_down_to_large_page(), PAddr::from(0x200000));
-        assert_eq!(base.align_down_to_huge_page(), PAddr::from(0x0));
-        assert_eq!(base.align_up_to_base_page(), PAddr::from(0x200000));
-        assert_eq!(base.align_up_to_large_page(), PAddr::from(0x200000));
-        assert_eq!(base.align_up_to_huge_page(), PAddr::from(1073741824));
+        assert_eq!(base.align_down_to_base_page(), PAddr::from(0x400000));
+        assert_eq!(base.align_down_to_large_page(), PAddr::from(0x400000));
+        assert_eq!(base.align_up_to_base_page(), PAddr::from(0x400000));
+        assert_eq!(base.align_up_to_large_page(), PAddr::from(0x400000));
         assert!(base.is_base_page_aligned());
         assert!(base.is_large_page_aligned());
-        assert!(!base.is_huge_page_aligned());
         assert!(base.is_aligned(0x1u32));
         assert!(base.is_aligned(0x2u32));
         assert!(!base.is_aligned(0x3u32));
         assert!(base.is_aligned(0x4u32));
 
-        let base = PAddr::from(0x200002);
+        let base = PAddr::from(0x400002);
         assert_eq!(base.base_page_offset(), 0x2);
         assert_eq!(base.large_page_offset(), 0x2);
-        assert_eq!(base.huge_page_offset(), 0x200002);
-        assert_eq!(base.align_down_to_base_page(), PAddr::from(0x200000));
-        assert_eq!(base.align_down_to_large_page(), PAddr::from(0x200000));
-        assert_eq!(base.align_down_to_huge_page(), PAddr::from(0x0));
-        assert_eq!(base.align_up_to_base_page(), PAddr::from(0x201000));
-        assert_eq!(base.align_up_to_large_page(), PAddr::from(0x400000));
-        assert_eq!(base.align_up_to_huge_page(), PAddr::from(1073741824));
+        assert_eq!(base.align_down_to_base_page(), PAddr::from(0x400000));
+        assert_eq!(base.align_down_to_large_page(), PAddr::from(0x400000));
+        assert_eq!(base.align_up_to_base_page(), PAddr::from(0x401000));
+        assert_eq!(base.align_up_to_large_page(), PAddr::from(0x800000));
         assert!(!base.is_base_page_aligned());
         assert!(!base.is_large_page_aligned());
-        assert!(!base.is_huge_page_aligned());
         assert!(base.is_aligned(0x1u32));
         assert!(base.is_aligned(0x2u32));
         assert!(!base.is_aligned(0x3u32));
@@ -1380,16 +1306,12 @@ mod test {
         let base = IOAddr::from(0x1000);
         assert_eq!(base.base_page_offset(), 0x0);
         assert_eq!(base.large_page_offset(), 0x1000);
-        assert_eq!(base.huge_page_offset(), 0x1000);
         assert_eq!(base.align_down_to_base_page(), IOAddr::from(0x1000));
         assert_eq!(base.align_down_to_large_page(), IOAddr::from(0x0));
-        assert_eq!(base.align_down_to_huge_page(), IOAddr::from(0x0));
         assert_eq!(base.align_up_to_base_page(), IOAddr::from(0x1000));
-        assert_eq!(base.align_up_to_large_page(), IOAddr::from(0x200000));
-        assert_eq!(base.align_up_to_huge_page(), IOAddr::from(1073741824));
+        assert_eq!(base.align_up_to_large_page(), IOAddr::from(0x400000));
         assert!(base.is_base_page_aligned());
         assert!(!base.is_large_page_aligned());
-        assert!(!base.is_huge_page_aligned());
         assert!(base.is_aligned(0x1u32));
         assert!(base.is_aligned(0x2u32));
         assert!(!base.is_aligned(0x3u32));
@@ -1398,52 +1320,40 @@ mod test {
         let base = IOAddr::from(0x1001);
         assert_eq!(base.base_page_offset(), 0x1);
         assert_eq!(base.large_page_offset(), 0x1001);
-        assert_eq!(base.huge_page_offset(), 0x1001);
         assert_eq!(base.align_down_to_base_page(), IOAddr::from(0x1000));
         assert_eq!(base.align_down_to_large_page(), IOAddr::from(0x0));
-        assert_eq!(base.align_down_to_huge_page(), IOAddr::from(0x0));
         assert_eq!(base.align_up_to_base_page(), IOAddr::from(0x2000));
-        assert_eq!(base.align_up_to_large_page(), IOAddr::from(0x200000));
-        assert_eq!(base.align_up_to_huge_page(), IOAddr::from(1073741824));
+        assert_eq!(base.align_up_to_large_page(), IOAddr::from(0x400000));
         assert!(!base.is_base_page_aligned());
         assert!(!base.is_large_page_aligned());
-        assert!(!base.is_huge_page_aligned());
         assert!(base.is_aligned(0x1u32));
         assert!(!base.is_aligned(0x2u32));
         assert!(!base.is_aligned(0x3u32));
         assert!(!base.is_aligned(0x4u32));
 
-        let base = IOAddr::from(0x200000);
+        let base = IOAddr::from(0x400000);
         assert_eq!(base.base_page_offset(), 0x0);
         assert_eq!(base.large_page_offset(), 0x0);
-        assert_eq!(base.huge_page_offset(), 0x200000);
-        assert_eq!(base.align_down_to_base_page(), IOAddr::from(0x200000));
-        assert_eq!(base.align_down_to_large_page(), IOAddr::from(0x200000));
-        assert_eq!(base.align_down_to_huge_page(), IOAddr::from(0x0));
-        assert_eq!(base.align_up_to_base_page(), IOAddr::from(0x200000));
-        assert_eq!(base.align_up_to_large_page(), IOAddr::from(0x200000));
-        assert_eq!(base.align_up_to_huge_page(), IOAddr::from(1073741824));
+        assert_eq!(base.align_down_to_base_page(), IOAddr::from(0x400000));
+        assert_eq!(base.align_down_to_large_page(), IOAddr::from(0x400000));
+        assert_eq!(base.align_up_to_base_page(), IOAddr::from(0x400000));
+        assert_eq!(base.align_up_to_large_page(), IOAddr::from(0x400000));
         assert!(base.is_base_page_aligned());
         assert!(base.is_large_page_aligned());
-        assert!(!base.is_huge_page_aligned());
         assert!(base.is_aligned(0x1u32));
         assert!(base.is_aligned(0x2u32));
         assert!(!base.is_aligned(0x3u32));
         assert!(base.is_aligned(0x4u32));
 
-        let base = IOAddr::from(0x200002);
+        let base = IOAddr::from(0x400002);
         assert_eq!(base.base_page_offset(), 0x2);
         assert_eq!(base.large_page_offset(), 0x2);
-        assert_eq!(base.huge_page_offset(), 0x200002);
-        assert_eq!(base.align_down_to_base_page(), IOAddr::from(0x200000));
-        assert_eq!(base.align_down_to_large_page(), IOAddr::from(0x200000));
-        assert_eq!(base.align_down_to_huge_page(), IOAddr::from(0x0));
-        assert_eq!(base.align_up_to_base_page(), IOAddr::from(0x201000));
-        assert_eq!(base.align_up_to_large_page(), IOAddr::from(0x400000));
-        assert_eq!(base.align_up_to_huge_page(), IOAddr::from(1073741824));
+        assert_eq!(base.align_down_to_base_page(), IOAddr::from(0x400000));
+        assert_eq!(base.align_down_to_large_page(), IOAddr::from(0x400000));
+        assert_eq!(base.align_up_to_base_page(), IOAddr::from(0x401000));
+        assert_eq!(base.align_up_to_large_page(), IOAddr::from(0x800000));
         assert!(!base.is_base_page_aligned());
         assert!(!base.is_large_page_aligned());
-        assert!(!base.is_huge_page_aligned());
         assert!(base.is_aligned(0x1u32));
         assert!(base.is_aligned(0x2u32));
         assert!(!base.is_aligned(0x3u32));
@@ -1455,16 +1365,12 @@ mod test {
         let base = VAddr::from(0x1000);
         assert_eq!(base.base_page_offset(), 0x0);
         assert_eq!(base.large_page_offset(), 0x1000);
-        assert_eq!(base.huge_page_offset(), 0x1000);
         assert_eq!(base.align_down_to_base_page(), VAddr::from(0x1000));
         assert_eq!(base.align_down_to_large_page(), VAddr::from(0x0));
-        assert_eq!(base.align_down_to_huge_page(), VAddr::from(0x0));
         assert_eq!(base.align_up_to_base_page(), VAddr::from(0x1000));
-        assert_eq!(base.align_up_to_large_page(), VAddr::from(0x200000));
-        assert_eq!(base.align_up_to_huge_page(), VAddr::from(1073741824));
+        assert_eq!(base.align_up_to_large_page(), VAddr::from(0x400000));
         assert!(base.is_base_page_aligned());
         assert!(!base.is_large_page_aligned());
-        assert!(!base.is_huge_page_aligned());
         assert!(base.is_aligned(0x1u32));
         assert!(base.is_aligned(0x2u32));
         assert!(!base.is_aligned(0x3u32));
@@ -1473,52 +1379,40 @@ mod test {
         let base = VAddr::from(0x1001);
         assert_eq!(base.base_page_offset(), 0x1);
         assert_eq!(base.large_page_offset(), 0x1001);
-        assert_eq!(base.huge_page_offset(), 0x1001);
         assert_eq!(base.align_down_to_base_page(), VAddr::from(0x1000));
         assert_eq!(base.align_down_to_large_page(), VAddr::from(0x0));
-        assert_eq!(base.align_down_to_huge_page(), VAddr::from(0x0));
         assert_eq!(base.align_up_to_base_page(), VAddr::from(0x2000));
-        assert_eq!(base.align_up_to_large_page(), VAddr::from(0x200000));
-        assert_eq!(base.align_up_to_huge_page(), VAddr::from(1073741824));
+        assert_eq!(base.align_up_to_large_page(), VAddr::from(0x400000));
         assert!(!base.is_base_page_aligned());
         assert!(!base.is_large_page_aligned());
-        assert!(!base.is_huge_page_aligned());
         assert!(base.is_aligned(0x1u32));
         assert!(!base.is_aligned(0x2u32));
         assert!(!base.is_aligned(0x3u32));
         assert!(!base.is_aligned(0x4u32));
 
-        let base = VAddr::from(0x200000);
+        let base = VAddr::from(0x400000);
         assert_eq!(base.base_page_offset(), 0x0);
         assert_eq!(base.large_page_offset(), 0x0);
-        assert_eq!(base.huge_page_offset(), 0x200000);
-        assert_eq!(base.align_down_to_base_page(), VAddr::from(0x200000));
-        assert_eq!(base.align_down_to_large_page(), VAddr::from(0x200000));
-        assert_eq!(base.align_down_to_huge_page(), VAddr::from(0x0));
-        assert_eq!(base.align_up_to_base_page(), VAddr::from(0x200000));
-        assert_eq!(base.align_up_to_large_page(), VAddr::from(0x200000));
-        assert_eq!(base.align_up_to_huge_page(), VAddr::from(1073741824));
+        assert_eq!(base.align_down_to_base_page(), VAddr::from(0x400000));
+        assert_eq!(base.align_down_to_large_page(), VAddr::from(0x400000));
+        assert_eq!(base.align_up_to_base_page(), VAddr::from(0x400000));
+        assert_eq!(base.align_up_to_large_page(), VAddr::from(0x400000));
         assert!(base.is_base_page_aligned());
         assert!(base.is_large_page_aligned());
-        assert!(!base.is_huge_page_aligned());
         assert!(base.is_aligned(0x1u32));
         assert!(base.is_aligned(0x2u32));
         assert!(!base.is_aligned(0x3u32));
         assert!(base.is_aligned(0x4u32));
 
-        let base = VAddr::from(0x200002);
+        let base = VAddr::from(0x400002);
         assert_eq!(base.base_page_offset(), 0x2);
         assert_eq!(base.large_page_offset(), 0x2);
-        assert_eq!(base.huge_page_offset(), 0x200002);
-        assert_eq!(base.align_down_to_base_page(), VAddr::from(0x200000));
-        assert_eq!(base.align_down_to_large_page(), VAddr::from(0x200000));
-        assert_eq!(base.align_down_to_huge_page(), VAddr::from(0x0));
-        assert_eq!(base.align_up_to_base_page(), VAddr::from(0x201000));
-        assert_eq!(base.align_up_to_large_page(), VAddr::from(0x400000));
-        assert_eq!(base.align_up_to_huge_page(), VAddr::from(1073741824));
+        assert_eq!(base.align_down_to_base_page(), VAddr::from(0x400000));
+        assert_eq!(base.align_down_to_large_page(), VAddr::from(0x400000));
+        assert_eq!(base.align_up_to_base_page(), VAddr::from(0x401000));
+        assert_eq!(base.align_up_to_large_page(), VAddr::from(0x800000));
         assert!(!base.is_base_page_aligned());
         assert!(!base.is_large_page_aligned());
-        assert!(!base.is_huge_page_aligned());
         assert!(base.is_aligned(0x1u32));
         assert!(base.is_aligned(0x2u32));
         assert!(!base.is_aligned(0x3u32));
