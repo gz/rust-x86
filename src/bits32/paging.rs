@@ -55,6 +55,16 @@ impl PAddr {
         self.0 as usize
     }
 
+    /// Convert to mutable pointer.
+    pub fn as_mut_ptr<T>(self) -> *mut T {
+        self.0 as *mut T
+    }
+
+    /// Convert to pointer.
+    pub fn as_ptr<T>(self) -> *const T {
+        self.0 as *const T
+    }    
+
     /// Physical Address zero.
     pub const fn zero() -> Self {
         PAddr(0)
