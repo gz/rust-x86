@@ -121,29 +121,31 @@ mod test {
 
     #[test]
     fn check_sgdt() {
-        let gdtr: super::DescriptorTablePointer<u64> = Default::default();
+        let mut gdtr: super::DescriptorTablePointer<u64> = Default::default();
         gdtr.limit = 0xdead;
         gdtr.base = 0xbadc0de as *mut u64;
         unsafe {
             sgdt(&mut gdtr);
         }
-        assert_ne!(gdtr.limit, 0);
-        assert_ne!(gdtr.base, core::ptr::null_mut());
-        assert_ne!(gdtr.limit, 0xdead);
-        assert_ne!(gdtr.base, 0xbadc0de);
+        let base = gdtr.base;
+        let limit = gdtr.limit;
+        assert_ne!(base, core::ptr::null_mut());
+        assert_ne!(limit, 0xdead);
+        assert_ne!(base as u64, 0xbadc0de);
     }
 
     #[test]
     fn check_sidt() {
-        let gdtr: super::DescriptorTablePointer<u64> = Default::default();
-        idtr.limit = 0xdead;
-        idtr.base = 0xbadc0de as *mut u64;
+        let mut gdtr: super::DescriptorTablePointer<u64> = Default::default();
+        gdtr.limit = 0xdead;
+        gdtr.base = 0xbadc0de as *mut u64;
         unsafe {
-            sidt(&mut idtr);
+            sidt(&mut gdtr);
         }
-        assert_ne!(idtr.limit, 0);
-        assert_ne!(idtr.base, core::ptr::null_mut());
-        assert_ne!(idtr.limit, 0xdead);
-        assert_ne!(idtr.base, 0xbadc0de);
+        let base = gdtr.base;
+        let limit = gdtr.limit;
+        assert_ne!(base, core::ptr::null_mut());
+        assert_ne!(limit, 0xdead);
+        assert_ne!(base as u64, 0xbadc0de);
     }
 }

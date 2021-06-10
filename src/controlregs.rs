@@ -155,7 +155,8 @@ pub unsafe fn cr4() -> Cr4 {
 ///
 /// # Example
 ///
-/// ```no-run
+/// ```no_run
+/// use x86::controlregs::*;
 /// unsafe {
 ///   let cr4 = cr4();
 ///   let cr4 = cr4 | Cr4::CR4_ENABLE_PSE;
