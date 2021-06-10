@@ -43,7 +43,7 @@ jobs:
       - uses: actions-rs/cargo@v1.0.3
         with:
           command: test
-          args: --features performance-counter #--all-features  will currently fail
+          args: --features performance-counter # --all-features  will currently fail
 
       - uses: actions-rs/cargo@v1.0.3
         with:
