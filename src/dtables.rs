@@ -50,7 +50,9 @@ impl<T> DescriptorTablePointer<T> {
 
 impl<T> fmt::Debug for DescriptorTablePointer<T> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "DescriptorTablePointer ({} {:?})", { self.limit }, { self.base } )
+        write!(f, "DescriptorTablePointer ({} {:?})", { self.limit }, {
+            self.base
+        })
     }
 }
 
@@ -113,7 +115,6 @@ pub unsafe fn sidt<T>(idt: &mut DescriptorTablePointer<T>) {
     llvm_asm!("sidt ($0)" : "+r" (idt as *mut DescriptorTablePointer<T>) :: "memory");
 }
 
-
 #[cfg(all(test, feature = "utest"))]
 mod test {
     use super::*;
@@ -131,7 +132,7 @@ mod test {
         assert_ne!(gdtr.limit, 0xdead);
         assert_ne!(gdtr.base, 0xbadc0de);
     }
-    
+
     #[test]
     fn check_sidt() {
         let gdtr: super::DescriptorTablePointer<u64> = Default::default();

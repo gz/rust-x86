@@ -24,6 +24,7 @@ pub mod bits64;
 pub mod apic;
 pub mod controlregs;
 pub mod dtables;
+pub mod fence;
 pub mod io;
 pub mod irq;
 pub mod msr;
@@ -33,7 +34,6 @@ pub mod task;
 pub mod time;
 pub mod tlb;
 pub mod vmx;
-pub mod fence;
 
 #[cfg(feature = "performance-counter")]
 pub mod perfcnt;

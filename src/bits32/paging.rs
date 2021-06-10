@@ -63,7 +63,7 @@ impl PAddr {
     /// Convert to pointer.
     pub fn as_ptr<T>(self) -> *const T {
         self.0 as *const T
-    }    
+    }
 
     /// Physical Address zero.
     pub const fn zero() -> Self {
@@ -350,7 +350,6 @@ impl Hash for PAddr {
         self.0.hash(state);
     }
 }
-
 
 /// A wrapper for an IO address (IOVA / DMA Address for devices)
 #[repr(transparent)]

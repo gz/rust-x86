@@ -366,7 +366,6 @@ impl Hash for PAddr {
     }
 }
 
-
 /// A wrapper for an IO address (IOVA / DMA Address for devices)
 #[repr(transparent)]
 #[derive(Copy, Clone, Eq, Ord, PartialEq, PartialOrd)]
