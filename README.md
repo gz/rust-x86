@@ -1,4 +1,4 @@
-# x86 / amd64 library [![Crates.io](https://img.shields.io/crates/v/x86.svg)](https://crates.io/crates/x86) [![docs.rs/x86](https://docs.rs/x86/badge.svg)](https://docs.rs/crate/x86/)
+# x86 / amd64 library [![Crates.io](https://img.shields.io/crates/v/x86.svg)](https://crates.io/crates/x86) [![docs.rs/x86](https://docs.rs/x86/badge.svg)](https://docs.rs/crate/x86/) ![Standard checks](https://github.com/gz/rust-x86/actions/workflows/standard.yml/badge.svg)
 
 
 Library to program x86 (amd64) hardware. Contains x86 specific data structure descriptions, data-tables, as well as convenience function to call assembly instructions typically not exposed in higher level languages.
