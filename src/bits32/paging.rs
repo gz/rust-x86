@@ -1042,6 +1042,7 @@ pub struct LargePage([u8; LARGE_PAGE_SIZE]);
 
 /// Mask to find the physical address of an entry in a page-table.
 const ADDRESS_MASK: u32 = !0xfff;
+const ADDRESS_MASK_PSE: u32 = !0x3fffff;
 
 /// Page tables have 512 = 4096 / 32 entries.
 pub const PAGE_SIZE_ENTRIES: usize = 1024;
@@ -1110,8 +1111,17 @@ impl PDEntry {
     ///
     ///  * `pt` - The physical address of the page table.
     ///  * `flags`- Additional flags for the entry.
+    ///
+    /// # Implementation notes
+    ///
+    /// This doesn't support PSE-36 or PSE-40.
     pub fn new(pt: PAddr, flags: PDFlags) -> PDEntry {
-        let pt_val = pt & ADDRESS_MASK;
+        let mask = if flags.contains(PDFlags::PS) {
+            ADDRESS_MASK_PSE
+        } else {
+            ADDRESS_MASK
+        };
+        let pt_val = pt & mask;
         assert!(pt_val == pt.into());
         assert!(pt % BASE_PAGE_SIZE == 0);
         PDEntry(pt_val | flags.bits)
@@ -1119,7 +1129,11 @@ impl PDEntry {
 
     /// Retrieves the physical address in this entry.
     pub fn address(self) -> PAddr {
-        PAddr::from(self.0 & ADDRESS_MASK)
+        if self.flags().contains(PDFlags::PS) {
+            PAddr::from(self.0 & ADDRESS_MASK_PSE)
+        } else {
+            PAddr::from(self.0 & ADDRESS_MASK)
+        }
     }
 
     /// Returns the flags corresponding to this entry.
