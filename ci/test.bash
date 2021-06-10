@@ -12,4 +12,4 @@ TARGET_TRIPLE=$2
 required_arg $CROSS 'CROSS'
 required_arg $TARGET_TRIPLE '<Target Triple>'
 
-$CROSS test --target $TARGET_TRIPLE
+$CROSS test --target $TARGET_TRIPLE --features utest

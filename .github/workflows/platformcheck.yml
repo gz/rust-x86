@@ -43,8 +43,6 @@ jobs:
         shell: bash
       - run: ci/build.bash cargo ${{ matrix.target }}
         shell: bash
-      - run: ci/test.bash cargo ${{ matrix.target }}
-        shell: bash
 
     strategy:
       fail-fast: true
@@ -68,12 +66,8 @@ jobs:
           path: /usr/local/bin/
 
       - run: chmod +x /usr/local/bin/cross
-
       - run: ci/set_rust_version.bash ${{ matrix.channel }} ${{ matrix.target }}
       - run: ci/build.bash cross ${{ matrix.target }}
-        # Only test on macOS platforms since we can't simulate the others.
-      - run: ci/test.bash cross ${{ matrix.target }}
-        if: matrix.target == 'x86_64-apple-darwin'
 
     strategy:
       fail-fast: true
@@ -98,16 +92,12 @@ jobs:
       - run: chmod +x /tmp/cross
       - run: ci/set_rust_version.bash ${{ matrix.channel }} ${{ matrix.target }}
       - run: ci/build.bash /tmp/cross ${{ matrix.target }}
-        # These targets have issues with being tested so they are disabled
-        # by default. You can try disabling to see if they work for
-        # your project.
       - run: ci/test.bash /tmp/cross ${{ matrix.target }}
         if: |
           !contains(matrix.target, 'android') &&
           !contains(matrix.target, 'bsd') &&
           !contains(matrix.target, 'solaris') &&
-          matrix.target != 'armv5te-unknown-linux-musleabi' &&
-          matrix.target != 'sparc64-unknown-linux-gnu'
+          contains(matrix.target, 'x86_64')
 
     strategy:
       fail-fast: true
