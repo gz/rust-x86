@@ -97,6 +97,7 @@ jobs:
           !contains(matrix.target, 'android') &&
           !contains(matrix.target, 'bsd') &&
           !contains(matrix.target, 'solaris') &&
+          !contains(matrix.target, 'netbsd') &&
           contains(matrix.target, 'x86_64')
 
     strategy:
