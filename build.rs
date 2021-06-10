@@ -9,32 +9,28 @@ fn main() {
 #[cfg(feature = "performance-counter")]
 mod performance_counter {
 
-    extern crate csv;
-    extern crate phf_codegen;
-    extern crate serde_json;
-
     use std::collections::HashMap;
     use std::env;
     use std::fs::File;
     use std::io::{BufReader, BufWriter, Write};
-    use std::mem;
     use std::path::Path;
 
-    use self::serde_json::Value;
+    use serde_json::Value;
 
     include!(concat!(
         env!("CARGO_MANIFEST_DIR"),
         "/src/perfcnt/intel/description.rs"
     ));
 
-    /// HACK: We need to convert parsed strings to static because we're reusing
-    /// the struct definition which declare strings as static in the generated code.
-    fn string_to_static_str<'a>(s: &'a str) -> &'static str {
-        unsafe {
-            let ret = mem::transmute(&s as &str);
-            mem::forget(s);
-            ret
-        }
+    /// We need to convert parsed strings to static because we're reusing
+    /// the struct definition which declare strings as static in the generated
+    /// code.
+    fn str_to_static_str(s: &str) -> &'static str {
+        Box::leak(String::from(s).into_boxed_str())
+    }
+
+    fn string_to_static_str(s: &String) -> &'static str {
+        Box::leak(s.clone().into_boxed_str())
     }
 
     fn parse_bool(input: &str) -> bool {
@@ -186,7 +182,7 @@ mod performance_counter {
 
                         //println!("key = {} value = {}", key, value.as_string().unwrap());
                         let value_string = value.as_str().unwrap_or("unknown");
-                        let value_str = string_to_static_str(value_string).trim();
+                        let value_str = str_to_static_str(value_string).trim();
                         let split_str_parts: Vec<&str> =
                             value_string.split(',').map(|x| x.trim()).collect();
 
@@ -350,18 +346,11 @@ mod performance_counter {
         .unwrap();
 
         for (key, val) in builder_values.iter() {
-            // Stupid hack since .entry needs &str
-            unsafe {
-                builder.entry(
-                    mem::transmute::<&str, &'static str>(key.as_str()),
-                    mem::transmute::<&str, &'static str>(val.as_str()),
-                );
-            }
+            // entry needs &'static str so we leak a bunch of Strings
+            builder.entry(string_to_static_str(key), string_to_static_str(val));
         }
         writeln!(file, "{};", builder.build()).unwrap();
         file.flush().ok();
-        // Make sure builder entries stay around (see unsafe above), and we don't accidentially drop it
-        assert!(!builder_values.is_empty());
     }
 
     fn make_file_name<'a>(path: &'a Path) -> (String, String) {
