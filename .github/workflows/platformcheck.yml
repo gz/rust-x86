@@ -20,7 +20,7 @@ jobs:
           repo: cross
           matches: ${{ matrix.platform }}
           token: ${{ secrets.GITHUB_TOKEN }}
-      - uses: actions/upload-artifact@v2.2.3
+      - uses: actions/upload-artifact@v2.2.4
         with:
           name: cross-${{ matrix.platform }}
           path: ${{ steps.cross.outputs.install_path }}
