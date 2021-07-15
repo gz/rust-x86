@@ -52,7 +52,7 @@ serde_json = { version = "1.0.61", optional = true }
 [dependencies]
 bitflags = "1.*"
 bit_field = "0.10.1"
-raw-cpuid = "9.0.0"
+raw-cpuid = "10.0.0"
 
 [dependencies.phf]
 version = "0.8.0"
