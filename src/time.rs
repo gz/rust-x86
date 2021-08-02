@@ -59,7 +59,7 @@ mod test {
     fn check_rdtscp() {
         let cpuid = crate::cpuid::CpuId::new();
         let has_rdtscp = cpuid
-            .get_extended_function_info()
+            .get_extended_processor_and_feature_identifiers()
             .map_or(false, |einfo| einfo.has_rdtscp());
 
         if has_rdtscp {

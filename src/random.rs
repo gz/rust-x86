@@ -322,10 +322,8 @@ mod test {
         unsafe {
             let mut buf: [u16; 4] = [0, 0, 0, 0];
             rdseed_slice(&mut buf);
-            assert_ne!(buf[0], 0);
-            assert_ne!(buf[1], 0);
-            assert_ne!(buf[2], 0);
-            assert_ne!(buf[3], 0);
+            // Not the best test in the world, but unlikely enough to fail...
+            assert!(buf[0] > 0 || buf[1] > 0 || buf[2] > 0 || buf[3] > 0);
         }
     }
 
@@ -341,10 +339,8 @@ mod test {
         unsafe {
             let mut buf: [u8; 4] = [0, 0, 0, 0];
             rdrand_slice(&mut buf);
-            assert_ne!(buf[0], 0);
-            assert_ne!(buf[1], 0);
-            assert_ne!(buf[2], 0);
-            assert_ne!(buf[3], 0);
+            // Not the best test in the world, but unlikely enough to fail...
+            assert!(buf[0] > 0 || buf[1] > 0 || buf[2] > 0 || buf[3] > 0);
         }
     }
 
@@ -360,10 +356,8 @@ mod test {
         unsafe {
             let mut buf: [u8; 4] = [0, 0, 0, 0];
             rdseed_slice(&mut buf);
-            assert_ne!(buf[0], 0);
-            assert_ne!(buf[1], 0);
-            assert_ne!(buf[2], 0);
-            assert_ne!(buf[3], 0);
+            // Not the best test in the world, but unlikely enough to fail...
+            assert!(buf[0] > 0 || buf[1] > 0 || buf[2] > 0 || buf[3] > 0);
         }
     }
 }

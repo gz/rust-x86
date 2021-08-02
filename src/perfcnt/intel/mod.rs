@@ -45,7 +45,7 @@ macro_rules! get_events {
 
         cpuid.get_vendor_info().map_or(None, |vf| {
             cpuid.get_feature_info().map_or(None, |fi| {
-                let vendor = vf.as_string();
+                let vendor = vf.as_str();
                 let (family, extended_model, model) =
                     (fi.family_id(), fi.extended_model_id(), fi.model_id());
 
