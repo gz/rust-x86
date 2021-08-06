@@ -24,5 +24,5 @@ pub fn sfence() {
 /// execute until all prior instructions have completed locally, and no later
 /// instruction begins execution until LFENCE completes.
 pub fn lfence() {
-    unsafe { llvm_asm!("sfence" ::: "memory") };
+    unsafe { llvm_asm!("lfence" ::: "memory") };
 }
