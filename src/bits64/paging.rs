@@ -1121,6 +1121,9 @@ pub const PAGE_SIZE_ENTRIES: usize = 512;
 /// A PML4 table.
 pub type PML4 = [PML4Entry; PAGE_SIZE_ENTRIES];
 
+/// A PML5 table
+pub type PML5 = [PML5Entry; PAGE_SIZE_ENTRIES];
+
 /// A page directory pointer table.
 #[allow(clippy::clippy::upper_case_acronyms)]
 pub type PDPT = [PDPTEntry; PAGE_SIZE_ENTRIES];
@@ -1136,6 +1139,13 @@ pub type PT = [PTEntry; PAGE_SIZE_ENTRIES];
 #[inline]
 pub fn pml4_index(addr: VAddr) -> usize {
     ((addr >> 39usize) & 0b111111111) as usize
+}
+
+/// Given virtual address calculate corresponding entry in PML5.
+#[cfg(target_arch = "x86_64")]
+#[inline]
+pub fn pml5_index(addr: VAddr) -> usize {
+    ((addr >> 48usize) & 0b111111111) as usize
 }
 
 /// Given virtual address calculate corresponding entry in PDPT.
@@ -1178,6 +1188,32 @@ bitflags! {
         const A       = bit!(5);
         /// If IA32_EFER.NXE = 1, execute-disable
         /// If 1, instruction fetches are not allowed from the 512-GByte region.
+        const XD      = bit!(63);
+    }
+}
+
+bitflags! {
+    /// PML5 configuration bit description.
+    #[repr(transparent)]
+    pub struct PML5Flags: u64 {
+        /// Present; must be 1 to reference a PML5 entry
+        const P       = bit!(0);
+        /// Read/write; if 0, writes may not be allowed to the 256-TByte region
+        /// controlled by this entry (see Section 4.6)
+        const RW      = bit!(1);
+        /// User/supervisor; if 0, user-mode accesses are not allowed
+        /// to the 256-TByte region controlled by this entry.
+        const US      = bit!(2);
+        /// Page-level write-through; indirectly determines the memory type used to
+        /// access the PML4 table referenced by this entry.
+        const PWT     = bit!(3);
+        /// Page-level cache disable; indirectly determines the memory type used to
+        /// access the PML4 table referenced by this entry.
+        const PCD     = bit!(4);
+        /// Accessed; indicates whether this entry has been used for linear-address translation.
+        const A       = bit!(5);
+        /// If IA32_EFER.NXE = 1, execute-disable
+        /// If 1, instruction fetches are not allowed from the 256-TByte region.
         const XD      = bit!(63);
     }
 }
@@ -1238,6 +1274,64 @@ impl PML4Entry {
     );
     check_flag!(doc = "If IA32_EFER.NXE = 1, execute-disable. If 1, instruction fetches are not allowed from the 512-GByte region.",
                 is_instruction_fetching_disabled, PML4Flags::XD);
+}
+
+/// A PML5 Entry consists of an address and a bunch of flags.
+#[repr(transparent)]
+#[derive(Clone, Copy)]
+pub struct PML5Entry(pub u64);
+
+impl fmt::Debug for PML5Entry {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(
+            f,
+            "PML5Entry {{ {:#x}, {:?} }}",
+            self.address(),
+            self.flags()
+        )
+    }
+}
+
+impl PML5Entry {
+    /// Creates a new PML5Entry.
+    ///
+    /// # Arguments
+    ///
+    ///  * `pml4` - The physical address of the PML4 table that this entry points to.
+    ///  * `flags` - Additional flags for the entry.
+    pub fn new(pml4: PAddr, flags: PML5Flags) -> PML5Entry {
+        let pml5_val = pml4 & ADDRESS_MASK;
+        assert!(pml5_val == pml4.into());
+        assert!(pml4 % BASE_PAGE_SIZE == 0);
+        PML5Entry(pml5_val | flags.bits)
+    }
+
+    /// Retrieves the physical address in this entry.
+    pub fn address(self) -> PAddr {
+        PAddr::from(self.0 & ADDRESS_MASK)
+    }
+
+    pub fn flags(self) -> PML5Flags {
+        PML5Flags::from_bits_truncate(self.0)
+    }
+
+    check_flag!(doc = "Is page present?", is_present, PML5Flags::P);
+    check_flag!(doc = "Read/write; if 0, writes may not be allowed to the 256-TByte region, controlled by this entry (see Section 4.6)",
+                is_writeable, PML5Flags::RW);
+    check_flag!(doc = "User/supervisor; if 0, user-mode accesses are not allowed to the 256-TByte region controlled by this entry.",
+                is_user_mode_allowed, PML5Flags::US);
+    check_flag!(doc = "Page-level write-through; indirectly determines the memory type used to access the PML4 table referenced by this entry.",
+                is_page_write_through, PML5Flags::PWT);
+    check_flag!(doc = "Page-level cache disable; indirectly determines the memory type used to access the PML4 table referenced by this entry.",
+                is_page_level_cache_disabled, PML5Flags::PCD);
+    check_flag!(
+        doc =
+            "Accessed; indicates whether this entry has been used for linear-address translation.",
+        is_accessed,
+        PML5Flags::A
+    );
+    check_flag!(doc = "If IA32_EFER.NXE = 1, execute-disable. If 1, instruction fetches are not allowed from the 256-TByte region.",
+                is_instruction_fetching_disabled, PML5Flags::XD);
 }
 
 bitflags! {
