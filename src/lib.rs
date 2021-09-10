@@ -1,6 +1,6 @@
 #![cfg(any(target_arch = "x86", target_arch = "x86_64"))]
 #![allow(stable_features)]
-#![feature(llvm_asm, core_intrinsics)]
+#![feature(asm, llvm_asm, core_intrinsics)]
 #![no_std]
 #![cfg_attr(test, allow(unused_features))]
 #![cfg_attr(all(test, feature = "vmtest"), feature(custom_test_frameworks))]
@@ -23,6 +23,7 @@ pub mod bits64;
 
 pub mod apic;
 pub mod controlregs;
+pub mod debugregs;
 pub mod dtables;
 pub mod fence;
 pub mod io;
