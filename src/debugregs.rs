@@ -11,6 +11,34 @@
 use bit_field::BitField;
 use bitflags::bitflags;
 
+/// An array list of all available breakpoint registers.
+pub const BREAKPOINT_REGS: [Breakpoint; 4] = [
+    Breakpoint::Dr0,
+    Breakpoint::Dr1,
+    Breakpoint::Dr2,
+    Breakpoint::Dr3,
+];
+
+/// Write dr{0-3} register based on provided `reg` enum.
+pub unsafe fn dr_write(reg: Breakpoint, val: usize) {
+    match reg {
+        Breakpoint::Dr0 => dr0_write(val),
+        Breakpoint::Dr1 => dr1_write(val),
+        Breakpoint::Dr2 => dr2_write(val),
+        Breakpoint::Dr3 => dr3_write(val),
+    }
+}
+
+/// Read dr{0-3} register based on provided `reg` enum.
+pub unsafe fn dr(reg: Breakpoint) -> usize {
+    match reg {
+        Breakpoint::Dr0 => dr0(),
+        Breakpoint::Dr1 => dr1(),
+        Breakpoint::Dr2 => dr2(),
+        Breakpoint::Dr3 => dr3(),
+    }
+}
+
 /// Read dr0.
 ///
 /// # Safety
