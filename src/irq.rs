@@ -352,7 +352,7 @@ impl fmt::Display for PageFaultError {
 /// # Safety
 /// Only allowed if we have IO privileges for the current operating level in RFlags.
 pub unsafe fn enable() {
-    llvm_asm!("sti");
+    asm!("sti");
 }
 
 /// Disable Interrupts.
@@ -360,7 +360,7 @@ pub unsafe fn enable() {
 /// # Safety
 /// Only allowed if we have IO privileges for the current operating level in RFlags.
 pub unsafe fn disable() {
-    llvm_asm!("cli");
+    asm!("cli");
 }
 
 /// Generate a software interrupt.
@@ -368,7 +368,7 @@ pub unsafe fn disable() {
 #[macro_export]
 macro_rules! int {
     ($x:expr) => {{
-        llvm_asm!("int $0" :: "N" ($x));
+        asm!("int $0" :: "N" ($x));
     }};
 }
 
