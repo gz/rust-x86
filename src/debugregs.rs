@@ -45,7 +45,7 @@ pub unsafe fn dr(reg: Breakpoint) -> usize {
 /// Needs CPL 0.
 pub unsafe fn dr0() -> usize {
     let ret: usize;
-    asm!("mov dr0, {}", out(reg) ret, options(att_syntax));
+    asm!("mov %dr0, {}", out(reg) ret, options(att_syntax));
     ret
 }
 
@@ -54,7 +54,7 @@ pub unsafe fn dr0() -> usize {
 /// # Safety
 /// Needs CPL 0.
 pub unsafe fn dr0_write(val: usize) {
-    asm!("mov {}, dr0", in(reg) val, options(att_syntax));
+    asm!("mov {}, %dr0", in(reg) val, options(att_syntax));
 }
 
 /// Read dr1.
@@ -63,7 +63,7 @@ pub unsafe fn dr0_write(val: usize) {
 /// Needs CPL 0.
 pub unsafe fn dr1() -> usize {
     let ret: usize;
-    asm!("mov dr1, {}", out(reg) ret, options(att_syntax));
+    asm!("mov %dr1, {}", out(reg) ret, options(att_syntax));
     ret
 }
 
@@ -72,7 +72,7 @@ pub unsafe fn dr1() -> usize {
 /// # Safety
 /// Needs CPL 0.
 pub unsafe fn dr1_write(val: usize) {
-    asm!("mov {}, dr1", in(reg) val, options(att_syntax));
+    asm!("mov {}, %dr1", in(reg) val, options(att_syntax));
 }
 
 /// Read dr2.
@@ -81,7 +81,7 @@ pub unsafe fn dr1_write(val: usize) {
 /// Needs CPL 0.
 pub unsafe fn dr2() -> usize {
     let ret: usize;
-    asm!("mov dr2, {}", out(reg) ret, options(att_syntax));
+    asm!("mov %dr2, {}", out(reg) ret, options(att_syntax));
     ret
 }
 
@@ -90,7 +90,7 @@ pub unsafe fn dr2() -> usize {
 /// # Safety
 /// Needs CPL 0.
 pub unsafe fn dr2_write(val: usize) {
-    asm!("mov {}, dr2", in(reg) val, options(att_syntax));
+    asm!("mov {}, %dr2", in(reg) val, options(att_syntax));
 }
 
 /// Read dr3.
@@ -99,7 +99,7 @@ pub unsafe fn dr2_write(val: usize) {
 /// Needs CPL 0.
 pub unsafe fn dr3() -> usize {
     let ret: usize;
-    asm!("mov dr3, {}", out(reg) ret, options(att_syntax));
+    asm!("mov %dr3, {}", out(reg) ret, options(att_syntax));
     ret
 }
 
@@ -108,7 +108,7 @@ pub unsafe fn dr3() -> usize {
 /// # Safety
 /// Needs CPL 0.
 pub unsafe fn dr3_write(val: usize) {
-    asm!("mov {}, dr3", in(reg) val, options(att_syntax));
+    asm!("mov {}, %dr3", in(reg) val, options(att_syntax));
 }
 
 bitflags! {
@@ -196,7 +196,7 @@ bitflags! {
 /// Needs CPL 0.
 pub unsafe fn dr6() -> Dr6 {
     let ret: usize;
-    asm!("mov dr6, {}", out(reg) ret, options(att_syntax));
+    asm!("mov %dr6, {}", out(reg) ret, options(att_syntax));
     Dr6::from_bits_truncate(ret)
 }
 
@@ -213,7 +213,7 @@ pub unsafe fn dr6() -> Dr6 {
 /// # Safety
 /// Needs CPL 0.
 pub unsafe fn dr6_write(val: Dr6) {
-    asm!("mov {}, dr6", in(reg) val.bits, options(att_syntax));
+    asm!("mov {}, %dr6", in(reg) val.bits, options(att_syntax));
 }
 
 /// Specifies available hardware breakpoints.
@@ -359,7 +359,7 @@ impl Dr7 {
 /// Needs CPL 0.
 pub unsafe fn dr7() -> Dr7 {
     let ret: usize;
-    asm!("mov dr7, {}", out(reg) ret, options(att_syntax));
+    asm!("mov %dr7, {}", out(reg) ret, options(att_syntax));
     Dr7(ret)
 }
 
@@ -368,5 +368,5 @@ pub unsafe fn dr7() -> Dr7 {
 /// # Safety
 /// Needs CPL 0.
 pub unsafe fn dr7_write(val: Dr7) {
-    asm!("mov {}, dr7", in(reg) val.0, options(att_syntax));
+    asm!("mov {}, %dr7", in(reg) val.0, options(att_syntax));
 }
