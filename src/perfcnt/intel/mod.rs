@@ -47,7 +47,7 @@ macro_rules! get_events {
             cpuid.get_feature_info().map_or(None, |fi| {
                 let vendor = vf.as_str();
                 let (family, extended_model, model) =
-                    (fi.family_id(), fi.extended_model_id(), fi.model_id());
+                    (fi.base_family_id(), fi.extended_model_id(), fi.base_model_id());
 
                 let mut writer: ModelWriter = Default::default();
                 // Should work as long as it fits in MODEL_LEN bytes:
