@@ -4,9 +4,14 @@
 pub use crate::segmentation;
 
 /// Returns the current value of the task register.
-pub fn tr() -> segmentation::SegmentSelector {
+///
+/// # Safety
+/// Needs CPL 0.
+pub unsafe fn tr() -> segmentation::SegmentSelector {
     let segment: u16;
-    unsafe { llvm_asm!("str $0" : "=r" (segment) ) };
+    asm!("str {0:x}",
+        out(reg) segment,
+        options(att_syntax, nostack, nomem, preserves_flags));
     segmentation::SegmentSelector::from_raw(segment)
 }
 
@@ -15,5 +20,7 @@ pub fn tr() -> segmentation::SegmentSelector {
 /// # Safety
 /// Needs CPL 0.
 pub unsafe fn load_tr(sel: segmentation::SegmentSelector) {
-    llvm_asm!("ltr $0" :: "r" (sel.bits()));
+    asm!("ltr {0:x}",
+        in(reg) sel.bits(),
+        options(att_syntax, nostack, nomem, preserves_flags));
 }

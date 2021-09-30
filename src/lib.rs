@@ -90,7 +90,7 @@ pub enum Ring {
 /// Will cause a general protection fault if used outside of ring 0.
 #[inline(always)]
 pub unsafe fn halt() {
-    llvm_asm!("hlt" :::: "volatile");
+    asm!("hlt", options(att_syntax, nomem, nostack)); // check if preserves_flags
 }
 
 #[cfg(all(test, feature = "vmtest"))]
@@ -117,7 +117,7 @@ mod x86testing {
 #[inline(always)]
 pub unsafe fn rdpid() -> u64 {
     let mut pid: u64;
-    llvm_asm!("rdpid $0" : "=r"(pid));
+    asm!("rdpid {pid}", pid = out(reg) pid, options(att_syntax));
     pid
 }
 
