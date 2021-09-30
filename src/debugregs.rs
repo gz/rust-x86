@@ -7,6 +7,12 @@
 //!   conditions.
 //!
 //! See Intel Vol. 3a Chapter 17, "Debug, Branch, Profile, TSC ... Features"
+//!
+//! # Potential API Improvements
+//! Maybe `Breakpoint` should be a linear type, and functions that mutate
+//! dr0-dr3 should take `&mut self`. That would mean we'd have to remove
+//! `BREAKPOINT_REGS` and a client maintains some mutable instance to the
+//! registers on every core on its own.
 
 use bit_field::BitField;
 use bitflags::bitflags;
@@ -18,26 +24,6 @@ pub const BREAKPOINT_REGS: [Breakpoint; 4] = [
     Breakpoint::Dr2,
     Breakpoint::Dr3,
 ];
-
-/// Write dr{0-3} register based on provided `reg` enum.
-pub unsafe fn dr_write(reg: Breakpoint, val: usize) {
-    match reg {
-        Breakpoint::Dr0 => dr0_write(val),
-        Breakpoint::Dr1 => dr1_write(val),
-        Breakpoint::Dr2 => dr2_write(val),
-        Breakpoint::Dr3 => dr3_write(val),
-    }
-}
-
-/// Read dr{0-3} register based on provided `reg` enum.
-pub unsafe fn dr(reg: Breakpoint) -> usize {
-    match reg {
-        Breakpoint::Dr0 => dr0(),
-        Breakpoint::Dr1 => dr1(),
-        Breakpoint::Dr2 => dr2(),
-        Breakpoint::Dr3 => dr3(),
-    }
-}
 
 /// Read dr0.
 ///
@@ -225,6 +211,98 @@ pub enum Breakpoint {
     Dr3 = 3,
 }
 
+impl Breakpoint {
+    /// Write dr{0-3} register based on provided enum variant.
+    ///
+    /// # Safety
+    /// Needs CPL 0.
+    pub unsafe fn write(&self, val: usize) {
+        match self {
+            Breakpoint::Dr0 => dr0_write(val),
+            Breakpoint::Dr1 => dr1_write(val),
+            Breakpoint::Dr2 => dr2_write(val),
+            Breakpoint::Dr3 => dr3_write(val),
+        }
+    }
+
+    /// Read dr{0-3} register based on enum variant.
+    ///
+    /// # Safety
+    /// Needs CPL 0.
+    pub unsafe fn dr(&self) -> usize {
+        match self {
+            Breakpoint::Dr0 => dr0(),
+            Breakpoint::Dr1 => dr1(),
+            Breakpoint::Dr2 => dr2(),
+            Breakpoint::Dr3 => dr3(),
+        }
+    }
+
+    /// Configures the breakpoint by writing `dr` registers.
+    ///
+    /// # Safety
+    /// Needs CPL 0.
+    pub unsafe fn configure(&self, addr: usize, bc: BreakCondition, bs: BreakSize) {
+        self.write(addr);
+        let mut dr7 = dr7();
+        dr7.configure_bp(*self, bc, bs);
+        dr7_write(dr7);
+    }
+
+    /// Enables the breakpoint with `dr7_write`.
+    ///
+    /// # Safety
+    /// Needs CPL 0.
+    unsafe fn enable(&self, global: bool) {
+        let mut dr7 = dr7();
+        dr7.enable_bp(*self, global);
+        dr7_write(dr7);
+    }
+
+    /// Enable the breakpoint in global mode.
+    ///
+    /// # Safety
+    /// Needs CPL 0.
+    pub unsafe fn enable_global(&self) {
+        self.enable(true);
+    }
+
+    /// Enable the breakpoint in local mode.
+    ///
+    /// # Safety
+    /// Needs CPL 0.
+    pub unsafe fn enable_local(&self) {
+        self.enable(false);
+    }
+
+    /// Disable the breakpoint with `dr7_write`.
+    ///
+    /// # Safety
+    /// Needs CPL 0.
+    unsafe fn disable(&self, global: bool) {
+        self.write(0x0);
+        let mut dr7 = dr7();
+        dr7.disable_bp(*self, global);
+        dr7_write(dr7);
+    }
+
+    /// Disable breakpoint in global mode.
+    ///
+    /// # Safety
+    /// Needs CPL 0.
+    pub unsafe fn disable_global(&self) {
+        self.disable(true);
+    }
+
+    /// Disable breakpoint in local mode.
+    ///
+    /// # Safety
+    /// Needs CPL 0.
+    pub unsafe fn disable_local(&self) {
+        self.disable(false);
+    }
+}
+
 /// Specifies the  breakpoint condition for a corresponding breakpoint.
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
 pub enum BreakCondition {
@@ -261,52 +339,84 @@ pub struct Dr7(pub usize);
 
 impl Default for Dr7 {
     fn default() -> Self {
-        Self(1 << 10)
+        Self(Dr7::EMPTY)
     }
 }
 
 impl Dr7 {
-    fn set_bp(&mut self, bp: Breakpoint, global: bool, val: bool) {
+    /// Empty Dr7 has bit 10 always set.
+    pub const EMPTY: usize = 1 << 10;
+
+    /// Bit that controls debug-register protection.
+    pub const GD_BIT: usize = 13;
+
+    /// Bit that controls debugging of RTM transactional regions.
+    pub const RTM_BIT: usize = 11;
+
+    /// Bit that controls global exact breakpoints.
+    pub const GE_BIT: usize = 9;
+
+    /// Bit that controls local exact breakpoints.
+    pub const LE_BIT: usize = 8;
+
+    /// Enable/disable a breakpoint either as global or local.
+    ///
+    /// # Arguments
+    /// * `bp` - The breakpoint to enable/disable.
+    /// * `global` - Whether the breakpoint is global or local.
+    /// * `enable` - Whether to enable or disable the breakpoint.
+    fn set_bp(&mut self, bp: Breakpoint, global: bool, enable: bool) {
         let bp = bp as usize;
         assert!(bp < 4);
-        let idx = if global { bp + 1 } else { bp };
-        self.0.set_bit(idx, val);
+        let idx = if global { bp * 2 + 1 } else { bp * 2 };
+        assert!(idx <= 7);
+        self.0.set_bit(idx, enable);
     }
 
+    /// Set break condition `bc` for a given breakpoint `bc`.
     fn set_bc(&mut self, bp: Breakpoint, bc: BreakCondition) {
         let idx = 16 + (bp as usize * 4);
         assert!(idx == 16 || idx == 20 || idx == 24 || idx == 28);
         self.0.set_bits(idx..=idx + 1, bc as usize);
     }
 
+    /// Set size `bs` for a given break point `bp`.
     fn set_bs(&mut self, bp: Breakpoint, bs: BreakSize) {
         let idx = 18 + (bp as usize * 4);
         assert!(idx == 18 || idx == 22 || idx == 26 || idx == 30);
         self.0.set_bits(idx..=idx + 1, bs as usize);
     }
 
-    /// Enables the breakpoint condition for the associated breakpoint.
+    /// Configures a breakpoint condition `bc` and size `bs` for the associated
+    /// breakpoint `bp`.
     ///
-    /// - `bp`: The breakpoint to enable.
-    /// - `global`: If true, the breakpoint is global (e.g., never reset on task
-    ///   switches). If false, the CPU resets the flag (disables bp) on task
-    ///   switch.
-    pub fn enable_bp(&mut self, bp: Breakpoint, bc: BreakCondition, bs: BreakSize, global: bool) {
+    /// # Note
+    /// This should be called before `enable_bp`.
+    pub fn configure_bp(&mut self, bp: Breakpoint, bc: BreakCondition, bs: BreakSize) {
         assert!(
             !(bc == BreakCondition::Instructions && bs != BreakSize::Bytes1),
             "If bc is 00 (instruction execution), then the bs field should be 00"
         );
-        self.set_bp(bp, global, true);
         self.set_bc(bp, bc);
         self.set_bs(bp, bs);
+    }
+
+    /// Enables the breakpoint condition for the associated breakpoint.
+    ///
+    /// # Arguments
+    /// * `bp` - The breakpoint to enable.
+    /// * `global` - If true, the breakpoint is global (e.g., never reset on
+    ///   task switches). If false, the CPU resets the flag (disables bp) on
+    ///   task switch.
+    pub fn enable_bp(&mut self, bp: Breakpoint, global: bool) {
+        self.set_bp(bp, global, true);
     }
 
     /// Disables the breakpoint condition for the associated breakpoint.
     ///
     /// - `bp`: The breakpoint to disable.
-    /// - `global`: If true, the breakpoint is global (e.g., never reset on task
-    ///   switches). If false, the CPU resets the flag (disables bp) on task
-    ///   switch.
+    /// - `global`: If true, the global breakpoint bit is unset (e.g., never
+    ///   reset on task switches). If false, the local breakpoint bit is unset.
     pub fn disable_bp(&mut self, bp: Breakpoint, global: bool) {
         self.set_bp(bp, global, false);
     }
@@ -321,7 +431,7 @@ impl Dr7 {
     /// Intel recommends that the LE flag be set to 1 if exact breakpoints are
     /// required.
     pub fn enable_exact_local_bp(&mut self) {
-        self.0.set_bit(8, true);
+        self.0.set_bit(Dr7::LE_BIT, true);
     }
 
     /// Global exact breakpoint enable.
@@ -334,7 +444,7 @@ impl Dr7 {
     /// Intel recommends that the GE flag be set to 1 if exact breakpoints are
     /// required.
     pub fn enable_exact_global_bp(&mut self) {
-        self.0.set_bit(9, true);
+        self.0.set_bit(Dr7::GE_BIT, true);
     }
 
     /// Enables advanced debugging of RTM transactional regions.
@@ -343,13 +453,13 @@ impl Dr7 {
     /// This advanced debugging is enabled only if IA32_DEBUGCTL.RTM is also
     /// set.
     pub fn enable_rtm(&mut self) {
-        self.0.set_bit(11, true);
+        self.0.set_bit(Dr7::RTM_BIT, true);
     }
 
     /// Enables debug-register protection, which causes a debug exception to be
     /// generated prior to any MOV instruction that accesses a debug register.
     pub fn enable_general_detect(&mut self) {
-        self.0.set_bit(13, true);
+        self.0.set_bit(Dr7::GD_BIT, true);
     }
 }
 
