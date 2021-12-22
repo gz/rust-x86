@@ -6,6 +6,7 @@
 #![cfg_attr(all(test, feature = "vmtest"), feature(custom_test_frameworks))]
 #![cfg_attr(all(test, feature = "vmtest"), test_runner(x86test::runner::runner))]
 
+use core::arch::asm;
 #[cfg(target_arch = "x86")]
 pub(crate) use core::arch::x86 as arch;
 #[cfg(target_arch = "x86_64")]

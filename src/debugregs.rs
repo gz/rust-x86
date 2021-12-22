@@ -17,6 +17,8 @@
 use bit_field::BitField;
 use bitflags::bitflags;
 
+use core::arch::asm;
+
 /// An array list of all available breakpoint registers.
 pub const BREAKPOINT_REGS: [Breakpoint; 4] = [
     Breakpoint::Dr0,
