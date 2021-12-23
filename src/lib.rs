@@ -117,9 +117,12 @@ mod x86testing {
 /// May fail with #UD if rdpid is not supported (check CPUID).
 #[inline(always)]
 pub unsafe fn rdpid() -> u64 {
+    #[cfg(target_pointer_width = "64")]
     let mut pid: u64;
+    #[cfg(target_pointer_width = "32")]
+    let mut pid: u32;
     asm!("rdpid {pid}", pid = out(reg) pid, options(att_syntax));
-    pid
+    pid.into()
 }
 
 #[cfg(all(test, feature = "utest"))]
