@@ -1,8 +1,8 @@
 //! Helpers to program the task state segment.
 //! See Intel 3a, Chapter 7
 
-use core::arch::asm;
 pub use crate::segmentation;
+use core::arch::asm;
 
 /// Returns the current value of the task register.
 ///
