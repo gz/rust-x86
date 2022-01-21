@@ -1,5 +1,7 @@
 //! Program x86 enclaves.
 
+use core::arch::asm;
+
 /// Execute an enclave system function of specified leaf number.
 ///
 /// # Safety
@@ -22,8 +24,12 @@ macro_rules! encls {
 unsafe fn encls2(rax: u64, rbx: u64) -> (u32, u64) {
     let eax: u32;
     let out_rbx: u64;
-    llvm_asm!("encls" : "={eax}" (eax), "={rbx}" (out_rbx)
-                 : "{rax}" (rax), "{rbx}" (rbx));
+    asm!(
+        "pushq %rbx; movq %rsi, %rbx; encls; movq %rbx, %rsi; popq %rbx",
+        lateout("eax") eax, lateout("rsi") out_rbx,
+        in("rax") rax, in("rsi") rbx,
+        options(att_syntax),
+    );
     (eax, out_rbx)
 }
 
@@ -31,8 +37,12 @@ unsafe fn encls2(rax: u64, rbx: u64) -> (u32, u64) {
 unsafe fn encls3(rax: u64, rbx: u64, rcx: u64) -> (u32, u64) {
     let eax: u32;
     let out_rbx: u64;
-    llvm_asm!("encls" : "={eax}" (eax), "={rbx}" (out_rbx)
-                 : "{rax}" (rax), "{rbx}" (rbx), "{rcx}" (rcx));
+    asm!(
+        "pushq %rbx; movq %rsi, %rbx; encls; movq %rbx, %r11; popq %rbx",
+        lateout("eax") eax, lateout("rsi") out_rbx,
+        in("rax") rax, in("rsi") rbx, in("rcx") rcx,
+        options(att_syntax),
+    );
     (eax, out_rbx)
 }
 
@@ -40,8 +50,12 @@ unsafe fn encls3(rax: u64, rbx: u64, rcx: u64) -> (u32, u64) {
 unsafe fn encls4(rax: u64, rbx: u64, rcx: u64, rdx: u64) -> (u32, u64) {
     let eax: u32;
     let out_rbx: u64;
-    llvm_asm!("encls" : "={eax}" (eax), "={rbx}" (out_rbx)
-                 : "{rax}" (rax), "{rbx}" (rbx), "{rcx}" (rcx), "{rdx}" (rdx));
+    asm!(
+        "pushq %rbx; movq %rsi, %rbx; encls; movq %rbx, %rsi; popq %rbx",
+        lateout("eax") eax, lateout("rsi") out_rbx,
+        in("rax") rax, in("rsi") rbx, in("rcx") rcx, in("rdx") rdx,
+        options(att_syntax),
+    );
     (eax, out_rbx)
 }
 
@@ -289,8 +303,12 @@ macro_rules! enclu {
 unsafe fn enclu3(rax: u64, rbx: u64, rcx: u64) -> (u32, u64) {
     let eax: u32;
     let out_rcx: u64;
-    llvm_asm!("enclu" : "={eax}" (eax), "={rcx}" (out_rcx)
-                 : "{rax}" (rax), "{rbx}" (rbx), "{rcx}" (rcx));
+    asm!(
+        "pushq %rbx; movq %rsi, %rbx; enclu; popq %rbx",
+        lateout("eax") eax, lateout("rcx") out_rcx,
+        in("rax") rax, in("rsi") rbx, in("rcx") rcx,
+        options(att_syntax),
+    );
     (eax, out_rcx)
 }
 
@@ -298,8 +316,12 @@ unsafe fn enclu3(rax: u64, rbx: u64, rcx: u64) -> (u32, u64) {
 unsafe fn enclu4(rax: u64, rbx: u64, rcx: u64, rdx: u64) -> (u32, u64) {
     let eax: u32;
     let out_rcx: u64;
-    llvm_asm!("enclu" : "={eax}" (eax), "={rcx}" (out_rcx)
-                 : "{rax}" (rax), "{rbx}" (rbx), "{rcx}" (rcx), "{rdx}" (rdx));
+    asm!(
+        "pushq %rbx; movq %rsi, %rbx; enclu; popq %rbx",
+        lateout("eax") eax, lateout("rcx") out_rcx,
+        in("rax") rax, in("rsi") rbx, in("rcx") rcx, in("rdx") rdx,
+        options(att_syntax),
+    );
     (eax, out_rcx)
 }
 

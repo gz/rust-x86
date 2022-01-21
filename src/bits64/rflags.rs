@@ -8,6 +8,9 @@ use bitflags::*;
 
 use crate::Ring;
 
+#[cfg(target_arch = "x86_64")]
+use core::arch::asm;
+
 bitflags! {
     /// The RFLAGS register.
     /// This is duplicated code from bits32 eflags.rs.
@@ -79,14 +82,16 @@ impl RFlags {
 #[inline(always)]
 pub fn read() -> RFlags {
     let r: u64;
-    unsafe { llvm_asm!("pushfq; popq $0" : "=r"(r) :: "memory") };
+    unsafe { asm!("pushfq; popq {0}", out(reg) r, options(att_syntax)) };
     RFlags::from_bits_truncate(r)
 }
 
 #[cfg(target_arch = "x86_64")]
 #[inline(always)]
 pub fn set(val: RFlags) {
-    unsafe { llvm_asm!("pushq $0; popfq" :: "r"(val.bits()) : "memory" "flags") };
+    unsafe {
+        asm!("pushq {0}; popfq", in(reg) val.bits(), options(att_syntax));
+    }
 }
 
 // clac and stac are also usable in 64-bit mode

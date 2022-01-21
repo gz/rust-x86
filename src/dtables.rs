@@ -1,5 +1,6 @@
 //! Functions and data-structures for working with descriptor tables.
 use crate::segmentation::SegmentSelector;
+use core::arch::asm;
 use core::fmt;
 use core::mem::size_of;
 
@@ -61,7 +62,7 @@ impl<T> fmt::Debug for DescriptorTablePointer<T> {
 /// # Safety
 /// Needs CPL 0.
 pub unsafe fn lgdt<T>(gdt: &DescriptorTablePointer<T>) {
-    llvm_asm!("lgdt ($0)" :: "r" (gdt) : "memory");
+    asm!("lgdt ({0})", in(reg) gdt, options(att_syntax));
 }
 
 /// Retrieve base and limit from the GDTR register.
@@ -69,7 +70,7 @@ pub unsafe fn lgdt<T>(gdt: &DescriptorTablePointer<T>) {
 /// # Safety
 /// Needs CPL 0.
 pub unsafe fn sgdt<T>(idt: &mut DescriptorTablePointer<T>) {
-    llvm_asm!("sgdt ($0)" : "+r" (idt as *mut DescriptorTablePointer<T>) :: "memory");
+    asm!("sgdt ({0})", in(reg) idt as *mut DescriptorTablePointer<T>, options(att_syntax));
 }
 
 /// Loads the segment selector into the selector field of the local
@@ -83,7 +84,7 @@ pub unsafe fn sgdt<T>(idt: &mut DescriptorTablePointer<T>) {
 /// # Safety
 /// Needs CPL 0.
 pub unsafe fn load_ldtr(selector: SegmentSelector) {
-    llvm_asm!("lldt $0" :: "r" (selector.bits()) : "memory");
+    asm!("lldt {0:x}", in(reg) selector.bits(), options(att_syntax));
 }
 
 /// Returns the segment selector from the local descriptor table register (LDTR).
@@ -95,7 +96,7 @@ pub unsafe fn load_ldtr(selector: SegmentSelector) {
 /// Needs CPL 0.
 pub unsafe fn ldtr() -> SegmentSelector {
     let selector: u16;
-    llvm_asm!("sldt $0" : "=r"(selector));
+    asm!("sldt {0:x}", out(reg) selector, options(att_syntax));
     SegmentSelector::from_raw(selector)
 }
 
@@ -104,7 +105,7 @@ pub unsafe fn ldtr() -> SegmentSelector {
 /// # Safety
 /// Needs CPL 0.
 pub unsafe fn lidt<T>(idt: &DescriptorTablePointer<T>) {
-    llvm_asm!("lidt ($0)" :: "r" (idt) : "memory");
+    asm!("lidt ({0})", in(reg) idt, options(att_syntax));
 }
 
 /// Retrieve base and limit from the IDTR register.
@@ -112,7 +113,7 @@ pub unsafe fn lidt<T>(idt: &DescriptorTablePointer<T>) {
 /// # Safety
 /// Needs CPL 0.
 pub unsafe fn sidt<T>(idt: &mut DescriptorTablePointer<T>) {
-    llvm_asm!("sidt ($0)" : "+r" (idt as *mut DescriptorTablePointer<T>) :: "memory");
+    asm!("sidt ({0})", in(reg) idt as *mut DescriptorTablePointer<T>, options(att_syntax));
 }
 
 #[cfg(all(test, feature = "utest"))]

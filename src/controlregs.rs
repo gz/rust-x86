@@ -4,6 +4,7 @@
 use bitflags::*;
 
 use crate::arch::{_xgetbv, _xsetbv};
+use core::arch::asm;
 
 bitflags! {
     pub struct Cr0: usize {
@@ -93,7 +94,7 @@ bitflags! {
 /// Needs CPL 0.
 pub unsafe fn cr0() -> Cr0 {
     let ret: usize;
-    llvm_asm!("mov %cr0, $0" : "=r" (ret));
+    asm!("mov %cr0, {0}", out(reg) ret, options(att_syntax));
     Cr0::from_bits_truncate(ret)
 }
 
@@ -102,7 +103,7 @@ pub unsafe fn cr0() -> Cr0 {
 /// # Safety
 /// Needs CPL 0.
 pub unsafe fn cr0_write(val: Cr0) {
-    llvm_asm!("mov $0, %cr0" :: "r" (val.bits) : "memory");
+    asm!("mov {0}, %cr0", in(reg) val.bits, options(att_syntax));
 }
 
 /// Contains page-fault linear address.
@@ -111,7 +112,7 @@ pub unsafe fn cr0_write(val: Cr0) {
 /// Needs CPL 0.
 pub unsafe fn cr2() -> usize {
     let ret: usize;
-    llvm_asm!("mov %cr2, $0" : "=r" (ret));
+    asm!("mov %cr2, {0}", out(reg) ret, options(att_syntax));
     ret
 }
 
@@ -120,7 +121,7 @@ pub unsafe fn cr2() -> usize {
 /// # Safety
 /// Needs CPL 0.
 pub unsafe fn cr2_write(val: u64) {
-    llvm_asm!("mov $0, %cr2" :: "r" (val) : "memory");
+    asm!("mov {0}, %cr2", in(reg) val as usize, options(att_syntax));
 }
 
 /// Contains page-table root pointer.
@@ -128,9 +129,9 @@ pub unsafe fn cr2_write(val: u64) {
 /// # Safety
 /// Needs CPL 0.
 pub unsafe fn cr3() -> u64 {
-    let ret: u64;
-    llvm_asm!("mov %cr3, $0" : "=r" (ret));
-    ret
+    let ret: usize;
+    asm!("mov %cr3, {0}", out(reg) ret, options(att_syntax));
+    ret as u64
 }
 
 /// Switch page-table PML4 pointer.
@@ -138,7 +139,7 @@ pub unsafe fn cr3() -> u64 {
 /// # Safety
 /// Needs CPL 0.
 pub unsafe fn cr3_write(val: u64) {
-    llvm_asm!("mov $0, %cr3" :: "r" (val) : "memory");
+    asm!("mov {0}, %cr3", in(reg) val as usize, options(att_syntax));
 }
 
 /// Contains various flags to control operations in protected mode.
@@ -147,7 +148,7 @@ pub unsafe fn cr3_write(val: u64) {
 /// Needs CPL 0.
 pub unsafe fn cr4() -> Cr4 {
     let ret: usize;
-    llvm_asm!("mov %cr4, $0" : "=r" (ret));
+    asm!("mov %cr4, {0}", out(reg) ret, options(att_syntax));
     Cr4::from_bits_truncate(ret)
 }
 
@@ -167,7 +168,7 @@ pub unsafe fn cr4() -> Cr4 {
 /// # Safety
 /// Needs CPL 0.
 pub unsafe fn cr4_write(val: Cr4) {
-    llvm_asm!("mov $0, %cr4" :: "r" (val.bits) : "memory");
+    asm!("mov {0}, %cr4", in(reg) val.bits, options(att_syntax));
 }
 
 /// Read Extended Control Register XCR0.

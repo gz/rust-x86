@@ -5,6 +5,9 @@ use crate::segmentation::{
     LdtDescriptorBuilder, SystemDescriptorTypes64,
 };
 
+#[cfg(target_arch = "x86_64")]
+use core::arch::asm;
+
 /// Entry for IDT, GDT or LDT.
 ///
 /// See Intel 3a, Section 3.4.5 "Segment Descriptors", and Section 3.5.2
@@ -141,11 +144,11 @@ impl BuildDescriptor<Descriptor64> for DescriptorBuilder {
 /// Can cause a GP-fault with a bad `sel` value.
 #[cfg(target_arch = "x86_64")]
 pub unsafe fn load_cs(sel: SegmentSelector) {
-    llvm_asm!("pushq $0; \
+    asm!("pushq {0}; \
           leaq  1f(%rip), %rax; \
           pushq %rax; \
           lretq; \
-          1:" :: "ri" (sel.bits() as usize) : "rax" "memory");
+          1:", in(reg) sel.bits() as usize, out("rax") _, options(att_syntax));
 }
 
 /// Write GS Segment Base
@@ -154,7 +157,7 @@ pub unsafe fn load_cs(sel: SegmentSelector) {
 /// Needs FSGSBASE-Enable Bit (bit 16 of CR4) set.
 #[cfg(target_arch = "x86_64")]
 pub unsafe fn wrgsbase(base: u64) {
-    llvm_asm!("wrgsbase $0" :: "r" (base) : "memory");
+    asm!("wrgsbase {0}", in(reg) base, options(att_syntax));
 }
 
 /// Write FS Segment Base
@@ -163,7 +166,7 @@ pub unsafe fn wrgsbase(base: u64) {
 /// Needs FSGSBASE-Enable Bit (bit 16 of CR4) set.
 #[cfg(target_arch = "x86_64")]
 pub unsafe fn wrfsbase(base: u64) {
-    llvm_asm!("wrfsbase $0" :: "r" (base) : "memory");
+    asm!("wrfsbase {0}", in(reg) base, options(att_syntax));
 }
 
 /// Read GS Segment Base
@@ -173,7 +176,7 @@ pub unsafe fn wrfsbase(base: u64) {
 #[cfg(target_arch = "x86_64")]
 pub unsafe fn rdgsbase() -> u64 {
     let gs_base: u64;
-    llvm_asm!("rdgsbase $0" : "=r" (gs_base) );
+    asm!("rdgsbase {0}", out(reg) gs_base, options(att_syntax));
     gs_base
 }
 
@@ -184,7 +187,7 @@ pub unsafe fn rdgsbase() -> u64 {
 #[cfg(target_arch = "x86_64")]
 pub unsafe fn rdfsbase() -> u64 {
     let fs_base: u64;
-    llvm_asm!("rdfsbase $0" : "=r" (fs_base) );
+    asm!("rdfsbase {0}", out(reg) fs_base, options(att_syntax));
     fs_base
 }
 
@@ -195,7 +198,7 @@ pub unsafe fn rdfsbase() -> u64 {
 #[cfg(target_arch = "x86_64")]
 pub unsafe fn fs_deref() -> u64 {
     let fs: u64;
-    llvm_asm!("movq %fs:0x0, $0" : "=r" (fs) );
+    asm!("movq %fs:0x0, {0}", out(reg) fs, options(att_syntax));
     fs
 }
 
@@ -206,7 +209,7 @@ pub unsafe fn fs_deref() -> u64 {
 #[cfg(target_arch = "x86_64")]
 pub unsafe fn gs_deref() -> u64 {
     let gs: u64;
-    llvm_asm!("movq %gs:0x0, $0" : "=r" (gs) );
+    asm!("movq %gs:0x0, {0}", out(reg) gs, options(att_syntax));
     gs
 }
 
@@ -221,5 +224,5 @@ pub unsafe fn gs_deref() -> u64 {
 /// The SWAPGS instruction is a privileged instruction intended for use by system software.
 #[cfg(target_arch = "x86_64")]
 pub unsafe fn swapgs() {
-    llvm_asm!("swapgs" ::: "gs");
+    asm!("swapgs");
 }

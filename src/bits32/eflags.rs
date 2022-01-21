@@ -3,6 +3,7 @@
 use bitflags::*;
 
 use crate::Ring;
+use core::arch::asm;
 
 bitflags! {
     /// The EFLAGS register.
@@ -70,14 +71,14 @@ impl EFlags {
 #[inline(always)]
 pub unsafe fn read() -> EFlags {
     let r: u32;
-    llvm_asm!("pushfl; popl $0" : "=r"(r) :: "memory");
+    asm!("pushfl; popl {0}", out(reg) r, options(att_syntax));
     EFlags::from_bits_truncate(r)
 }
 
 #[cfg(target_arch = "x86")]
 #[inline(always)]
 pub unsafe fn set(val: EFlags) {
-    llvm_asm!("pushl $0; popfl" :: "r"(val.bits()) : "memory" "flags");
+    asm!("pushl {0}; popfl", in(reg) val.bits(), options(att_syntax));
 }
 
 /// Clears the AC flag bit in EFLAGS register.
@@ -92,7 +93,7 @@ pub unsafe fn set(val: EFlags) {
 /// that the CPU supports the instruction (check CPUID).
 #[inline(always)]
 pub unsafe fn clac() {
-    llvm_asm!("clac" ::: "memory" "flags" : "volatile");
+    asm!("clac");
 }
 
 /// Sets the AC flag bit in EFLAGS register.
@@ -107,5 +108,5 @@ pub unsafe fn clac() {
 /// that the CPU supports the instruction (check CPUID).
 #[inline(always)]
 pub unsafe fn stac() {
-    llvm_asm!("stac" ::: "memory" "flags" : "volatile");
+    asm!("stac");
 }
