@@ -2,6 +2,7 @@
 //! descriptors and selectors.
 use bitflags::*;
 
+use core::arch::asm;
 use core::fmt;
 
 use crate::Ring;
@@ -561,7 +562,7 @@ impl Descriptor {
 /// # Safety
 /// Needs CPL 0.
 pub unsafe fn load_ss(sel: SegmentSelector) {
-    llvm_asm!("movw $0, %ss " :: "r" (sel.bits()) : "memory");
+    asm!("movw {0:x}, %ss", in(reg) sel.bits(), options(att_syntax));
 }
 
 /// Reload data segment register.
@@ -569,7 +570,7 @@ pub unsafe fn load_ss(sel: SegmentSelector) {
 /// # Safety
 /// Needs CPL 0.
 pub unsafe fn load_ds(sel: SegmentSelector) {
-    llvm_asm!("movw $0, %ds " :: "r" (sel.bits()) : "memory");
+    asm!("movw {0:x}, %ds", in(reg) sel.bits(), options(att_syntax));
 }
 
 /// Reload es segment register.
@@ -577,7 +578,7 @@ pub unsafe fn load_ds(sel: SegmentSelector) {
 /// # Safety
 /// Needs CPL 0.
 pub unsafe fn load_es(sel: SegmentSelector) {
-    llvm_asm!("movw $0, %es " :: "r" (sel.bits()) : "memory");
+    asm!("movw {0:x}, %es", in(reg) sel.bits(), options(att_syntax));
 }
 
 /// Reload fs segment register.
@@ -585,7 +586,7 @@ pub unsafe fn load_es(sel: SegmentSelector) {
 /// # Safety
 /// Needs CPL 0.
 pub unsafe fn load_fs(sel: SegmentSelector) {
-    llvm_asm!("movw $0, %fs " :: "r" (sel.bits()) : "memory");
+    asm!("movw {0:x}, %fs", in(reg) sel.bits(), options(att_syntax));
 }
 
 /// Reload gs segment register.
@@ -593,7 +594,7 @@ pub unsafe fn load_fs(sel: SegmentSelector) {
 /// # Safety
 /// Needs CPL 0.
 pub unsafe fn load_gs(sel: SegmentSelector) {
-    llvm_asm!("movw $0, %gs " :: "r" (sel.bits()) : "memory");
+    asm!("movw {0:x}, %gs", in(reg) sel.bits(), options(att_syntax));
 }
 
 pub use crate::current::segmentation::load_cs;
@@ -601,42 +602,42 @@ pub use crate::current::segmentation::load_cs;
 /// Returns the current value of the code segment register.
 pub fn cs() -> SegmentSelector {
     let segment: u16;
-    unsafe { llvm_asm!("mov %cs, $0" : "=r" (segment) ) };
+    unsafe { asm!("mov %cs, {0:x}", out(reg) segment, options(att_syntax)) };
     SegmentSelector::from_raw(segment)
 }
 
 /// Returns the current value of the extra segment register.
 pub fn es() -> SegmentSelector {
     let segment: u16;
-    unsafe { llvm_asm!("mov %es, $0" : "=r" (segment) ) };
+    unsafe { asm!("mov %es, {0:x}", out(reg) segment, options(att_syntax)) };
     SegmentSelector::from_raw(segment)
 }
 
 /// Returns the current value of the stack segment register.
 pub fn ss() -> SegmentSelector {
     let segment: u16;
-    unsafe { llvm_asm!("mov %ss, $0" : "=r" (segment) ) };
+    unsafe { asm!("mov %ss, {0:x}", out(reg) segment, options(att_syntax)) };
     SegmentSelector::from_raw(segment)
 }
 
 /// Returns the current value of the data segment register.
 pub fn ds() -> SegmentSelector {
     let segment: u16;
-    unsafe { llvm_asm!("mov %ds, $0" : "=r" (segment) ) };
+    unsafe { asm!("mov %ds, {0:x}", out(reg) segment, options(att_syntax)) };
     SegmentSelector::from_raw(segment)
 }
 
 /// Returns the current value of the FS segment register.
 pub fn fs() -> SegmentSelector {
     let segment: u16;
-    unsafe { llvm_asm!("mov %fs, $0" : "=r" (segment) ) };
+    unsafe { asm!("mov %fs, {0:x}", out(reg) segment, options(att_syntax)) };
     SegmentSelector::from_raw(segment)
 }
 
 /// Returns the current value of the GS segment register.
 pub fn gs() -> SegmentSelector {
     let segment: u16;
-    unsafe { llvm_asm!("mov %gs, $0" : "=r" (segment) ) };
+    unsafe { asm!("mov %gs, {0:x}", out(reg) segment, options(att_syntax)) };
     SegmentSelector::from_raw(segment)
 }
 

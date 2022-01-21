@@ -1,11 +1,13 @@
 //! Intel fence instructions
 
+use core::arch::asm;
+
 /// mfence -- Memory Fence
 ///
 /// Performs a serializing operation on all load-from-memory and store-to-memory
 /// instructions that were issued prior the MFENCE instruction.
 pub fn mfence() {
-    unsafe { llvm_asm!("mfence" ::: "memory") };
+    unsafe { asm!("mfence") };
 }
 
 /// sfence -- Store Fence
@@ -14,7 +16,7 @@ pub fn mfence() {
 /// instruction. The processor ensures that every store prior to SFENCE is
 /// globally visible before any store after SFENCE becomes globally visible.
 pub fn sfence() {
-    unsafe { llvm_asm!("sfence" ::: "memory") };
+    unsafe { asm!("sfence") };
 }
 
 /// lfence -- Load Fence
@@ -24,5 +26,5 @@ pub fn sfence() {
 /// execute until all prior instructions have completed locally, and no later
 /// instruction begins execution until LFENCE completes.
 pub fn lfence() {
-    unsafe { llvm_asm!("lfence" ::: "memory") };
+    unsafe { asm!("lfence") };
 }

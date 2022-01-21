@@ -6,8 +6,11 @@ pub mod segmentation;
 pub mod task;
 
 #[cfg(target_arch = "x86")]
+use core::arch::asm;
+
+#[cfg(target_arch = "x86")]
 #[inline(always)]
 pub unsafe fn stack_jmp(stack: *mut (), ip: *const ()) -> ! {
-    llvm_asm!("mov esp, $0; jmp $1" :: "rg"(stack), "r"(ip) :: "volatile", "intel");
+    asm!("movl {0}, %esp; jmp {1}", in(reg) stack, in(reg) ip, options(att_syntax));
     loop {}
 }

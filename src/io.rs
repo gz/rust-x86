@@ -1,12 +1,14 @@
 //! I/O port functionality.
 
+use core::arch::asm;
+
 /// Write 8 bits to port
 ///
 /// # Safety
 /// Needs IO privileges.
 #[inline]
 pub unsafe fn outb(port: u16, val: u8) {
-    llvm_asm!("outb %al, %dx" :: "{dx}"(port), "{al}"(val));
+    asm!("outb %al, %dx", in("al") val, in("dx") port, options(att_syntax));
 }
 
 /// Read 8 bits from port
@@ -16,7 +18,7 @@ pub unsafe fn outb(port: u16, val: u8) {
 #[inline]
 pub unsafe fn inb(port: u16) -> u8 {
     let ret: u8;
-    llvm_asm!("inb %dx, %al" : "={ax}"(ret) : "{dx}"(port) :: "volatile");
+    asm!("inb %dx, %al", in("dx") port, out("al") ret, options(att_syntax));
     ret
 }
 
@@ -26,7 +28,7 @@ pub unsafe fn inb(port: u16) -> u8 {
 /// Needs IO privileges.
 #[inline]
 pub unsafe fn outw(port: u16, val: u16) {
-    llvm_asm!("outw %ax, %dx" :: "{dx}"(port), "{al}"(val));
+    asm!("outw %ax, %dx", in("ax") val, in("dx") port, options(att_syntax));
 }
 
 /// Read 16 bits from port
@@ -36,7 +38,7 @@ pub unsafe fn outw(port: u16, val: u16) {
 #[inline]
 pub unsafe fn inw(port: u16) -> u16 {
     let ret: u16;
-    llvm_asm!("inw %dx, %ax" : "={ax}"(ret) : "{dx}"(port) :: "volatile");
+    asm!("inw %dx, %ax", in("dx") port, out("ax") ret, options(att_syntax));
     ret
 }
 
@@ -46,7 +48,7 @@ pub unsafe fn inw(port: u16) -> u16 {
 /// Needs IO privileges.
 #[inline]
 pub unsafe fn outl(port: u16, val: u32) {
-    llvm_asm!("outl %eax, %dx" :: "{dx}"(port), "{al}"(val));
+    asm!("outl %eax, %dx", in("eax") val, in("dx") port, options(att_syntax));
 }
 
 /// Read 32 bits from port
@@ -56,7 +58,7 @@ pub unsafe fn outl(port: u16, val: u32) {
 #[inline]
 pub unsafe fn inl(port: u16) -> u32 {
     let ret: u32;
-    llvm_asm!("inl %dx, %eax" : "={ax}"(ret) : "{dx}"(port) :: "volatile");
+    asm!("inl %dx, %eax", out("eax") ret, in("dx") port, options(att_syntax));
     ret
 }
 

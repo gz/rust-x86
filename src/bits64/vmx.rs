@@ -2,6 +2,7 @@
 
 use crate::bits64::rflags::{self, RFlags};
 use crate::vmx::{Result, VmFail};
+use core::arch::asm;
 
 /// Helper used to extract VMX-specific Result in accordance with
 /// conventions described in Intel SDM, Volume 3C, Section 30.2.
@@ -30,7 +31,7 @@ fn vmx_capture_status() -> Result<()> {
 /// # Safety
 /// Needs CPL 0.
 pub unsafe fn vmxon(addr: u64) -> Result<()> {
-    llvm_asm!("vmxon $0" : /* no outputs */ : "m"(addr));
+    asm!("vmxon ({0})", in(reg) addr, options(att_syntax));
     vmx_capture_status()
 }
 
@@ -39,7 +40,7 @@ pub unsafe fn vmxon(addr: u64) -> Result<()> {
 /// # Safety
 /// Needs CPL 0.
 pub unsafe fn vmxoff() -> Result<()> {
-    llvm_asm!("vmxoff");
+    asm!("vmxoff");
     vmx_capture_status()
 }
 
@@ -51,7 +52,7 @@ pub unsafe fn vmxoff() -> Result<()> {
 /// # Safety
 /// Needs CPL 0.
 pub unsafe fn vmclear(addr: u64) -> Result<()> {
-    llvm_asm!("vmclear $0" : /* no outputs */ : "m"(addr));
+    asm!("vmclear ({0})", in(reg) addr, options(att_syntax));
     vmx_capture_status()
 }
 
@@ -62,7 +63,7 @@ pub unsafe fn vmclear(addr: u64) -> Result<()> {
 /// # Safety
 /// Needs CPL 0.
 pub unsafe fn vmptrld(addr: u64) -> Result<()> {
-    llvm_asm!("vmptrld $0" : /* no outputs */ : "m"(addr));
+    asm!("vmptrld ({0})", in(reg) addr, options(att_syntax));
     vmx_capture_status()
 }
 
@@ -72,7 +73,7 @@ pub unsafe fn vmptrld(addr: u64) -> Result<()> {
 /// Needs CPL 0.
 pub unsafe fn vmptrst() -> Result<u64> {
     let value: u64 = 0;
-    llvm_asm!("vmptrst ($0)" : /* no outputs */ : "r"(&value) : "memory");
+    asm!("vmptrst ({0})", in(reg) &value, options(att_syntax));
     vmx_capture_status().and(Ok(value))
 }
 
@@ -83,7 +84,7 @@ pub unsafe fn vmptrst() -> Result<u64> {
 pub unsafe fn vmread(field: u32) -> Result<u64> {
     let field: u64 = field.into();
     let value: u64;
-    llvm_asm!("vmread $1, $0" : "=r"(value) : "r"(field));
+    asm!("vmread {1}, {0}", in(reg) field, out(reg) value, options(att_syntax));
     vmx_capture_status().and(Ok(value))
 }
 
@@ -93,7 +94,7 @@ pub unsafe fn vmread(field: u32) -> Result<u64> {
 /// Needs CPL 0.
 pub unsafe fn vmwrite(field: u32, value: u64) -> Result<()> {
     let field: u64 = field.into();
-    llvm_asm!("vmwrite $1, $0" : /* no outputs */ : "r"(field), "r"(value));
+    asm!("vmwrite {1}, {0}", in(reg) field, in(reg) value, options(att_syntax));
     vmx_capture_status()
 }
 
@@ -103,7 +104,7 @@ pub unsafe fn vmwrite(field: u32, value: u64) -> Result<()> {
 /// Needs CPL 0.
 #[inline(always)]
 pub unsafe fn vmlaunch() -> Result<()> {
-    llvm_asm!("vmlaunch");
+    asm!("vmlaunch");
     vmx_capture_status()
 }
 
@@ -113,6 +114,6 @@ pub unsafe fn vmlaunch() -> Result<()> {
 /// Needs CPL 0.
 #[inline(always)]
 pub unsafe fn vmresume() -> Result<()> {
-    llvm_asm!("vmresume");
+    asm!("vmresume");
     vmx_capture_status()
 }

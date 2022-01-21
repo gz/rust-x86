@@ -1,5 +1,7 @@
 //! MSR value list and function to read and write them.
 
+use core::arch::asm;
+
 /// Write 64 bits to msr register.
 ///
 /// # Safety
@@ -7,7 +9,7 @@
 pub unsafe fn wrmsr(msr: u32, value: u64) {
     let low = value as u32;
     let high = (value >> 32) as u32;
-    llvm_asm!("wrmsr" :: "{ecx}" (msr), "{eax}" (low), "{edx}" (high) : "memory" : "volatile" );
+    asm!("wrmsr", in("ecx") msr, in("eax") low, in("edx") high);
 }
 
 /// Read 64 bits msr register.
@@ -17,7 +19,7 @@ pub unsafe fn wrmsr(msr: u32, value: u64) {
 #[allow(unused_mut)]
 pub unsafe fn rdmsr(msr: u32) -> u64 {
     let (high, low): (u32, u32);
-    llvm_asm!("rdmsr" : "={eax}" (low), "={edx}" (high) : "{ecx}" (msr) : "memory" : "volatile");
+    asm!("rdmsr", out("eax") low, out("edx") high, in("ecx") msr);
     ((high as u64) << 32) | (low as u64)
 }
 
