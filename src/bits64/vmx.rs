@@ -31,7 +31,7 @@ fn vmx_capture_status() -> Result<()> {
 /// # Safety
 /// Needs CPL 0.
 pub unsafe fn vmxon(addr: u64) -> Result<()> {
-    asm!("vmxon ({0})", in(reg) addr, options(att_syntax));
+    asm!("vmxon ({0})", in(reg) &addr, options(att_syntax));
     vmx_capture_status()
 }
 
@@ -52,7 +52,7 @@ pub unsafe fn vmxoff() -> Result<()> {
 /// # Safety
 /// Needs CPL 0.
 pub unsafe fn vmclear(addr: u64) -> Result<()> {
-    asm!("vmclear ({0})", in(reg) addr, options(att_syntax));
+    asm!("vmclear ({0})", in(reg) &addr, options(att_syntax));
     vmx_capture_status()
 }
 
@@ -63,7 +63,7 @@ pub unsafe fn vmclear(addr: u64) -> Result<()> {
 /// # Safety
 /// Needs CPL 0.
 pub unsafe fn vmptrld(addr: u64) -> Result<()> {
-    asm!("vmptrld ({0})", in(reg) addr, options(att_syntax));
+    asm!("vmptrld ({0})", in(reg) &addr, options(att_syntax));
     vmx_capture_status()
 }
 
@@ -84,7 +84,7 @@ pub unsafe fn vmptrst() -> Result<u64> {
 pub unsafe fn vmread(field: u32) -> Result<u64> {
     let field: u64 = field.into();
     let value: u64;
-    asm!("vmread {1}, {0}", in(reg) field, out(reg) value, options(att_syntax));
+    asm!("vmread {0}, {1}", in(reg) field, out(reg) value, options(att_syntax));
     vmx_capture_status().and(Ok(value))
 }
 
