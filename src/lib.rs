@@ -1,6 +1,4 @@
 #![cfg(any(target_arch = "x86", target_arch = "x86_64"))]
-#![allow(stable_features)]
-#![feature(core_intrinsics)]
 #![no_std]
 #![cfg_attr(test, allow(unused_features))]
 #![cfg_attr(all(test, feature = "vmtest"), feature(custom_test_frameworks))]
