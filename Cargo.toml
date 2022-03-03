@@ -18,7 +18,8 @@ authors = [
   "woppopo <woppopo@protonmail.com>",
   "Vikram Narayanan <vikram186@gmail.com>",
   "Dan Cross <cross@gajendra.net>",
-  "Yuekai Jia <equation618@gmail.com>"
+  "Yuekai Jia <equation618@gmail.com>",
+  "Lucas Kent <rubickent@gmail.com>"
 ]
 
 description = "Library to program x86 (amd64) hardware. Contains x86 specific data structure descriptions, data-tables, as well as convenience function to call assembly instructions typically not exposed in higher level languages."
