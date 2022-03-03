@@ -19,7 +19,7 @@ Custom test runner for bare-metal x86 tests.
 x86test-macro = { path = "x86test_macro", version = "0.0.4" }
 x86test-types = { path = "x86test_types", version = "0.0.4" }
 kvm-sys = "0.3.0"
-x86 = { version = "0.45" }
+x86 = { version = "0.46" }
 mmap = "0.1.1"
 log = "0.4"
 klogger = { version = "0.0.9", features = ["use_ioports"] }
