@@ -3,10 +3,8 @@
 //! Table 10-1 Local APIC Register Address Map
 //! the MMIO base values are found in this file.
 
-use core::fmt;
-use core::intrinsics::{volatile_load, volatile_store};
-
 use bit_field::BitField;
+use core::fmt;
 
 use super::*;
 use crate::msr::{rdmsr, wrmsr, IA32_APIC_BASE, IA32_TSC_DEADLINE};
@@ -306,14 +304,14 @@ impl XAPIC {
     fn read(&self, offset: ApicRegister) -> u32 {
         assert!(offset as usize % 4 == 0);
         let index = offset as usize / 4;
-        unsafe { volatile_load(&self.mmio_region[index]) }
+        unsafe { core::ptr::read_volatile(&self.mmio_region[index]) }
     }
 
     /// write a register in the MMIO region.
     fn write(&mut self, offset: ApicRegister, val: u32) {
         assert!(offset as usize % 4 == 0);
         let index = offset as usize / 4;
-        unsafe { volatile_store(&mut self.mmio_region[index], val) }
+        unsafe { core::ptr::write_volatile(&mut self.mmio_region[index], val) }
     }
 }
 
