@@ -369,7 +369,7 @@ pub unsafe fn disable() {
 #[macro_export]
 macro_rules! int {
     ($x:expr) => {{
-        asm!("int ${vec}", vec = const ($x));
+        core::arch::asm!("int ${vec}", vec = const ($x));
     }};
 }
 
