@@ -1115,6 +1115,12 @@ pub const MAXPHYADDR: u64 = 52;
 /// Mask to find the physical address of an entry in a page-table.
 const ADDRESS_MASK: u64 = ((1 << MAXPHYADDR) - 1) & !0xfff;
 
+/// Maximum supported bits for virtual addresses (with 5-level paging)
+pub const MAXVADDR_BITS: u64 = 57;
+
+/// Maximum virtual address.
+pub const MAXVADDR: u64 = 1 << MAXVADDR_BITS;
+
 /// Page tables have 512 = 4096 / 64 entries.
 pub const PAGE_SIZE_ENTRIES: usize = 512;
 
