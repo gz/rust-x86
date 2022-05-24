@@ -11,24 +11,25 @@ use crate::msr::{
 /// Represents an x2APIC driver instance.
 #[derive(Debug)]
 pub struct X2APIC {
-    /// Initial BASE msr register value.
+    /// Initial base msr register value.
     base: u64,
 }
 
 impl Default for X2APIC {
     fn default() -> Self {
-        unsafe {
-            X2APIC {
-                base: rdmsr(IA32_APIC_BASE),
-            }
-        }
+        X2APIC { base: 0x0 }
     }
 }
 
 impl X2APIC {
     /// Create a new x2APIC driver object for the local core.
-    pub fn new() -> X2APIC {
-        Default::default()
+    ///
+    /// # Notes
+    /// The object needs to be initialized by calling `attach()` first which
+    /// enables the x2APIC. There should be only one x2APIC object created per
+    /// core.
+    pub const fn new() -> Self {
+        X2APIC { base: 0x0 }
     }
 
     /// Attach to APIC (enable x2APIC mode, initialize LINT0)
