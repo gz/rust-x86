@@ -191,27 +191,49 @@ pub unsafe fn rdfsbase() -> u64 {
     fs_base
 }
 
-/// "Dereferences" the fs register at offset 0.
+/// "Dereferences" the fs register at `offset`.
 ///
 /// # Safety
-/// fs needs to point to valid address.
+/// - Offset needs to be within valid memory relative to what the fs register
+///   points to.
 #[cfg(target_arch = "x86_64")]
-pub unsafe fn fs_deref() -> u64 {
-    let fs: u64;
-    asm!("movq %fs:0x0, {0}", out(reg) fs, options(att_syntax));
-    fs
+#[macro_export]
+macro_rules! fs_deref {
+    ($offset:expr) => {{
+        let fs: u64;
+        core::arch::asm!("movq %fs:{offset}, {result}",
+                offset = const ($offset),
+                result = out(reg) fs,
+                options(att_syntax)
+        );
+        fs
+    }};
 }
 
-/// "Dereferences" the gs register at offset 0.
+#[cfg(target_arch = "x86_64")]
+pub use fs_deref;
+
+/// "Dereferences" the gs register at `offset`.
 ///
 /// # Safety
-/// gs needs to point to valid address.
+/// - Offset needs to be within valid memory relative to what the gs register
+///   points to.
 #[cfg(target_arch = "x86_64")]
-pub unsafe fn gs_deref() -> u64 {
-    let gs: u64;
-    asm!("movq %gs:0x0, {0}", out(reg) gs, options(att_syntax));
-    gs
+#[macro_export]
+macro_rules! gs_deref {
+    ($offset:expr) => {{
+        let gs: u64;
+        core::arch::asm!("movq %gs:{offset}, {result}",
+                offset = const ($offset),
+                result = out(reg) gs,
+                options(att_syntax)
+        );
+        gs
+    }};
 }
+
+#[cfg(target_arch = "x86_64")]
+pub use gs_deref;
 
 /// Swap the GS register.
 ///

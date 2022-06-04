@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
+## [0.49.0] - 2022-06-03
+
+- Removed `bits64::segmentation::fs_deref()`: Users should replace calls to
+  `fs_deref` with the more general `fbits64::segmentation::s_deref!` macro.
+  `fs_deref!(0)` is equivalent to `fs_deref()`.
+- Removed `bits64::segmentation::gs_deref()`: Users should replace calls to
+  `gs_deref` with the more general `bits64::segmentation::gs_deref!` macro.
+  `fs_deref!(0)` is equivalent to `fs_deref()`.
+
 ## [0.48.0] - 2022-05-23
 
 - Added `const new` constructor for X2APIC struct
