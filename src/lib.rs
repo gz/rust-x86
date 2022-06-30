@@ -108,8 +108,11 @@ mod x86testing {
 
 /// Read Processor ID
 ///
-/// Reads the value of the IA32_TSC_AUX MSR (address C0000103H)
-/// into the destination register.
+/// Reads the value of the IA32_TSC_AUX MSR (address C0000103H) into the
+/// destination register.
+///
+/// # See also
+/// `IA32_TSC_AUX` can also be read calling [`crate::time::rdtscp`].
 ///
 /// # Safety
 /// May fail with #UD if rdpid is not supported (check CPUID).
