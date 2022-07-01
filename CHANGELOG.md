@@ -23,7 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `fs_deref!(0)` is equivalent to `fs_deref()`.
 - Removed `x86::bits64::segmentation::gs_deref()`: Users should replace calls to
   `gs_deref` with the more general `x86::bits64::segmentation::gs_deref!` macro.
-  `fs_deref!(0)` is equivalent to `fs_deref()`.
+  `gs_deref!(0)` is equivalent to `gs_deref()`.
 
 ## [0.48.0] - 2022-05-23
 
