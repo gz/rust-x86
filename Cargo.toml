@@ -60,7 +60,7 @@ bit_field = "0.10.1"
 raw-cpuid = "10.2.0"
 
 [dependencies.phf]
-version = "0.9.0"
+version = "0.10.1"
 default-features = false # So phf uses libcore instead of libstd
 optional = true
 
