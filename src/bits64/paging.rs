@@ -5,6 +5,8 @@ use bitflags::*;
 use core::convert::{From, Into};
 use core::fmt;
 use core::hash::{Hash, Hasher};
+#[cfg(feature = "unstable")]
+use core::iter::Step;
 use core::ops;
 
 macro_rules! check_flag {
@@ -157,6 +159,19 @@ impl PAddr {
         }
 
         self.align_down(align) == self
+    }
+}
+
+#[cfg(feature = "unstable")]
+impl Step for PAddr {
+    fn steps_between(start: &Self, end: &Self) -> Option<usize> {
+        <u64 as Step>::steps_between(&start.0, &end.0)
+    }
+    fn forward_checked(start: Self, count: usize) -> Option<Self> {
+        <u64 as Step>::forward_checked(start.0, count).map(|v| PAddr(v))
+    }
+    fn backward_checked(start: Self, count: usize) -> Option<Self> {
+        <u64 as Step>::backward_checked(start.0, count).map(|v| PAddr(v))
     }
 }
 
@@ -484,6 +499,19 @@ impl IOAddr {
         }
 
         self.align_down(align) == self
+    }
+}
+
+#[cfg(feature = "unstable")]
+impl Step for IOAddr {
+    fn steps_between(start: &Self, end: &Self) -> Option<usize> {
+        <u64 as Step>::steps_between(&start.0, &end.0)
+    }
+    fn forward_checked(start: Self, count: usize) -> Option<Self> {
+        <u64 as Step>::forward_checked(start.0, count).map(|v| IOAddr(v))
+    }
+    fn backward_checked(start: Self, count: usize) -> Option<Self> {
+        <u64 as Step>::backward_checked(start.0, count).map(|v| IOAddr(v))
     }
 }
 
@@ -826,6 +854,19 @@ impl VAddr {
         }
 
         self.align_down(align) == self
+    }
+}
+
+#[cfg(feature = "unstable")]
+impl Step for VAddr {
+    fn steps_between(start: &Self, end: &Self) -> Option<usize> {
+        <u64 as Step>::steps_between(&start.0, &end.0)
+    }
+    fn forward_checked(start: Self, count: usize) -> Option<Self> {
+        <u64 as Step>::forward_checked(start.0, count).map(|v| VAddr(v))
+    }
+    fn backward_checked(start: Self, count: usize) -> Option<Self> {
+        <u64 as Step>::backward_checked(start.0, count).map(|v| VAddr(v))
     }
 }
 

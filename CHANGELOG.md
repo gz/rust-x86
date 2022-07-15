@@ -7,7 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
-## [0.50.0] - 2022-07-29
+## [0.51.0] - 2022-07-15
+
+- Implement `core::iter::Step` for PAddr, VAddr, IOAddr types. This currently
+  requires nightly so added a `unstable` Cargo feature to enable it
+  conditionally.
+
+## [0.50.0] - 2022-06-29
 
 - `rdtscp` now returns a tuple in the form of `(cycles: u64, aux: u32)`, where
   `cycles` is the cycle count (as returned by this function in previous

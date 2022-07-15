@@ -3,6 +3,7 @@
 #![cfg_attr(test, allow(unused_features))]
 #![cfg_attr(all(test, feature = "vmtest"), feature(custom_test_frameworks))]
 #![cfg_attr(all(test, feature = "vmtest"), test_runner(x86test::runner::runner))]
+#![cfg_attr(feature = "unstable", feature(step_trait))]
 
 use core::arch::asm;
 #[cfg(target_arch = "x86")]

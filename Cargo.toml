@@ -1,6 +1,6 @@
 [package]
 name = "x86"
-version = "0.50.0"
+version = "0.51.0"
 authors = [
   "Gerd Zellweger <mail@gerdzellweger.com>",
   "Eric Kidd <git@randomhacks.net>",
@@ -43,6 +43,7 @@ performance-counter = ["phf", "phf_codegen", "csv", "serde_json"]
 utest = []
 # Run VM tests, i.e., the #[x86test] ones
 vmtest = []
+unstable = []
 
 [[test]]
 name = "kvm"
