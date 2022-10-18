@@ -1233,6 +1233,12 @@ bitflags! {
         const PCD     = bit!(4);
         /// Accessed; indicates whether this entry has been used for linear-address translation.
         const A       = bit!(5);
+        /// User defined flag -- ignored by hardware (bit 9)
+        const USER_9 = bit!(9);
+        /// User defined flag -- ignored by hardware (bit 10)
+        const USER_10 = bit!(10);
+        /// User defined flag -- ignored by hardware (bit 11)
+        const USER_11 = bit!(11);
         /// If IA32_EFER.NXE = 1, execute-disable
         /// If 1, instruction fetches are not allowed from the 512-GByte region.
         const XD      = bit!(63);
@@ -1259,6 +1265,12 @@ bitflags! {
         const PCD     = bit!(4);
         /// Accessed; indicates whether this entry has been used for linear-address translation.
         const A       = bit!(5);
+        /// User defined flag -- ignored by hardware (bit 9)
+        const USER_9 = bit!(9);
+        /// User defined flag -- ignored by hardware (bit 10)
+        const USER_10 = bit!(10);
+        /// User defined flag -- ignored by hardware (bit 11)
+        const USER_11 = bit!(11);
         /// If IA32_EFER.NXE = 1, execute-disable
         /// If 1, instruction fetches are not allowed from the 256-TByte region.
         const XD      = bit!(63);
@@ -1407,6 +1419,12 @@ bitflags! {
         /// Global; if PS && CR4.PGE = 1, determines whether the translation is global; ignored otherwise
         /// if not PS this is ignored.
         const G       = bit!(8);
+        /// User defined flag -- ignored by hardware (bit 9)
+        const USER_9 = bit!(9);
+        /// User defined flag -- ignored by hardware (bit 10)
+        const USER_10 = bit!(10);
+        /// User defined flag -- ignored by hardware (bit 11)
+        const USER_11 = bit!(11);
         /// Indirectly determines the memory type used to access the 1-GByte page referenced by this entry.
         const PAT     = bit!(12);
         /// If IA32_EFER.NXE = 1, execute-disable
@@ -1509,6 +1527,12 @@ bitflags! {
         /// Global; if PS && CR4.PGE = 1, determines whether the translation is global; ignored otherwise
         /// if not PS this is ignored.
         const G       = bit!(8);
+        /// User defined flag -- ignored by hardware (bit 9)
+        const USER_9 = bit!(9);
+        /// User defined flag -- ignored by hardware (bit 10)
+        const USER_10 = bit!(10);
+        /// User defined flag -- ignored by hardware (bit 11)
+        const USER_11 = bit!(11);
         /// Indirectly determines the memory type used to access the 2-MByte page referenced by this entry.
         /// if not PS this is ignored.
         const PAT     = bit!(12);
@@ -1606,6 +1630,12 @@ bitflags! {
         const D       = bit!(6);
         /// Global; if CR4.PGE = 1, determines whether the translation is global (see Section 4.10); ignored otherwise
         const G       = bit!(8);
+        /// User defined flag -- ignored by hardware (bit 9)
+        const USER_9 = bit!(9);
+        /// User defined flag -- ignored by hardware (bit 10)
+        const USER_10 = bit!(10);
+        /// User defined flag -- ignored by hardware (bit 11)
+        const USER_11 = bit!(11);
         /// If IA32_EFER.NXE = 1, execute-disable
         /// If 1, instruction fetches are not allowed from the 512-GByte region.
         const XD      = bit!(63);
