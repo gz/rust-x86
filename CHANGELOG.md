@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
+## [0.52.0] - 2022-10-18
+
+- Add user-defined, hardware ignored bits to page-table flags.
+
 ## [0.51.0] - 2022-07-15
 
 - Implement `core::iter::Step` for PAddr, VAddr, IOAddr types. This currently
