@@ -1043,7 +1043,7 @@ pub struct LargePage([u8; LARGE_PAGE_SIZE]);
 const ADDRESS_MASK: u32 = !0xfff;
 const ADDRESS_MASK_PSE: u32 = !0x3fffff;
 
-/// Page tables have 512 = 4096 / 32 entries.
+/// Page tables have 1024 (= 4096 bytes / 32 bits) entries.
 pub const PAGE_SIZE_ENTRIES: usize = 1024;
 
 /// A page directory.
