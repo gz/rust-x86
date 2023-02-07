@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
+- Fix error in page-table documentation.
+
 ## [0.52.0] - 2022-10-18
 
 - Add user-defined, hardware ignored bits to page-table flags.
