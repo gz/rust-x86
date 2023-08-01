@@ -192,14 +192,14 @@ enum ApicRegister {
 
 /// State for the XAPIC driver.
 #[allow(clippy::clippy::upper_case_acronyms)]
-pub struct XAPIC {
+pub struct XAPIC<'a> {
     /// Reference to the xAPCI region
-    mmio_region: &'static mut [u32],
+    mmio_region: &'a mut [u32],
     /// Initial APIC Base register value.
     base: u64,
 }
 
-impl fmt::Debug for XAPIC {
+impl fmt::Debug for XAPIC<'_> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_struct("XAPIC")
             .field("XAPIC_ID", &self.read(ApicRegister::XAPIC_ID))
@@ -262,12 +262,12 @@ impl fmt::Debug for XAPIC {
     }
 }
 
-impl XAPIC {
+impl XAPIC<'_> {
     /// Create a new xAPIC object for the local CPU.
     ///
     /// Pass the xAPCI region which is at XXX unless you have
     /// relocated the region.
-    pub fn new(apic_region: &'static mut [u32]) -> XAPIC {
+    pub fn new<'a>(apic_region: &'a mut [u32]) -> XAPIC {
         unsafe {
             XAPIC {
                 mmio_region: apic_region,
@@ -315,7 +315,7 @@ impl XAPIC {
     }
 }
 
-impl ApicControl for XAPIC {
+impl ApicControl for XAPIC<'_> {
     /// Is this the bootstrap core?
     fn bsp(&self) -> bool {
         (self.base & (1 << 8)) > 0
