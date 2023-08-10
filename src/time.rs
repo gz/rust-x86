@@ -91,7 +91,8 @@ mod test {
 
                 // Check TSC AUX is correct (currently when using Linux only):
                 // See also: https://elixir.bootlin.com/linux/v5.18.8/source/arch/x86/include/asm/segment.h#L241
-                if cfg!(target_os = "linux") {
+                #[cfg(target_os = "linux")]
+                {
                     let mut cpu: u32 = 0;
                     let mut node: u32 = 0;
                     libc::syscall(libc::SYS_getcpu, &mut cpu, &mut node, 0);
