@@ -40,7 +40,7 @@ impl SegmentSelector {
     }
 
     /// Returns segment selector's index in GDT or LDT.
-    pub fn index(&self) -> u16 {
+    pub const fn index(&self) -> u16 {
         self.bits >> 3
     }
 
@@ -248,7 +248,7 @@ pub struct DescriptorBuilder {
 
 impl DescriptorBuilder {
     /// Start building a new descriptor with a base and limit.
-    pub(crate) fn with_base_limit(base: u64, limit: u64) -> DescriptorBuilder {
+    pub(crate) const fn with_base_limit(base: u64, limit: u64) -> DescriptorBuilder {
         DescriptorBuilder {
             base_limit: Some((base, limit)),
             selector_offset: None,
@@ -264,7 +264,7 @@ impl DescriptorBuilder {
     }
 
     /// Start building a new descriptor with a segment selector and offset.
-    pub(crate) fn with_selector_offset(
+    pub(crate) const fn with_selector_offset(
         selector: SegmentSelector,
         offset: u64,
     ) -> DescriptorBuilder {
@@ -282,37 +282,37 @@ impl DescriptorBuilder {
         }
     }
 
-    pub(crate) fn set_type(mut self, typ: DescriptorType) -> DescriptorBuilder {
+    pub(crate) const fn set_type(mut self, typ: DescriptorType) -> DescriptorBuilder {
         self.typ = Some(typ);
         self
     }
 
     /// The segment limit is interpreted in 4-KByte units if this is set.
-    pub fn limit_granularity_4kb(mut self) -> DescriptorBuilder {
+    pub const fn limit_granularity_4kb(mut self) -> DescriptorBuilder {
         self.limit_granularity_4k = true;
         self
     }
 
     /// Indicates whether the segment is present in memory (set) or not present (clear).
-    pub fn present(mut self) -> DescriptorBuilder {
+    pub const fn present(mut self) -> DescriptorBuilder {
         self.present = true;
         self
     }
 
     /// Specifies the privilege level of the segment.
-    pub fn dpl(mut self, dpl: Ring) -> DescriptorBuilder {
+    pub const fn dpl(mut self, dpl: Ring) -> DescriptorBuilder {
         self.dpl = Some(dpl);
         self
     }
 
     /// Toggle the AVL bit.
-    pub fn avl(mut self) -> DescriptorBuilder {
+    pub const fn avl(mut self) -> DescriptorBuilder {
         self.avl = true;
         self
     }
 
     /// Set default operation size (false for 16bit segment, true for 32bit segments).
-    pub fn db(mut self) -> DescriptorBuilder {
+    pub const fn db(mut self) -> DescriptorBuilder {
         self.db = true;
         self
     }
@@ -320,13 +320,13 @@ impl DescriptorBuilder {
     /// Set L bit if this descriptor is a 64-bit code segment.
     /// In IA-32e mode, bit 21 of the second doubleword of the segment descriptor indicates whether a code segment
     /// contains native 64-bit code. A value of 1 indicates instructions in this code segment are executed in 64-bit mode.
-    pub fn l(mut self) -> DescriptorBuilder {
+    pub const fn l(mut self) -> DescriptorBuilder {
         self.l = true;
         self
     }
 
     /// Set a the interrupt stack table index (only if this ends up being a 64-bit interrupt descriptor).
-    pub fn ist(mut self, index: u8) -> DescriptorBuilder {
+    pub const fn ist(mut self, index: u8) -> DescriptorBuilder {
         debug_assert!(index <= 7);
         self.ist = index;
         self
@@ -433,11 +433,11 @@ impl fmt::Display for Descriptor {
 impl Descriptor {
     pub const NULL: Descriptor = Descriptor { lower: 0, upper: 0 };
 
-    pub fn as_u64(&self) -> u64 {
+    pub const fn as_u64(&self) -> u64 {
         (self.upper as u64) << 32 | self.lower as u64
     }
 
-    pub(crate) fn apply_builder_settings(&mut self, builder: &DescriptorBuilder) {
+    pub(crate) const fn apply_builder_settings(&mut self, builder: &DescriptorBuilder) {
         if let Some(ring) = builder.dpl {
             self.set_dpl(ring)
         }
@@ -467,7 +467,7 @@ impl Descriptor {
 
     /// Create a new segment, TSS or LDT descriptor
     /// by setting the three base and two limit fields.
-    pub fn set_base_limit(&mut self, base: u32, limit: u32) {
+    pub const fn set_base_limit(&mut self, base: u32, limit: u32) {
         // Clear the base and limit fields in Descriptor
         self.lower = 0;
         self.upper &= 0x00F0FF00;
@@ -485,7 +485,7 @@ impl Descriptor {
 
     /// Creates a new descriptor with selector and offset (for IDT Gate descriptors,
     /// e.g. Trap, Interrupts and Task gates)
-    pub fn set_selector_offset(&mut self, selector: SegmentSelector, offset: u32) {
+    pub const fn set_selector_offset(&mut self, selector: SegmentSelector, offset: u32) {
         // Clear the selector and offset
         self.lower = 0;
         self.upper &= 0x0000ffff;
@@ -502,18 +502,18 @@ impl Descriptor {
     /// Indicates the segment or gate type and specifies the kinds of access that can be made to the
     /// segment and the direction of growth. The interpretation of this field depends on whether the descriptor
     /// type flag specifies an application (code or data) descriptor or a system descriptor.
-    pub fn set_type(&mut self, typ: u8) {
+    pub const fn set_type(&mut self, typ: u8) {
         self.upper &= !(0x0f << 8); // clear
         self.upper |= (typ as u32 & 0x0f) << 8;
     }
 
     /// Specifies whether the segment descriptor is for a system segment (S flag is clear) or a code or data segment (S flag is set).
-    pub fn set_s(&mut self) {
+    pub const fn set_s(&mut self) {
         self.upper |= bit!(12);
     }
 
     /// Specifies the privilege level of the segment. The DPL is used to control access to the segment.
-    pub fn set_dpl(&mut self, ring: Ring) {
+    pub const fn set_dpl(&mut self, ring: Ring) {
         assert!(ring as u32 <= 0b11);
         self.upper &= !(0b11 << 13);
         self.upper |= (ring as u32) << 13;
@@ -523,12 +523,12 @@ impl Descriptor {
     /// Indicates whether the segment is present in memory (set) or not present (clear).
     /// If this flag is clear, the processor generates a segment-not-present exception (#NP) when a segment selector
     /// that points to the segment descriptor is loaded into a segment register.
-    pub fn set_p(&mut self) {
+    pub const fn set_p(&mut self) {
         self.upper |= bit!(15);
     }
 
     /// Set AVL bit. System software can use this bit to store information.
-    pub fn set_avl(&mut self) {
+    pub const fn set_avl(&mut self) {
         self.upper |= bit!(20);
     }
 
@@ -537,14 +537,14 @@ impl Descriptor {
     /// code segment contains native 64-bit code. A value of 1 indicates instructions in this code
     /// segment are executed in 64-bit mode. A value of 0 indicates the instructions in this code segment
     /// are executed in compatibility mode. If L-bit is set, then D-bit must be cleared.
-    pub fn set_l(&mut self) {
+    pub const fn set_l(&mut self) {
         self.upper |= bit!(21);
     }
 
     /// Set D/B.
     /// Performs different functions depending on whether the segment descriptor is an executable code segment,
     /// an expand-down data segment, or a stack segment.
-    pub fn set_db(&mut self) {
+    pub const fn set_db(&mut self) {
         self.upper |= bit!(22);
     }
 
@@ -552,7 +552,7 @@ impl Descriptor {
     /// Determines the scaling of the segment limit field.
     /// When the granularity flag is clear, the segment limit is interpreted in byte units;
     /// when flag is set, the segment limit is interpreted in 4-KByte units.
-    pub fn set_g(&mut self) {
+    pub const fn set_g(&mut self) {
         self.upper |= bit!(23);
     }
 }
