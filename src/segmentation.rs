@@ -1,5 +1,6 @@
 //! Functionality to manipulate segment registers, build segement
 //! descriptors and selectors.
+use _core::convert::TryInto;
 use bitflags::*;
 
 use core::arch::asm;
@@ -45,8 +46,14 @@ impl SegmentSelector {
     }
 
     /// Returns the requested privilege level of the selector.
-    pub fn rpl(&self) -> u16 {
-        self.bits & 0b11
+    pub fn rpl(&self) -> Ring {
+        match self.bits & 0b11 {
+            0b00 => Ring::Ring0,
+            0b01 => Ring::Ring1,
+            0b10 => Ring::Ring2,
+            0b11 => Ring::Ring3,
+            _ => unreachable!(),
+        }
     }
 
     /// Returns the table indicator (TI) bit.
@@ -67,7 +74,13 @@ impl fmt::Display for SegmentSelector {
             true => "LDT Table",
         };
 
-        write!(f, "Index {} in {}, RPL = {}", self.index(), tbl, self.rpl())
+        write!(
+            f,
+            "Index {} in {}, {:?} segment selector.",
+            self.index(),
+            tbl,
+            self.rpl()
+        )
     }
 }
 
