@@ -1,3 +1,4 @@
+#![cfg(target_family = "unix")]
 #![feature(start, libc)]
 #![no_std]
 
