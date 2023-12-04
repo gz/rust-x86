@@ -2,29 +2,33 @@
 use crate::segmentation::SegmentSelector;
 use core::arch::asm;
 use core::fmt;
+use core::marker::PhantomData;
 use core::mem::size_of;
 
 /// A struct describing a pointer to a descriptor table (GDT / IDT).
 /// This is in a format suitable for giving to 'lgdt' or 'lidt'.
 #[repr(C, packed)]
-pub struct DescriptorTablePointer<Entry> {
+pub struct DescriptorTablePointer<'a, Entry> {
     /// Size of the DT.
-    pub limit: u16,
+    limit: u16,
     /// Pointer to the memory region containing the DT.
-    pub base: *const Entry,
+    base: *const Entry,
+    /// save the lifetime
+    phantom: PhantomData<&'a ()>,
 }
 
-impl<T> Default for DescriptorTablePointer<T> {
-    fn default() -> DescriptorTablePointer<T> {
+impl<'a, T> Default for DescriptorTablePointer<'a, T> {
+    fn default() -> DescriptorTablePointer<'a, T> {
         DescriptorTablePointer {
             limit: 0,
             base: core::ptr::null(),
+            phantom: PhantomData::default(),
         }
     }
 }
 
-impl<T> DescriptorTablePointer<T> {
-    pub fn new(tbl: &T) -> Self {
+impl<'a, T> DescriptorTablePointer<'a, T> {
+    pub fn new(tbl: &'a T) -> Self {
         // GDT, LDT, and IDT all expect the limit to be set to "one less".
         // See Intel 3a, Section 3.5.1 "Segment Descriptor Tables" and
         // Section 6.10 "Interrupt Descriptor Table (IDT)".
@@ -33,10 +37,11 @@ impl<T> DescriptorTablePointer<T> {
         DescriptorTablePointer {
             base: tbl as *const T,
             limit: len as u16,
+            phantom: PhantomData::<&'a ()>::default(),
         }
     }
 
-    pub fn new_from_slice(slice: &[T]) -> Self {
+    pub fn new_from_slice(slice: &'a [T]) -> Self {
         // GDT, LDT, and IDT all expect the limit to be set to "one less".
         // See Intel 3a, Section 3.5.1 "Segment Descriptor Tables" and
         // Section 6.10 "Interrupt Descriptor Table (IDT)".
@@ -45,11 +50,12 @@ impl<T> DescriptorTablePointer<T> {
         DescriptorTablePointer {
             base: slice.as_ptr(),
             limit: len as u16,
+            phantom: PhantomData::<&'a ()>::default(),
         }
     }
 }
 
-impl<T> fmt::Debug for DescriptorTablePointer<T> {
+impl<T> fmt::Debug for DescriptorTablePointer<'_, T> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "DescriptorTablePointer ({} {:?})", { self.limit }, {
             self.base
@@ -61,7 +67,7 @@ impl<T> fmt::Debug for DescriptorTablePointer<T> {
 ///
 /// # Safety
 /// Needs CPL 0.
-pub unsafe fn lgdt<T>(gdt: &DescriptorTablePointer<T>) {
+pub unsafe fn lgdt<T>(gdt: &'static DescriptorTablePointer<T>) {
     asm!("lgdt ({0})", in(reg) gdt, options(att_syntax));
 }
 
