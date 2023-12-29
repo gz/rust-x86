@@ -1,6 +1,6 @@
 //! Functionality to manipulate segment registers, build segement
 //! descriptors and selectors.
-use _core::convert::TryInto;
+
 use bitflags::*;
 
 use core::arch::asm;
