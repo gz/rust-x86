@@ -54,9 +54,9 @@ pub mod cpuid {
 
 #[cfg(not(test))]
 mod std {
-    pub use core::fmt;
-    pub use core::ops;
-    pub use core::option;
+    
+    
+    
 }
 
 #[cfg(all(test, feature = "vmtest"))]

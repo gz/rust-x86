@@ -1,5 +1,6 @@
 //! Functionality to manipulate segment registers, build segement
 //! descriptors and selectors.
+
 use bitflags::*;
 
 use core::arch::asm;
@@ -44,6 +45,22 @@ impl SegmentSelector {
         self.bits >> 3
     }
 
+    /// Returns the requested privilege level of the selector.
+    pub fn rpl(&self) -> Ring {
+        match self.bits & 0b11 {
+            0b00 => Ring::Ring0,
+            0b01 => Ring::Ring1,
+            0b10 => Ring::Ring2,
+            0b11 => Ring::Ring3,
+            _ => unreachable!(),
+        }
+    }
+
+    /// Returns the table indicator (TI) bit.
+    pub fn ti(&self) -> u16 {
+        (self.bits >> 2) & 1
+    }
+
     /// Make a new segment selector from a untyped u16 value.
     pub const fn from_raw(bits: u16) -> SegmentSelector {
         SegmentSelector { bits }
@@ -52,22 +69,6 @@ impl SegmentSelector {
 
 impl fmt::Display for SegmentSelector {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let r0 = match self.contains(SegmentSelector::RPL_0) {
-            false => "",
-            true => "Ring 0 segment selector.",
-        };
-        let r1 = match self.contains(SegmentSelector::RPL_1) {
-            false => "",
-            true => "Ring 1 segment selector.",
-        };
-        let r2 = match self.contains(SegmentSelector::RPL_2) {
-            false => "",
-            true => "Ring 2 segment selector.",
-        };
-        let r3 = match self.contains(SegmentSelector::RPL_3) {
-            false => "",
-            true => "Ring 3 segment selector.",
-        };
         let tbl = match self.contains(SegmentSelector::TI_LDT) {
             false => "GDT Table",
             true => "LDT Table",
@@ -75,13 +76,10 @@ impl fmt::Display for SegmentSelector {
 
         write!(
             f,
-            "Index {} in {}, {}{}{}{}",
-            self.bits >> 3,
+            "Index {} in {}, {:?} segment selector.",
+            self.index(),
             tbl,
-            r0,
-            r1,
-            r2,
-            r3
+            self.rpl()
         )
     }
 }
