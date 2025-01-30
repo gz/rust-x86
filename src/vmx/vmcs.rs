@@ -119,6 +119,10 @@ pub mod control {
     pub const TSC_MULTIPLIER_FULL: u32 = 0x2032;
     /// TSC multiplier (high).
     pub const TSC_MULTIPLIER_HIGH: u32 = 0x2033;
+    /// Tertiary processor-based VM-execution controls (full).
+    pub const TERTIARY_PROCBASED_EXEC_CONTROLS_FULL: u32 = 0x2034;
+    /// Tertiary processor-based VM-execution controls (high).
+    pub const TERTIARY_PROCBASED_EXEC_CONTROLS_HIGH: u32 = 0x2035;
 
     // B.3.1.: 32-bit control fields
     /// Pin-based VM-execution controls.
@@ -221,6 +225,8 @@ pub mod control {
             const CR3_LOAD_EXITING = 1 << 15;
             /// CR3-store exiting.
             const CR3_STORE_EXITING = 1 << 16;
+            /// Activate tertiary controls.
+            const TERTIARY_CONTROLS = 1 << 17;
             /// CR8-load exiting.
             const CR8_LOAD_EXITING = 1 << 19;
             /// CR8-store exiting.
@@ -309,6 +315,30 @@ pub mod control {
             const ENABLE_USER_WAIT_PAUSE = 1 << 26;
             /// Enable ENCLV exiting.
             const ENCLV_EXITING = 1 << 28;
+        }
+    }
+
+    bitflags! {
+        /// Tertiary processor-based VM-execution controls.
+        ///
+        /// A set of bitmask flags useful when setting up [`TERTIARY_PROCBASED_EXEC_CONTROLS_FULL`] VMCS field.
+        ///
+        /// See Intel SDM, Volume 3C, Section 24.6.2, Table 26-8.
+        pub struct TertiaryControls: u64 {
+            /// LOADIWKEY exiting.
+            const LOADIWKEY_EXITING = 1 << 0;
+            /// Enable HLAT
+            const ENABLE_HLAT = 1 << 1;
+            /// EPT page-write control.
+            const EPT_PAGE_WRITE_CONTROL = 1 << 2;
+            /// Guest-paging verification.
+            const GUEST_PAGING_VERIFICATION = 1 << 3;
+            /// IPI virtualization.
+            const IPI_VIRTUALIZATION = 1 << 4;
+            /// Enable MSR-list instructions.
+            const ENABLE_MSR_LIST = 1 << 6;
+            /// Virtualize IA32_SPEC_CTRL.
+            const VIRTUALIZE_SPEC_CTRL = 1 << 7;
         }
     }
 
